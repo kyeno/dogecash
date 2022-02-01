@@ -6,7 +6,7 @@
 
 #include "bitcoinaddressvalidator.h"
 
-#include "base58.h"
+#include "key_io.h"
 
 /* Base58 characters are:
      "123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz"
@@ -82,7 +82,7 @@ BitcoinAddressCheckValidator::BitcoinAddressCheckValidator(QObject* parent) : QV
 QValidator::State BitcoinAddressCheckValidator::validate(QString& input, int& pos) const
 {
     Q_UNUSED(pos);
-    // Validate the passed DogeCash address
+    // Validate the passed PIVX address
     CTxDestination addr = DecodeDestination(input.toStdString());
     if (IsValidDestination(addr))
         return QValidator::Acceptable;

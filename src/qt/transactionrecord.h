@@ -1,8 +1,6 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
 // Copyright (c) 2014-2016 The Dash developers
-// Copyright (c) 2017-2020 The PIVX Developers
-// Copyright (c) 2020 The DogeCash Developers
-
+// Copyright (c) 2016-2020 The PIVX developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -30,8 +28,8 @@ public:
     {
     }
 
-    enum Status {
-        Confirmed, /**< Have 6 or more confirmations (normal tx) or fully mature (mined tx) **/
+    enum Status : uint16_t{
+        Confirmed = 0, /**< Have 6 or more confirmations (normal tx) or fully mature (mined tx) **/
         /// Normal (sent/received) transactions
         OpenUntilDate,  /**< Transaction not yet final, waiting for date */
         OpenUntilBlock, /**< Transaction not yet final, waiting for block */
@@ -74,22 +72,22 @@ public:
 class TransactionRecord
 {
 public:
-    enum Type {
-        Other,
+    enum Type : uint16_t {
+        Other = 0,
         Generated,
         StakeMint,
-        StakeZDOGEC,
+        StakeZPIV,
         SendToAddress,
         SendToOther,
         RecvWithAddress,
         MNReward,
-        DevReward,
+        BudgetPayment,
         RecvFromOther,
         SendToSelf,
         ZerocoinMint,
         ZerocoinSpend,
         RecvFromZerocoinSpend,
-        ZerocoinSpend_Change_zdogec,
+        ZerocoinSpend_Change_zPiv,
         ZerocoinSpend_FromMe,
         StakeDelegated, // Received cold stake (owner)
         StakeHot, // Staked via a delegated P2CS.
@@ -103,7 +101,7 @@ public:
         SendToSelfShieldedAddress, // Shielded send to self
         SendToSelfShieldToTransparent, // Unshield coins to self
         SendToSelfShieldToShieldChangeAddress, // Changing coins from one shielded address to another inside the wallet.
-        SendToNobody // Burned DOGECs, op_return output.
+        SendToNobody // Burned PIVs, op_return output.
     };
 
     /** Number of confirmation recommended for accepting a transaction */
@@ -199,6 +197,9 @@ public:
     /** Return true if the tx is a coinstake
      */
     bool isCoinStake() const;
+
+    /** Return true if the tx is a MN reward */
+    bool isMNReward() const;
 
     /** Return true if the tx is a any cold staking type tx.
      */

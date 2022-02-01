@@ -1,14 +1,13 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
-// Copyright (c) 2017-2020 The PIVX Developers
-// Copyright (c) 2020 The DogeCash Developers
-
+// Copyright (c) 2015-2020 The PIVX developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "transactionrecord.h"
 
-#include "base58.h"
+#include "key_io.h"
+#include "budget/budgetproposal.h"
 #include "sapling/key_io_sapling.h"
 #include "wallet/wallet.h"
 
@@ -40,7 +39,7 @@ bool TransactionRecord::decomposeCoinStake(const CWallet* wallet, const CWalletT
             sub.debit = -nDebit;
             loadHotOrColdStakeOrContract(wallet, wtx, sub);
         } else {
-            // DOGEC stake reward
+            // PIV stake reward
             CTxDestination address;
             if (!ExtractDestination(wtx.tx->vout[1].scriptPubKey, address))
                 return true;
@@ -50,24 +49,17 @@ bool TransactionRecord::decomposeCoinStake(const CWallet* wallet, const CWalletT
             sub.address = EncodeDestination(address);
             sub.credit = nCredit - nDebit;
         }
-    } else if (isminetype mine = wallet->IsMine(wtx.tx->vout[2])) {
+    } else {
         //Masternode reward
         CTxDestination destMN;
-        int nIndexMN = (int) wtx.tx->vout.size() - 2;
+        int nIndexMN = (int) wtx.tx->vout.size() - 1;
         if (ExtractDestination(wtx.tx->vout[nIndexMN].scriptPubKey, destMN) && (mine = IsMine(*wallet, destMN)) ) {
             sub.involvesWatchAddress = mine & ISMINE_WATCH_ONLY;
-            sub.type = TransactionRecord::MNReward;
             sub.address = EncodeDestination(destMN);
             sub.credit = wtx.tx->vout[nIndexMN].nValue;
-        }
-    } else if (isminetype mine = wallet->IsMine(wtx.tx->vout[3])) {
-        CTxDestination devAddr;
-        int nIndexDevfee = (int) wtx.tx->vout.size() - 1;
-        if (ExtractDestination(wtx.tx->vout[nIndexDevfee].scriptPubKey, devAddr) && (mine = IsMine(*wallet, devAddr)) ) {
-            sub.involvesWatchAddress = mine & ISMINE_WATCH_ONLY;
-            sub.type = TransactionRecord::DevReward;
-            sub.address = EncodeDestination(devAddr);
-            sub.credit = wtx.tx->vout[nIndexDevfee].nValue;
+            // Simple way to differentiate budget payments from MN rewards.
+            CAmount mn_reward = Params().GetConsensus().nMNBlockReward;
+            sub.type = sub.credit > mn_reward ? TransactionRecord::BudgetPayment : TransactionRecord::MNReward;
         }
     }
 
@@ -155,7 +147,7 @@ bool TransactionRecord::decomposeCreditTransaction(const CWallet* wallet, const 
             sub.credit = txout.nValue;
             sub.involvesWatchAddress = mine & ISMINE_WATCH_ONLY;
             if (ExtractDestination(txout.scriptPubKey, address) && IsMine(*wallet, address)) {
-                // Received by DogeCash Address
+                // Received by PIVX Address
                 sub.type = TransactionRecord::RecvWithAddress;
                 sub.address = EncodeDestination(address);
             } else {
@@ -328,7 +320,7 @@ bool TransactionRecord::decomposeDebitTransaction(const CWallet* wallet, const C
             //private keys that the change was sent to. Do not display a "sent to" here.
             if (wtx.tx->HasZerocoinMintOutputs())
                 continue;
-            // Sent to DogeCash Address
+            // Sent to PIVX Address
             sub.type = TransactionRecord::SendToAddress;
             sub.address = EncodeDestination(address);
         } else if (txout.IsZerocoinMint()){
@@ -341,10 +333,21 @@ bool TransactionRecord::decomposeDebitTransaction(const CWallet* wallet, const C
             sub.address = getValueOrReturnEmpty(wtx.mapValue, "to");
             if (sub.address.empty() && txout.scriptPubKey.StartsWithOpcode(OP_RETURN)) {
                 sub.type = TransactionRecord::SendToNobody;
-                // Burned DOGECs, op_return could be for a proposal/budget fee or another sort of data stored there.
+                // Burned PIVs, op_return could be for a kind of data stored there. For now, support UTF8 comments.
                 std::string comment = wtx.GetComment();
-                if (IsValidUTF8(comment)) {
+                if (!comment.empty() && IsValidUTF8(comment)) {
                     sub.address = comment;
+                }
+                // Check if this is a budget proposal fee (future: encapsulate functionality inside wallet/governanceModel)
+                std::string prop = getValueOrReturnEmpty(wtx.mapValue, "proposal");
+                if (!prop.empty()) {
+                    const std::vector<unsigned char> vec = ParseHex(prop);
+                    if (!vec.empty()) {
+                        CDataStream ss(vec, SER_DISK, CLIENT_VERSION);
+                        CBudgetProposal proposal;
+                        ss >> proposal;
+                        sub.address = "Proposal: " + proposal.GetName();
+                    }
                 }
                 // future: could expand this to support base64 or hex encoded messages
             }
@@ -609,9 +612,9 @@ void TransactionRecord::updateStatus(const CWalletTx& wtx, int chainHeight)
     // For generated transactions, determine maturity
     else if (type == TransactionRecord::Generated ||
             type == TransactionRecord::StakeMint ||
-            type == TransactionRecord::StakeZDOGEC ||
-            type == TransactionRecord::DevReward ||
+            type == TransactionRecord::StakeZPIV ||
             type == TransactionRecord::MNReward ||
+            type == TransactionRecord::BudgetPayment ||
             type == TransactionRecord::StakeDelegated ||
             type == TransactionRecord::StakeHot) {
 
@@ -652,7 +655,12 @@ int TransactionRecord::getOutputIndex() const
 
 bool TransactionRecord::isCoinStake() const
 {
-    return (type == TransactionRecord::StakeMint || type == TransactionRecord::Generated || type == TransactionRecord::DevReward);
+    return type == TransactionRecord::StakeMint || type == TransactionRecord::Generated || type == TransactionRecord::StakeZPIV;
+}
+
+bool TransactionRecord::isMNReward() const
+{
+    return type == TransactionRecord::MNReward;
 }
 
 bool TransactionRecord::isAnyColdStakingType() const

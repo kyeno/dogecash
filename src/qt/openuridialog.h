@@ -1,8 +1,4 @@
-// Copyright (c) 2019 The PIVX Developers
-// Copyright (c) 2020 The PIVX Developers
-// Copyright (c) 2020 The DogeCash Developers
-
-
+// Copyright (c) 2019 The PIVX developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -10,7 +6,7 @@
 #define BITCOIN_QT_OPENURIDIALOG_H
 
 #include <QDialog>
-#include "qt/dogecash/snackbar.h"
+#include "qt/pivx/snackbar.h"
 
 namespace Ui
 {
@@ -30,9 +26,6 @@ public:
 
 protected Q_SLOTS:
     void accept() override;
-
-private Q_SLOTS:
-    void on_selectFileButton_clicked();
 
 private:
     Ui::OpenURIDialog* ui;

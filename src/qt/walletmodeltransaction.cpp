@@ -1,6 +1,5 @@
 // Copyright (c) 2011-2013 The Bitcoin developers
 // Copyright (c) 2017-2019 The PIVX developers
-// Copyright (c) 2020 The DogeCash Developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -31,7 +30,7 @@ CTransactionRef& WalletModelTransaction::getTransaction()
 
 unsigned int WalletModelTransaction::getTransactionSize()
 {
-    return (!walletTransaction ? 0 : (::GetSerializeSize(*walletTransaction, SER_NETWORK, PROTOCOL_VERSION)));
+    return (!walletTransaction ? 0 : (::GetSerializeSize(*walletTransaction, PROTOCOL_VERSION)));
 }
 
 CAmount WalletModelTransaction::getTransactionFee()
@@ -42,6 +41,15 @@ CAmount WalletModelTransaction::getTransactionFee()
 void WalletModelTransaction::setTransactionFee(const CAmount& newFee)
 {
     fee = newFee;
+}
+
+unsigned int WalletModelTransaction::subtractFeeFromRecipents() const
+{
+    unsigned int count = 0;
+    for (const SendCoinsRecipient& rcp : recipients) {
+        if (rcp.fSubtractFee) count++;
+    }
+    return count;
 }
 
 CAmount WalletModelTransaction::getTotalTransactionAmount()

@@ -1,6 +1,5 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
 // Copyright (c) 2017-2019 The PIVX developers
-// Copyright (c) 2020 The DogeCash Developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -17,6 +16,7 @@
 
 class ClientModel;
 class RPCTimerInterface;
+class WalletModel;
 
 namespace Ui
 {
@@ -38,14 +38,7 @@ public:
     ~RPCConsole();
 
     void setClientModel(ClientModel* model);
-
-    enum MessageClass {
-        MC_ERROR,
-        MC_DEBUG,
-        CMD_REQUEST,
-        CMD_REPLY,
-        CMD_ERROR
-    };
+    void setWalletModel(WalletModel* model);
 
 protected:
     virtual bool eventFilter(QObject* obj, QEvent* event);
@@ -88,6 +81,8 @@ public Q_SLOTS:
     void message(int category, const QString &message, bool html);
     /** Set number of connections shown in the UI */
     void setNumConnections(int count);
+    /** Set network state shown in the UI */
+    void setNetworkActive(bool networkActive);
     /** Set number of blocks shown in the UI */
     void setNumBlocks(int count);
     /** Set number of masternodes shown in the UI */
@@ -106,7 +101,7 @@ public Q_SLOTS:
     void showPeers();
     /** Switch to wallet-repair tab and show */
     void showRepair();
-    /** Open external (default) editor with dogecash.conf */
+    /** Open external (default) editor with pivx.conf */
     void showConfEditor();
     /** Open external (default) editor with masternode.conf */
     void showMNConfEditor();
@@ -149,6 +144,7 @@ private:
 
     Ui::RPCConsole* ui;
     ClientModel* clientModel;
+    WalletModel* walletModel;
     QStringList history;
     int historyPtr;
     NodeId cachedNodeid;
@@ -156,6 +152,9 @@ private:
     QMenu *peersTableContextMenu;
     QMenu *banTableContextMenu;
     RPCTimerInterface *rpcTimerInterface;
+
+    /** Update UI with latest network info from model. */
+    void updateNetworkState(int num_connections);
 };
 
 #endif // BITCOIN_QT_RPCCONSOLE_H
