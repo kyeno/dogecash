@@ -10,7 +10,7 @@
 #include "qt/dogec/focuseddialog.h"
 #include "qt/dogec/snackbar.h"
 
-class PIVXGUI;
+class DogeCashGUI;
 class WalletModel;
 
 namespace Ui {
@@ -22,7 +22,7 @@ class SendCustomFeeDialog : public FocusedDialog
     Q_OBJECT
 
 public:
-    explicit SendCustomFeeDialog(PIVXGUI* parent, WalletModel* model);
+    explicit SendCustomFeeDialog(DogeCashGUI* parent, WalletModel* model);
     ~SendCustomFeeDialog();
 
     void showEvent(QShowEvent* event) override;

@@ -16,7 +16,7 @@
 const struct NUInfo NetworkUpgradeInfo[Consensus::MAX_NETWORK_UPGRADES] = {
         {
                 /*.strName =*/ "Base",
-                /*.strInfo =*/ "PIVX network",
+                /*.strInfo =*/ "DogeCash network",
         },
         {
                 /*.strName =*/ "PoS",
@@ -43,11 +43,11 @@ const struct NUInfo NetworkUpgradeInfo[Consensus::MAX_NETWORK_UPGRADES] = {
                 /*.strInfo =*/ "Activation of zerocoin public spends (spend v3)",
         },
         {
-                /*.strName =*/ "PIVX_v3.4",
+                /*.strName =*/ "DogeCash_v3.4",
                 /*.strInfo =*/ "New 256-bit stake modifier - start block v6",
         },
         {
-                /*.strName =*/ "PIVX_v4.0",
+                /*.strName =*/ "DogeCash_v4.0",
                 /*.strInfo =*/ "New message sigs - start block v7 - time protocol - zc spend v4",
         },
         {
@@ -55,11 +55,11 @@ const struct NUInfo NetworkUpgradeInfo[Consensus::MAX_NETWORK_UPGRADES] = {
                 /*.strInfo =*/ "Sapling Shield - start block v8 - start transaction v3",
         },
         {
-                /*.strName =*/ "PIVX_v5.2",
+                /*.strName =*/ "DogeCash_v5.2",
                 /*.strInfo =*/ "New cold-staking rules",
         },
         {
-                /*.strName =*/ "PIVX_v5.3",
+                /*.strName =*/ "DogeCash_v5.3",
                 /*.strInfo =*/ "New staking rules",
         },
         {

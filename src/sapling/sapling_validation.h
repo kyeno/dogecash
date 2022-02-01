@@ -4,8 +4,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef PIVX_SAPLING_VALIDATION_H
-#define PIVX_SAPLING_VALIDATION_H
+#ifndef DogeCash_SAPLING_VALIDATION_H
+#define DogeCash_SAPLING_VALIDATION_H
 
 #include "chainparams.h"
 
@@ -28,4 +28,4 @@ bool ContextualCheckTransaction(const CTransaction &tx, CValidationState &state,
 
 }; // End SaplingValidation namespace
 
-#endif //PIVX_SAPLING_VALIDATION_H
+#endif //DogeCash_SAPLING_VALIDATION_H

@@ -24,7 +24,7 @@ void initPageIndexBtn(QPushButton* btn)
     btn->setVisible(false);
 }
 
-CreateProposalDialog::CreateProposalDialog(PIVXGUI* parent, GovernanceModel* _govModel, WalletModel* _walletModel) :
+CreateProposalDialog::CreateProposalDialog(DogeCashGUI* parent, GovernanceModel* _govModel, WalletModel* _walletModel) :
     QDialog(parent),
     ui(new Ui::CreateProposalDialog),
     govModel(_govModel),
@@ -83,7 +83,7 @@ void CreateProposalDialog::setupPageOne()
     setCssProperty(ui->labelTitle1, "text-title-dialog");
     setCssProperty(ui->labelMessage1b, "dialog-proposal-message");
     setEditBoxStyle(ui->labelName, ui->lineEditPropName, "e.g Best proposal ever!");
-    setEditBoxStyle(ui->labelURL, ui->lineEditURL, "e.g https://forum.pivx/proposals/best_proposal_ever");
+    setEditBoxStyle(ui->labelURL, ui->lineEditURL, "e.g https://forum.dogecash/proposals/best_proposal_ever");
 
     connect(ui->lineEditPropName, &QLineEdit::textChanged, this, &CreateProposalDialog::propNameChanged);
     connect(ui->lineEditURL, &QLineEdit::textChanged, this, &CreateProposalDialog::propUrlChanged);
@@ -93,7 +93,7 @@ void CreateProposalDialog::setupPageTwo()
 {
     setCssProperty(ui->labelTitleDest, "text-title-dialog");
     setCssProperty(ui->labelMessageDest, "dialog-proposal-message");
-    setEditBoxStyle(ui->labelAmount, ui->lineEditAmount, "e.g 500 PIV");
+    setEditBoxStyle(ui->labelAmount, ui->lineEditAmount, "e.g 500 DOGEC");
     setCssProperty(ui->labelMonths, "text-title");
     setEditBoxStyle(ui->labelAddress, ui->lineEditAddress, "e.g D...something..");
     setCssProperty(ui->lineEditAddress, "edit-primary-multi-book");
@@ -343,7 +343,7 @@ void CreateProposalDialog::onAddrListClicked()
         menuContacts = new ContactsDropdown(
                 width,
                 height,
-                dynamic_cast<PIVXGUI*>(parent()),
+                dynamic_cast<DogeCashGUI*>(parent()),
                 this
         );
         menuContacts->setWalletModel(walletModel, {AddressTableModel::Send, AddressTableModel::Receive});

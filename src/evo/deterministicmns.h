@@ -4,8 +4,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef PIVX_DETERMINISTICMNS_H
-#define PIVX_DETERMINISTICMNS_H
+#ifndef DogeCash_DETERMINISTICMNS_H
+#define DogeCash_DETERMINISTICMNS_H
 
 #include "arith_uint256.h"
 #include "bls/bls_wrapper.h"
@@ -599,4 +599,4 @@ private:
 
 extern std::unique_ptr<CDeterministicMNManager> deterministicMNManager;
 
-#endif //PIVX_DETERMINISTICMNS_H
+#endif //DogeCash_DETERMINISTICMNS_H

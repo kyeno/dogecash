@@ -6,7 +6,7 @@
 #ifndef QTUTILS_H
 #define QTUTILS_H
 
-#include "qt/dogec/pivxgui.h"
+#include "qt/dogec/dogecashgui.h"
 
 #include <QAbstractAnimation>
 #include <QColor>
@@ -34,11 +34,11 @@ const QString RESYNC("-resync");
 extern Qt::Modifier SHORT_KEY;
 
 bool openDialog(QDialog* widget, QWidget* gui);
-void closeDialog(QDialog* widget, PIVXGUI* gui);
+void closeDialog(QDialog* widget, DogeCashGUI* gui);
 void openDialogFullScreen(QWidget* parent, QWidget* dialog);
-bool openDialogWithOpaqueBackgroundY(QDialog* widget, PIVXGUI* gui, double posX = 3, int posY = 5, bool hideOpaqueBackground = true);
-bool openDialogWithOpaqueBackground(QDialog* widget, PIVXGUI* gui, double posX = 3);
-bool openDialogWithOpaqueBackgroundFullScreen(QDialog* widget, PIVXGUI* gui);
+bool openDialogWithOpaqueBackgroundY(QDialog* widget, DogeCashGUI* gui, double posX = 3, int posY = 5, bool hideOpaqueBackground = true);
+bool openDialogWithOpaqueBackground(QDialog* widget, DogeCashGUI* gui, double posX = 3);
+bool openDialogWithOpaqueBackgroundFullScreen(QDialog* widget, DogeCashGUI* gui);
 
 //
 QPixmap encodeToQr(const QString& str, QString& errorStr, const QColor& qrColor = Qt::black);

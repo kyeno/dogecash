@@ -19,7 +19,7 @@
 #include "qt/dogec/settings/settingsinformationwidget.h"
 #include "qt/dogec/settings/settingsconsolewidget.h"
 
-class PIVXGUI;
+class DogeCashGUI;
 
 QT_BEGIN_NAMESPACE
 class QDataWidgetMapper;
@@ -34,7 +34,7 @@ class SettingsWidget : public PWidget
     Q_OBJECT
 
 public:
-    explicit SettingsWidget(PIVXGUI* parent);
+    explicit SettingsWidget(DogeCashGUI* parent);
     ~SettingsWidget();
 
     void loadClientModel() override;

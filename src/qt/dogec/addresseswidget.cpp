@@ -60,7 +60,7 @@ public:
 };
 
 
-AddressesWidget::AddressesWidget(PIVXGUI* parent) :
+AddressesWidget::AddressesWidget(DogeCashGUI* parent) :
     PWidget(parent),
     ui(new Ui::AddressesWidget)
 {

@@ -137,12 +137,12 @@
     </message>
     <message>
         <location line="+7"/>
-        <source>These are your PIVX addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
+        <source>These are your DogeCash addresses for sending payments. Always check the amount and the receiving address before sending coins.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+4"/>
-        <source>These are your PIVX addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</source>
+        <source>These are your DogeCash addresses for receiving payments. It is recommended to use a new receiving address for each transaction.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -564,7 +564,7 @@ for staking</source>
     </message>
     <message>
         <location line="+81"/>
-        <source>Select PIV Outputs to Spend</source>
+        <source>Select DOGEC Outputs to Spend</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -601,7 +601,7 @@ for staking</source>
     <message>
         <location line="-269"/>
         <location line="+461"/>
-        <source>0.00 PIV</source>
+        <source>0.00 DOGEC</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -858,7 +858,7 @@ stake on your behalf, while you keep the keys securely offline.</source>
     </message>
     <message>
         <location line="-139"/>
-        <source>Accept PIV delegation / Delegate PIV</source>
+        <source>Accept DOGEC delegation / Delegate DOGEC</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1090,7 +1090,7 @@ address</source>
     </message>
     <message>
         <location line="+13"/>
-        <source>Make sure you have 50 PIV for the proposal fee</source>
+        <source>Make sure you have 50 DOGEC for the proposal fee</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1217,7 +1217,7 @@ address</source>
     </message>
     <message>
         <location line="+357"/>
-        <source>How to get PIV</source>
+        <source>How to get DOGEC</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1362,7 +1362,7 @@ It will start automatically as soon as the wallet has enough confirmations on an
     </message>
     <message>
         <location line="+67"/>
-        <source>The entered address &quot;%1&quot; is not a valid PIVX address.</source>
+        <source>The entered address &quot;%1&quot; is not a valid DogeCash address.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1610,7 +1610,7 @@ Be part of the DAO.</source>
     </message>
     <message>
         <location line="+18"/>
-        <source>%1 will download and store a copy of the PIVX block chain. At least %2GB of data will be stored in this directory, and it will grow over time. The wallet will also be stored in this directory.</source>
+        <source>%1 will download and store a copy of the DogeCash block chain. At least %2GB of data will be stored in this directory, and it will grow over time. The wallet will also be stored in this directory.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1817,7 +1817,7 @@ Be part of the DAO.</source>
     </message>
     <message>
         <location line="-210"/>
-        <source>To create a PIVX Masternode you must dedicate %1 (the unit of PIVX) to the network (however, these coins are still yours and will never leave your possession).</source>
+        <source>To create a DogeCash Masternode you must dedicate %1 (the unit of PIVX) to the network (however, these coins are still yours and will never leave your possession).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2007,7 +2007,7 @@ Please wait few more minutes (masternode collaterals require %1 confirmations).<
 on a remote server to your clipboard.
 
 
-You will only have to paste the data in the pivx.conf file
+You will only have to paste the data in the dogecash.conf file
 of your remote server and start it, then start the Masternode using
 this controller wallet (select the Masternode in the list and press &quot;start&quot;).
 </source>
@@ -2253,7 +2253,7 @@ STAKING</source>
     </message>
     <message>
         <location line="+45"/>
-        <source>Open PIVX URI</source>
+        <source>Open DogeCash URI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2268,9 +2268,9 @@ STAKING</source>
     </message>
 </context>
 <context>
-    <name>PIVXGUI</name>
+    <name>DogeCashGUI</name>
     <message>
-        <location filename="../dogecash/pivxgui.cpp" line="+70"/>
+        <location filename="../dogecash/dogecashgui.cpp" line="+70"/>
         <source>Wallet</source>
         <translation type="unfinished">Wallet</translation>
     </message>
@@ -2373,12 +2373,12 @@ Address: %4
     </message>
     <message>
         <location line="-54"/>
-        <source>Cannot start pivx: click-to-pay handler</source>
+        <source>Cannot start dogecash: click-to-pay handler</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+60"/>
-        <source>URI cannot be parsed! This can be caused by an invalid PIVX address or malformed URI parameters.</source>
+        <source>URI cannot be parsed! This can be caused by an invalid DogeCash address or malformed URI parameters.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2530,7 +2530,7 @@ Address: %4
     </message>
     <message>
         <location filename="../guiutil.cpp" line="+137"/>
-        <source>Enter PIVX address (e.g. %1)</source>
+        <source>Enter DogeCash address (e.g. %1)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2585,8 +2585,8 @@ Address: %4
         <translation>%1 ms</translation>
     </message>
     <message>
-        <location filename="../pivx.cpp" line="+544"/>
-        <source>A fatal error occurred. PIVX can no longer continue safely and will quit.</source>
+        <location filename="../dogecash.cpp" line="+544"/>
+        <source>A fatal error occurred. DogeCash can no longer continue safely and will quit.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2929,7 +2929,7 @@ Address: %4
     </message>
     <message>
         <location line="+93"/>
-        <source>Open the PIVX debug log file from the current data directory. This can take a few seconds for large log files.</source>
+        <source>Open the DogeCash debug log file from the current data directory. This can take a few seconds for large log files.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3191,7 +3191,7 @@ Address: %4
     </message>
     <message>
         <location line="-40"/>
-        <source>Welcome to the PIVX RPC console.</source>
+        <source>Welcome to the DogeCash RPC console.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3362,7 +3362,7 @@ Address: %4
     <name>ReceiveWidget</name>
     <message>
         <location filename="../dogecash/forms/receivewidget.ui" line="+81"/>
-        <source>Scan the QR code or copy the address to receive PIV</source>
+        <source>Scan the QR code or copy the address to receive DOGEC</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3377,7 +3377,7 @@ Address: %4
     </message>
     <message>
         <location line="+19"/>
-        <source>Accept transparent or shielded PIV</source>
+        <source>Accept transparent or shielded DOGEC</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3542,7 +3542,7 @@ try unlocking the wallet</source>
     </message>
     <message>
         <location line="-43"/>
-        <source>Instead of sharing only a PIVX address, you can create a payment request, bundling up more information</source>
+        <source>Instead of sharing only a DogeCash address, you can create a payment request, bundling up more information</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3646,7 +3646,7 @@ try unlocking the wallet</source>
     </message>
     <message>
         <location line="+72"/>
-        <source>The remainder of the value resultant from the inputs minus the outputs value goes to the &quot;change&quot; PIVX address</source>
+        <source>The remainder of the value resultant from the inputs minus the outputs value goes to the &quot;change&quot; DogeCash address</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3775,7 +3775,7 @@ try unlocking the wallet</source>
     </message>
     <message>
         <location line="+38"/>
-        <source>The fee will be deducted from the amount being sent. The recipient will receive less PIV than you enter in the amount field. If multiple recipients are selected, the fee is split equally.</source>
+        <source>The fee will be deducted from the amount being sent. The recipient will receive less DOGEC than you enter in the amount field. If multiple recipients are selected, the fee is split equally.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3831,7 +3831,7 @@ Do you want to continue?</source>
     </message>
     <message>
         <location line="-225"/>
-        <source>Parse a PIVX URI</source>
+        <source>Parse a DogeCash URI</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4129,7 +4129,7 @@ Remember to write it down and store it safely, otherwise you might lose access t
     </message>
     <message>
         <location line="+7"/>
-        <source>Encrypt your PIVX addresses (key pair actually) using BIP38 encryption.
+        <source>Encrypt your DogeCash addresses (key pair actually) using BIP38 encryption.
 Using this mechanism you can share your keys without middle-man risk, only need to store your passphrase safely</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4176,7 +4176,7 @@ Using this mechanism you can share your keys without middle-man risk, only need 
     </message>
     <message>
         <location line="+77"/>
-        <source>PIVX address</source>
+        <source>DogeCash address</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4343,7 +4343,7 @@ Verify that you have installed a predetermined text editor.</source>
     </message>
     <message>
         <location line="+138"/>
-        <source>Welcome to the PIVX RPC console.</source>
+        <source>Welcome to the DogeCash RPC console.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4548,12 +4548,12 @@ There was an error trying to save the address list to %1. Please try again.</sou
     <name>SettingsFaqWidget</name>
     <message>
         <location filename="../dogecash/settings/forms/settingsfaqwidget.ui" line="+166"/>
-        <source>1) What is PIVX?</source>
+        <source>1) What is DogeCash?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+31"/>
-        <source>2) Why are my PIV unspendable?</source>
+        <source>2) Why are my DOGEC unspendable?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4563,7 +4563,7 @@ There was an error trying to save the address list to %1. Please try again.</sou
     </message>
     <message>
         <location line="+18"/>
-        <source>What is PIVX?</source>
+        <source>What is DogeCash?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4573,7 +4573,7 @@ There was an error trying to save the address list to %1. Please try again.</sou
     </message>
     <message>
         <location line="+21"/>
-        <source>Why are my PIV unspendable?</source>
+        <source>Why are my DOGEC unspendable?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4583,7 +4583,7 @@ There was an error trying to save the address list to %1. Please try again.</sou
     </message>
     <message>
         <location line="+18"/>
-        <source>How do I stake PIV?</source>
+        <source>How do I stake DOGEC?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4628,7 +4628,7 @@ There was an error trying to save the address list to %1. Please try again.</sou
     </message>
     <message>
         <location line="+138"/>
-        <source>3) How do I stake PIV?</source>
+        <source>3) How do I stake DOGEC?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4653,22 +4653,22 @@ There was an error trying to save the address list to %1. Please try again.</sou
     </message>
     <message>
         <location filename="../dogecash/settings/settingsfaqwidget.cpp" line="+78"/>
-        <source>PIVX is a form of digital online money using blockchain technology that can be easily transferred globally, instantly, and with near zero fees. PIVX incorporates market leading security &amp; privacy and is also the first PoS (Proof of Stake) Cryptocurrency to implement Sapling(SHIELD), a zk-SNARKs based privacy protocol.</source>
+        <source>DogeCash is a form of digital online money using blockchain technology that can be easily transferred globally, instantly, and with near zero fees. DogeCash incorporates market leading security &amp; privacy and is also the first PoS (Proof of Stake) Cryptocurrency to implement Sapling(SHIELD), a zk-SNARKs based privacy protocol.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+6"/>
-        <source>PIVX utilizes a Proof of Stake (PoS) consensus system algorithm, allowing all owners of PIVX to participate in earning block rewards while securing the network with full node wallets, as well as to run Masternodes to create and vote on proposals.</source>
+        <source>DogeCash utilizes a Proof of Stake (PoS) consensus system algorithm, allowing all owners of DogeCash to participate in earning block rewards while securing the network with full node wallets, as well as to run Masternodes to create and vote on proposals.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+8"/>
-        <source>Newly received PIVX requires 6 confirmations on the network to become eligible for spending which can take ~6 minutes.</source>
+        <source>Newly received DogeCash requires 6 confirmations on the network to become eligible for spending which can take ~6 minutes.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+3"/>
-        <source>Your PIVX wallet also needs to be completely synchronized to see and spend balances on the network.</source>
+        <source>Your DogeCash wallet also needs to be completely synchronized to see and spend balances on the network.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4678,7 +4678,7 @@ There was an error trying to save the address list to %1. Please try again.</sou
     </message>
     <message>
         <location line="+1"/>
-        <source>You must have a balance of PIVX with a minimum of 600 confirmations.</source>
+        <source>You must have a balance of DogeCash with a minimum of 600 confirmations.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4753,7 +4753,7 @@ There was an error trying to save the address list to %1. Please try again.</sou
     </message>
     <message>
         <location line="+2"/>
-        <source>Participate in PIVX Governance</source>
+        <source>Participate in DogeCash Governance</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4768,7 +4768,7 @@ There was an error trying to save the address list to %1. Please try again.</sou
     </message>
     <message>
         <location line="+1"/>
-        <source>Help secure the PIVX network</source>
+        <source>Help secure the DogeCash network</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4911,7 +4911,7 @@ There was an error trying to save the address list to %1. Please try again.</sou
     </message>
     <message>
         <location line="+4"/>
-        <source>Unable to open pivx.conf with default application</source>
+        <source>Unable to open dogecash.conf with default application</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -5045,7 +5045,7 @@ Are you sure?
     </message>
     <message>
         <location line="-62"/>
-        <source>PIVX address or contact label</source>
+        <source>DogeCash address or contact label</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -5196,7 +5196,7 @@ Are you sure?
     </message>
     <message>
         <location line="+58"/>
-        <source>Automatically open the PIVX client port on the router. This only works when your router supports NAT-PMP and it is enabled. The external port could be random.</source>
+        <source>Automatically open the DogeCash client port on the router. This only works when your router supports NAT-PMP and it is enabled. The external port could be random.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -5444,7 +5444,7 @@ Are you sure?
     </message>
     <message>
         <location line="+31"/>
-        <source>About PIVX</source>
+        <source>About DogeCash</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -6368,12 +6368,12 @@ Select fewer inputs with coin control.</source>
     </message>
     <message>
         <location line="+116"/>
-        <source>PIVX is the world’s most innovative Proof of Stake blockchain based technology. Developed by a team of highly experienced developers and cryptographers.</source>
+        <source>DogeCash is the world’s most innovative Proof of Stake blockchain based technology. Developed by a team of highly experienced developers and cryptographers.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+93"/>
-        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;As our manifesto says: Privacy is a non-negotiable basic human right; it grants users the freedom to share their data whenever and with whomever they want - PIVX believes in self sovereignty.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
+        <source>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;As our manifesto says: Privacy is a non-negotiable basic human right; it grants users the freedom to share their data whenever and with whomever they want - DogeCash believes in self sovereignty.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -6383,7 +6383,7 @@ Select fewer inputs with coin control.</source>
     </message>
     <message>
         <location line="-103"/>
-        <source>How PIVX respects your privacy?</source>
+        <source>How DogeCash respects your privacy?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -6432,9 +6432,9 @@ Select fewer inputs with coin control.</source>
     </message>
 </context>
 <context>
-    <name>pivx-core</name>
+    <name>dogecash-core</name>
     <message>
-        <location filename="../pivxstrings.cpp" line="+25"/>
+        <location filename="../dogecashstrings.cpp" line="+25"/>
         <source>Distributed under the MIT software license, see the accompanying file COPYING or &lt;http://www.opensource.org/licenses/mit-license.php&gt;.</source>
         <translation type="unfinished">Distributed under the MIT software license, see the accompanying file COPYING or &lt;http://www.opensource.org/licenses/mit-license.php&gt;.</translation>
     </message>

@@ -323,7 +323,7 @@ CMasternodeConfig::CMasternodeEntry* MNModel::createLegacyMN(COutPoint& collater
                              QString& ret_error)
 {
     // Update the conf file
-    QString strConfFileQt(PIVX_MASTERNODE_CONF_FILENAME);
+    QString strConfFileQt(DogeCash_MASTERNODE_CONF_FILENAME);
     std::string strConfFile = strConfFileQt.toStdString();
     std::string strDataDir = GetDataDir().string();
     fs::path conf_file_path(strConfFile);
@@ -416,7 +416,7 @@ CMasternodeConfig::CMasternodeEntry* MNModel::createLegacyMN(COutPoint& collater
 // Future: remove after v6.0
 bool MNModel::removeLegacyMN(const std::string& alias_to_remove, const std::string& tx_id, unsigned int out_index, QString& ret_error)
 {
-    QString strConfFileQt(PIVX_MASTERNODE_CONF_FILENAME);
+    QString strConfFileQt(DogeCash_MASTERNODE_CONF_FILENAME);
     std::string strConfFile = strConfFileQt.toStdString();
     std::string strDataDir = GetDataDir().string();
     fs::path conf_file_path(strConfFile);

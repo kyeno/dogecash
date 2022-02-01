@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef PIVX_QUORUMS_UTILS_H
-#define PIVX_QUORUMS_UTILS_H
+#ifndef DogeCash_QUORUMS_UTILS_H
+#define DogeCash_QUORUMS_UTILS_H
 
 #include "consensus/params.h"
 #include "net.h"
@@ -36,4 +36,4 @@ std::string ToHexStr(const std::vector<bool>& vBits);
 
 } // namespace llmq
 
-#endif // PIVX_QUORUMS_UTILS_H
+#endif // DogeCash_QUORUMS_UTILS_H

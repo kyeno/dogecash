@@ -13,9 +13,9 @@ if [ -n "${1:-}" ]; then
     PARAMS_DIR="$1"
 else
     if [[ "$OSTYPE" == "darwin"* ]]; then
-        PARAMS_DIR="$HOME/Library/Application Support/PIVXParams"
+        PARAMS_DIR="$HOME/Library/Application Support/DogeCashParams"
     else
-        PARAMS_DIR="$HOME/.pivx-params"
+        PARAMS_DIR="$HOME/.dogecash-params"
     fi
 fi
 
@@ -91,9 +91,9 @@ function main() {
     || exit_locked_error
 
     cat <<EOF
-PIVX - install-params.sh
+DogeCash - install-params.sh
 
-This script will install the PIVX zkSNARK parameters and verify their
+This script will install the DogeCash zkSNARK parameters and verify their
 integrity with sha256sum.
 
 If they already exist locally, it will exit now and do nothing else.
@@ -105,7 +105,7 @@ EOF
         mkdir -p "$PARAMS_DIR"
         README_PATH="$PARAMS_DIR/README"
         cat >> "$README_PATH" <<EOF
-This directory stores common PIVX zkSNARK parameters. Note that it is
+This directory stores common DogeCash zkSNARK parameters. Note that it is
 distinct from the daemon's -datadir argument because the parameters are
 large and may be shared across multiple distinct -datadir's such as when
 setting up test networks.

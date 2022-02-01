@@ -1,13 +1,13 @@
-PIVX Core version v5.4.0 is now available from: <https://github.com/pivx-project/dogecash/releases>
+DogeCash Core version v5.4.0 is now available from: <https://github.com/dogecash/dogecash/releases>
 
 This is a new major version release, including a brand-new visual graphical interface for the Governance system, tier two network stability improvements, various bug fixes and performance enhancements, as well as updated translations.
 
-Please report bugs using the issue tracker at github: <https://github.com/pivx-project/dogecash/issues>
+Please report bugs using the issue tracker at github: <https://github.com/dogecash/dogecash/issues>
 
 How to Upgrade
 ==============
 
-If you are running an older version, shut it down. Wait until it has completely shut down, then run the installer (on Windows) or just copy over /Applications/PIVX-Qt (on Mac) or dogecashd/dogecash-qt (on Linux).
+If you are running an older version, shut it down. Wait until it has completely shut down, then run the installer (on Windows) or just copy over /Applications/DogeCash-Qt (on Mac) or dogecashd/dogecash-qt (on Linux).
 
 Notable Changes
 ==============
@@ -37,7 +37,7 @@ Notable Changes
 
 ### Deprecated 'autocombinerewards' Command
 
-The `autocombinerewards` RPC command was soft-deprecated in v5.3.0 and replaced with explicit setter/getter commands `setautocombinethreshold`/`getautocombinethreshold`. PIVX Core, by default, will no longer accept the `autocombinerewards` command, returning a deprecation error, unless the `dogecashd`/`dogecash-qt` is started with the `-deprecatedrpc=autocombinerewards` option.
+The `autocombinerewards` RPC command was soft-deprecated in v5.3.0 and replaced with explicit setter/getter commands `setautocombinethreshold`/`getautocombinethreshold`. DogeCash Core, by default, will no longer accept the `autocombinerewards` command, returning a deprecation error, unless the `dogecashd`/`dogecash-qt` is started with the `-deprecatedrpc=autocombinerewards` option.
 
 This command will be fully removed in v6.0.0.
 
@@ -187,4 +187,4 @@ Thanks to everyone who directly contributed to this release:
 - Suhas Daftuar
 - Wladimir J. van der Laan
 
-As well as everyone that helped translating on [Transifex](https://www.transifex.com/projects/p/pivx-project-translations/), and every single person who tested the release candidates.
+As well as everyone that helped translating on [Transifex](https://www.transifex.com/projects/p/dogecash-translations/), and every single person who tested the release candidates.

@@ -120,7 +120,7 @@ bool CPivStake::CreateTxOuts(const CWallet* pwallet, std::vector<CTxOut>& vout, 
 
 CDataStream CPivStake::GetUniqueness() const
 {
-    //The unique identifier for a PIV stake is the outpoint
+    //The unique identifier for a DOGEC stake is the outpoint
     CDataStream ss(SER_NETWORK, 0);
     ss << outpointFrom.n << outpointFrom.hash;
     return ss;

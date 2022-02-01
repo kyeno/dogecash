@@ -304,8 +304,8 @@ class TestNode():
             # So syncing here is redundant when we only want to send a message, but the cost is low (a few milliseconds)
             # in comparison to the upside of making tests less fragile and unexpected intermittent errors less likely.
             p2p_conn.sync_with_ping()
-            # Consistency check that the PIVX Core has received our user agent string. This checks the
-            # node's newest peer. It could be racy if another PIVX Core node has connected since we opened
+            # Consistency check that the DogeCash Core has received our user agent string. This checks the
+            # node's newest peer. It could be racy if another DogeCash Core node has connected since we opened
             # our connection, but we don't expect that to happen.
             assert_equal(self.getpeerinfo()[-1]['subver'], MY_SUBVERSION)
 

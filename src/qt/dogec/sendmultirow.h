@@ -26,7 +26,7 @@ class SendMultiRow : public PWidget
     Q_OBJECT
 
 public:
-    explicit SendMultiRow(PIVXGUI* _window, PWidget *parent = nullptr);
+    explicit SendMultiRow(DogeCashGUI* _window, PWidget *parent = nullptr);
     ~SendMultiRow();
 
     void hideLabels();

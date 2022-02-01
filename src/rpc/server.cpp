@@ -261,11 +261,11 @@ UniValue stop(const JSONRPCRequest& jsonRequest)
     if (jsonRequest.fHelp || !jsonRequest.params.empty())
         throw std::runtime_error(
             "stop\n"
-            "\nStop PIVX server.");
+            "\nStop DogeCash server.");
     // Event loop will exit after current HTTP requests have been handled, so
     // this reply will get back to the client.
     StartShutdown();
-    return "PIVX server stopping";
+    return "DogeCash server stopping";
 }
 
 

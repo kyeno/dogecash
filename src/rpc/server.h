@@ -143,7 +143,7 @@ public:
 };
 
 /**
- * PIVX RPC command dispatcher.
+ * DogeCash RPC command dispatcher.
  */
 class CRPCTable
 {

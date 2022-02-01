@@ -622,7 +622,7 @@ class FullBlockTest(PivxTestFramework):
         self.send_blocks([b53], False)
         self.save_spendable_output()
 
-        # PIVX: timestamp checks disabled for regtest
+        # DogeCash: timestamp checks disabled for regtest
 
         # valid timestamp
         self.move_tip(53)
@@ -998,7 +998,7 @@ class FullBlockTest(PivxTestFramework):
         #
         #    The tx'es must be unsigned and pass the node's mempool policy.  It is unsigned for the
         #    rather obscure reason that the Python signature code does not distinguish between
-        #    Low-S and High-S values (whereas the pivx code has custom code which does so);
+        #    Low-S and High-S values (whereas the dogecash code has custom code which does so);
         #    as a result of which, the odds are 50% that the python code will use the right
         #    value and the transaction will be accepted into the mempool. Until we modify the
         #    test framework to support low-S signing, we are out of luck.
@@ -1220,7 +1220,7 @@ class FullBlockTest(PivxTestFramework):
         if reconnect:
             self.reconnect_p2p()
 
-    # PIVX
+    # DogeCash
     # create a block with a tx spending a given out, and lots of txes spending the outputs created
     # in the first one. Keep the tx size under 150 kB limit.
     def create_sized_block(self, block, spend, block_size):

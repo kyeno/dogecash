@@ -15,7 +15,7 @@ class QPushButton;
 
 class ContactsDropdown;
 class GovernanceModel;
-class PIVXGUI;
+class DogeCashGUI;
 class SnackBar;
 class WalletModel;
 
@@ -24,7 +24,7 @@ class CreateProposalDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit CreateProposalDialog(PIVXGUI* parent, GovernanceModel* _govModel, WalletModel* _walletModel);
+    explicit CreateProposalDialog(DogeCashGUI* parent, GovernanceModel* _govModel, WalletModel* _walletModel);
     ~CreateProposalDialog() override;
 protected:
     void keyPressEvent(QKeyEvent* e) override;

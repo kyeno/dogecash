@@ -49,7 +49,7 @@
 #include "utilmoneystr.h"
 #include "validationinterface.h"
 #include "warnings.h"
-#include "zpiv/zpivmodule.h"
+#include "zdogec/zdogecmodule.h"
 
 #include <future>
 
@@ -60,7 +60,7 @@
 
 
 #if defined(NDEBUG)
-#error "PIVX cannot be compiled without assertions."
+#error "DogeCash cannot be compiled without assertions."
 #endif
 
 /**
@@ -814,7 +814,7 @@ CAmount GetBlockValue(int nHeight)
     if (Params().IsRegTestNet()) {
         return 250 * COIN;
     }
-    // Testnet high-inflation blocks [2, 200] with value 250k PIV
+    // Testnet high-inflation blocks [2, 200] with value 250k DOGEC
     const bool isTestnet = Params().IsTestnet();
     if (isTestnet && nHeight < 201 && nHeight > 1) {
         return 250000 * COIN;
@@ -1395,7 +1395,7 @@ static CCheckQueue<CScriptCheck> scriptcheckqueue(128);
 
 void ThreadScriptCheck()
 {
-    util::ThreadRename("pivx-scriptch");
+    util::ThreadRename("dogecash-scriptch");
     scriptcheckqueue.Thread();
 }
 
@@ -2744,7 +2744,7 @@ bool CheckBlock(const CBlock& block, CValidationState& state, bool fCheckPOW, bo
         }
         nHeight = pindexPrev->nHeight + 1;
 
-        // PIVX
+        // DogeCash
         // It is entierly possible that we don't have enough data and this could fail
         // (i.e. the block could indeed be valid). Store the block for later consideration
         // but issue an initial reject message.
@@ -2819,11 +2819,11 @@ bool CheckWork(const CBlock& block, const CBlockIndex* const pindexPrev)
     }
 
     if (block.nBits != nBitsRequired) {
-        // Pivx Specific reference to the block with the wrong threshold was used.
+        // DogeCash Specific reference to the block with the wrong threshold was used.
         const Consensus::Params& consensus = Params().GetConsensus();
         if ((block.nTime == (uint32_t) consensus.nPivxBadBlockTime) &&
                 (block.nBits == (uint32_t) consensus.nPivxBadBlockBits)) {
-            // accept PIVX block minted with incorrect proof of work threshold
+            // accept DogeCash block minted with incorrect proof of work threshold
             return true;
         }
 
@@ -3049,7 +3049,7 @@ static bool CheckInBlockDoubleSpends(const CBlock& block, int nHeight, CValidati
 {
     const Consensus::Params& consensus = Params().GetConsensus();
     libzerocoin::ZerocoinParams* params = consensus.Zerocoin_Params(false);
-    const bool zpivActive = consensus.NetworkUpgradeActive(nHeight, Consensus::UPGRADE_ZC);
+    const bool zdogecActive = consensus.NetworkUpgradeActive(nHeight, Consensus::UPGRADE_ZC);
     const bool publicZpivActive = consensus.NetworkUpgradeActive(nHeight, Consensus::UPGRADE_ZC_PUBLIC);
     const bool v5Active = consensus.NetworkUpgradeActive(nHeight, Consensus::UPGRADE_V5_0);
 
@@ -3063,7 +3063,7 @@ static bool CheckInBlockDoubleSpends(const CBlock& block, int nHeight, CValidati
                 return state.DoS(100, error("%s: public zerocoin spend at height %d", __func__, nHeight));
             }
             bool isPrivZerocoinSpend = !isPublicSpend && in.IsZerocoinSpend();
-            if (isPrivZerocoinSpend && (!zpivActive || publicZpivActive)) {
+            if (isPrivZerocoinSpend && (!zdogecActive || publicZpivActive)) {
                 return state.DoS(100, error("%s: private zerocoin spend at height %d", __func__, nHeight));
             }
             if (isPrivZerocoinSpend || isPublicSpend) {
@@ -3346,7 +3346,7 @@ static bool AcceptBlock(const CBlock& block, CValidationState& state, CBlockInde
             libzerocoin::CoinSpend spend = ZPIVModule::TxInToZerocoinSpend(coinstake_in);
             if (!ContextualCheckZerocoinSpend(coinstake, &spend, pindex->nHeight)) {
                 return state.DoS(100,error("%s: main chain ContextualCheckZerocoinSpend failed for tx %s", __func__,
-                        coinstake.GetHash().GetHex()), REJECT_INVALID, "bad-txns-invalid-zpiv");
+                        coinstake.GetHash().GetHex()), REJECT_INVALID, "bad-txns-invalid-zdogec");
             }
         }
 

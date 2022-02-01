@@ -5,8 +5,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef PIVX_WALLET_INIT_H
-#define PIVX_WALLET_INIT_H
+#ifndef DogeCash_WALLET_INIT_H
+#define DogeCash_WALLET_INIT_H
 
 #include <string>
 
@@ -24,4 +24,4 @@ bool WalletVerify();
 //! Load wallet databases.
 bool InitLoadWallet();
 
-#endif // PIVX_WALLET_INIT_H
+#endif // DogeCash_WALLET_INIT_H

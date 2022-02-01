@@ -13,7 +13,7 @@
 #include "qt/dogec/sendmemodialog.h"
 #include "qt/dogec/qtutils.h"
 
-SendMultiRow::SendMultiRow(PIVXGUI* _window, PWidget *parent) :
+SendMultiRow::SendMultiRow(DogeCashGUI* _window, PWidget *parent) :
     PWidget(_window, parent),
     ui(new Ui::SendMultiRow),
     iconNumber(new QPushButton())

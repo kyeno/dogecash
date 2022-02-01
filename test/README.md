@@ -8,7 +8,7 @@ This directory contains the following sets of tests:
 - [functional](/test/functional) which test the functionality of
 dogecashd and dogecash-qt by interacting with them through the RPC and P2P
 interfaces.
-- [util](/test/util) which tests the pivx utilities, currently only
+- [util](/test/util) which tests the dogecash utilities, currently only
 dogecash-tx.
 - [lint](/test/lint) which perform various static analysis checks.
 

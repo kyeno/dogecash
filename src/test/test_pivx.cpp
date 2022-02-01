@@ -4,9 +4,9 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#define BOOST_TEST_MODULE Pivx Test Suite
+#define BOOST_TEST_MODULE DogeCash Test Suite
 
-#include "test/test_pivx.h"
+#include "test/test_dogecash.h"
 
 #include "blockassembler.h"
 #include "consensus/merkle.h"
@@ -44,7 +44,7 @@ std::ostream& operator<<(std::ostream& os, const uint256& num)
 }
 
 BasicTestingSetup::BasicTestingSetup(const std::string& chainName)
-    : m_path_root(fs::temp_directory_path() / "test_pivx" / strprintf("%lu_%i", (unsigned long)GetTime(), (int)(InsecureRandRange(1 << 30))))
+    : m_path_root(fs::temp_directory_path() / "test_dogecash" / strprintf("%lu_%i", (unsigned long)GetTime(), (int)(InsecureRandRange(1 << 30))))
 {
     ECC_Start();
     BLSInit();

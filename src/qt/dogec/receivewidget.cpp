@@ -20,7 +20,7 @@
 #define DECORATION_SIZE 70
 #define NUM_ITEMS 3
 
-ReceiveWidget::ReceiveWidget(PIVXGUI* parent) :
+ReceiveWidget::ReceiveWidget(DogeCashGUI* parent) :
     PWidget(parent),
     ui(new Ui::ReceiveWidget)
 {

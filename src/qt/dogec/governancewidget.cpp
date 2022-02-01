@@ -28,7 +28,7 @@ void initComboView(PWidget* parent, QComboBox* comboBox, const QString& filterHi
     comboBox->setCurrentIndex(0);
 }
 
-GovernanceWidget::GovernanceWidget(PIVXGUI* parent) :
+GovernanceWidget::GovernanceWidget(DogeCashGUI* parent) :
         PWidget(parent),
         ui(new Ui::governancewidget)
 {

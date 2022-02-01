@@ -183,7 +183,7 @@
            </size>
           </property>
           <property name="text">
-           <string notr="true">PIVX-MBD-Jan-2021</string>
+           <string notr="true">DogeCash-MBD-Jan-2021</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignCenter</set>
@@ -257,7 +257,7 @@
          <item>
           <widget class="QLabel" name="labelAmount">
            <property name="text">
-            <string notr="true">5,000 PIV</string>
+            <string notr="true">5,000 DOGEC</string>
            </property>
           </widget>
          </item>

@@ -3,8 +3,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef PIVX_STAKEINPUT_H
-#define PIVX_STAKEINPUT_H
+#ifndef DogeCash_STAKEINPUT_H
+#define DogeCash_STAKEINPUT_H
 
 #include "chain.h"
 #include "streams.h"
@@ -52,4 +52,4 @@ public:
 };
 
 
-#endif //PIVX_STAKEINPUT_H
+#endif //DogeCash_STAKEINPUT_H

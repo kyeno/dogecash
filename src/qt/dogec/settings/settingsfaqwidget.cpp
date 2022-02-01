@@ -4,7 +4,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #if defined(HAVE_CONFIG_H)
-#include "config/pivx-config.h"
+#include "config/dogecash-config.h"
 #endif
 
 #include "qt/dogec/settings/settingsfaqwidget.h"
@@ -15,7 +15,7 @@
 #include <QScrollBar>
 #include <QMetaObject>
 
-SettingsFaqWidget::SettingsFaqWidget(PIVXGUI* parent, MNModel* mnModel) :
+SettingsFaqWidget::SettingsFaqWidget(DogeCashGUI* parent, MNModel* mnModel) :
     QDialog(parent),
     ui(new Ui::SettingsFaqWidget)
 {
@@ -75,31 +75,31 @@ SettingsFaqWidget::SettingsFaqWidget(PIVXGUI* parent, MNModel* mnModel) :
     // Set FAQ content strings
     QString introContent = formatFAQContent(
         formatFAQParagraph(
-            tr("PIVX is a form of digital online money using blockchain technology "
+            tr("DogeCash is a form of digital online money using blockchain technology "
                "that can be easily transferred globally, instantly, and with near "
-               "zero fees. PIVX incorporates market leading security & "
+               "zero fees. DogeCash incorporates market leading security & "
                "privacy and is also the first PoS (Proof of Stake) Cryptocurrency "
                "to implement Sapling(SHIELD), a zk-SNARKs based privacy protocol.")) +
         formatFAQParagraph(
-            tr("PIVX utilizes a Proof of Stake (PoS) consensus system algorithm, "
-               "allowing all owners of PIVX to participate in earning block rewards "
+            tr("DogeCash utilizes a Proof of Stake (PoS) consensus system algorithm, "
+               "allowing all owners of DogeCash to participate in earning block rewards "
                "while securing the network with full node wallets, as well as to "
                "run Masternodes to create and vote on proposals.")));
     ui->labelContent_Intro->setText(introContent);
 
     QString unspendablePIVContent = formatFAQContent(
         formatFAQParagraph(
-            tr("Newly received PIVX requires 6 confirmations on the network "
+            tr("Newly received DogeCash requires 6 confirmations on the network "
                "to become eligible for spending which can take ~6 minutes.")) +
         formatFAQParagraph(
-            tr("Your PIVX wallet also needs to be completely synchronized "
+            tr("Your DogeCash wallet also needs to be completely synchronized "
                "to see and spend balances on the network.")));
     ui->labelContent_UnspendablePIV->setText(unspendablePIVContent);
 
     QString stakeContent = formatFAQContent(
         formatFAQOrderedList(
             formatFAQListItem(tr("Make sure your wallet is completely synchronized and you are using the latest release.")) +
-            formatFAQListItem(tr("You must have a balance of PIVX with a minimum of 600 confirmations.")) +
+            formatFAQListItem(tr("You must have a balance of DogeCash with a minimum of 600 confirmations.")) +
             formatFAQListItem(tr("Your wallet must stay online and be unlocked for staking purposes.")) +
             formatFAQListItem(tr("Once all those steps are followed staking should be enabled."))) +
         formatFAQParagraph(
@@ -114,7 +114,7 @@ SettingsFaqWidget::SettingsFaqWidget(PIVXGUI* parent, MNModel* mnModel) :
     QString supportContent = formatFAQContent(
         formatFAQParagraph(
             tr("We have support channels in most of our official chat groups, for example %1")
-                .arg("<a style='color: #b088ff' href='https://discord.PIVX.org'>" + tr("#support in our Discord") + "</a>.")));
+                .arg("<a style='color: #b088ff' href='https://discord.DogeCash.org'>" + tr("#support in our Discord") + "</a>.")));
     ui->labelContent_Support->setText(supportContent);
 
     QString masternodeContent = formatFAQContent(
@@ -124,7 +124,7 @@ SettingsFaqWidget::SettingsFaqWidget(PIVXGUI* parent, MNModel* mnModel) :
                "to the network and in return, receive a portion of the block reward "
                "regularly. These services include:")
                 .arg(PACKAGE_NAME)
-                .arg(GUIUtil::formatBalance(mnModel->getMNCollateralRequiredAmount(), BitcoinUnits::PIV)) +
+                .arg(GUIUtil::formatBalance(mnModel->getMNCollateralRequiredAmount(), BitcoinUnits::DOGEC)) +
             formatFAQUnorderedList(
                 formatFAQListItem(tr("A decentralized governance (Proposal Voting)")) +
                 formatFAQListItem(tr("A decentralized budgeting system (Treasury)")) +
@@ -137,15 +137,15 @@ SettingsFaqWidget::SettingsFaqWidget(PIVXGUI* parent, MNModel* mnModel) :
         formatFAQParagraph(
             tr("Masternode Perks:") +
             formatFAQUnorderedList(
-                formatFAQListItem(tr("Participate in PIVX Governance")) +
+                formatFAQListItem(tr("Participate in DogeCash Governance")) +
                 formatFAQListItem(tr("Earn Masternode Rewards")) +
                 formatFAQListItem(tr("Commodity option for future sale")) +
-                formatFAQListItem(tr("Help secure the PIVX network")))) +
+                formatFAQListItem(tr("Help secure the DogeCash network")))) +
         formatFAQParagraph(
             tr("Requirements:") +
             formatFAQUnorderedList(
                 formatFAQListItem(tr("%1 per single Masternode instance")
-                        .arg(GUIUtil::formatBalance(mnModel->getMNCollateralRequiredAmount(), BitcoinUnits::PIV))) +
+                        .arg(GUIUtil::formatBalance(mnModel->getMNCollateralRequiredAmount(), BitcoinUnits::DOGEC))) +
                 formatFAQListItem(tr("Must be stored in a core wallet")) +
                 formatFAQListItem(tr("Need dedicated IP address")) +
                 formatFAQListItem(tr("Masternode wallet to remain online")))));
@@ -157,7 +157,7 @@ SettingsFaqWidget::SettingsFaqWidget(PIVXGUI* parent, MNModel* mnModel) :
                "can reside during a Controller-Remote masternode setup. It is a wallet "
                "that can activate the remote masternode wallet(s) and allows you to keep "
                "your collateral coins offline while the remote masternode remains online.")
-                    .arg(GUIUtil::formatBalance(mnModel->getMNCollateralRequiredAmount(), BitcoinUnits::PIV))));
+                    .arg(GUIUtil::formatBalance(mnModel->getMNCollateralRequiredAmount(), BitcoinUnits::DOGEC))));
     ui->labelContent_MNController->setText(mNControllerContent);
 
 
@@ -178,7 +178,7 @@ SettingsFaqWidget::SettingsFaqWidget(PIVXGUI* parent, MNModel* mnModel) :
     connect(ui->pushButton_MNController, &QPushButton::clicked, [this](){onFaqClicked(ui->widget_MNController);});
 
     if (parent)
-        connect(parent, &PIVXGUI::windowResizeEvent, this, &SettingsFaqWidget::windowResizeEvent);
+        connect(parent, &DogeCashGUI::windowResizeEvent, this, &SettingsFaqWidget::windowResizeEvent);
 }
 
 void SettingsFaqWidget::showEvent(QShowEvent *event)

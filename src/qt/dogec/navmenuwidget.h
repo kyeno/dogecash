@@ -9,7 +9,7 @@
 #include <QWidget>
 #include "qt/dogec/pwidget.h"
 
-class PIVXGUI;
+class DogeCashGUI;
 
 namespace Ui {
 class NavMenuWidget;
@@ -20,7 +20,7 @@ class NavMenuWidget : public PWidget
     Q_OBJECT
 
 public:
-    explicit NavMenuWidget(PIVXGUI* mainWindow, QWidget *parent = nullptr);
+    explicit NavMenuWidget(DogeCashGUI* mainWindow, QWidget *parent = nullptr);
     ~NavMenuWidget();
 
     void loadWalletModel() override;

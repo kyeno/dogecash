@@ -3,10 +3,10 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "zpiv/zpos.h"
+#include "zdogec/zpos.h"
 
 #include "validation.h"
-#include "zpiv/zpivmodule.h"
+#include "zdogec/zdogecmodule.h"
 
 
 /*
@@ -68,7 +68,7 @@ CLegacyZPivStake* CLegacyZPivStake::NewZPivStake(const CTxIn& txin, int nHeight)
     const Consensus::Params& consensus = Params().GetConsensus();
     if (!consensus.NetworkUpgradeActive(nHeight, Consensus::UPGRADE_ZC_V2) ||
             nHeight >= consensus.height_last_ZC_AccumCheckpoint) {
-        LogPrint(BCLog::LEGACYZC, "%s : zPIV stake block: height %d outside range", __func__, nHeight);
+        LogPrint(BCLog::LEGACYZC, "%s : zDOGEC stake block: height %d outside range", __func__, nHeight);
         return nullptr;
     }
 
@@ -93,7 +93,7 @@ CLegacyZPivStake* CLegacyZPivStake::NewZPivStake(const CTxIn& txin, int nHeight)
     // Find the pindex of the first block with the accumulator checksum
     const CBlockIndex* _pindexFrom = FindIndexFrom(_nChecksum, _denom, cpHeight);
     if (_pindexFrom == nullptr) {
-        LogPrintf("%s : Failed to find the block index for zpiv stake origin", __func__);
+        LogPrintf("%s : Failed to find the block index for zdogec stake origin", __func__);
         return nullptr;
     }
 

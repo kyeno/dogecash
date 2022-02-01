@@ -1860,14 +1860,14 @@ HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH*/
     font-size:20px;
 }
 
-*[cssClass="text-stake-piv"] {
+*[cssClass="text-stake-dogec"] {
     color:#5c4b7d;
     font-size:16px;
     padding:10px;
     border-bottom: 5px solid #5c4b7d;
 }
 
-*[cssClass="text-stake-piv-disable"] {
+*[cssClass="text-stake-dogec-disable"] {
     color:#69656F;
     font-size:16px;
     padding:10px;
@@ -1899,7 +1899,7 @@ HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH*/
     padding-left:4px;
 }
 
-*[cssClass="text-chart-piv"] {
+*[cssClass="text-chart-dogec"] {
     color:#5c4b7d;
     font-size:16px;
     padding-left:4px;
@@ -1910,7 +1910,7 @@ HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH*/
     border:none;
 }
 
-*[cssClass="square-chart-piv"] {
+*[cssClass="square-chart-dogec"] {
     background-color:#5c4b7d;
     border:none;
 }
@@ -2912,18 +2912,18 @@ HHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH*/
 }
 
 
-*[cssClass="coin-icon-piv"] {
-    qproperty-icon: url("://ic-coin-piv") off,
-    url("://ic-coin-piv") on ;
+*[cssClass="coin-icon-dogec"] {
+    qproperty-icon: url("://ic-coin-dogec") off,
+    url("://ic-coin-dogec") on ;
     qproperty-iconSize: 24px 24px;
     background-color: #FFFFFF;
     border:  2px solid #0f0b16;
     border-radius: 12px;
 }
 
-*[cssClass="coin-icon-zpiv"] {
-    qproperty-icon: url("://ic-coin-zpiv") off,
-    url("://ic-coin-zpiv") on ;
+*[cssClass="coin-icon-zdogec"] {
+    qproperty-icon: url("://ic-coin-zdogec") off,
+    url("://ic-coin-zdogec") on ;
     qproperty-iconSize: 24px 24px;
     background-position:center;
     background-repeat:no-repeat;

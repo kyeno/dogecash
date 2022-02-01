@@ -43,7 +43,7 @@ public:
     GUIException(const std::string &message) : message(message) {}
 };
 
-/** Utility functions used by the PIVX Qt UI.
+/** Utility functions used by the DogeCash Qt UI.
  */
 namespace GUIUtil
 {
@@ -52,7 +52,7 @@ QString dateTimeStr(const QDateTime& datetime);
 QString dateTimeStrWithSeconds(const QDateTime& date);
 QString dateTimeStr(qint64 nTime);
 
-// Render PIVX addresses in monospace font
+// Render DogeCash addresses in monospace font
 QFont bitcoinAddressFont();
 
 // Parse string into a CAmount value.
@@ -71,7 +71,7 @@ void setupAmountWidget(QLineEdit* widget, QWidget* parent);
 // Update the cursor of the widget after a text change
 void updateWidgetTextAndCursorPosition(QLineEdit* widget, const QString& str);
 
-// Parse "pivx:" URI into recipient object, return true on successful parsing
+// Parse "dogecash:" URI into recipient object, return true on successful parsing
 bool parseBitcoinURI(const QUrl& uri, SendCoinsRecipient* out);
 bool parseBitcoinURI(QString uri, SendCoinsRecipient* out);
 QString formatBitcoinURI(const SendCoinsRecipient& info);
@@ -140,7 +140,7 @@ bool isObscured(QWidget* w);
 // Open debug.log
 bool openDebugLogfile();
 
-// Open pivx.conf
+// Open dogecash.conf
 bool openConfigfile();
 
 // Open masternode.conf

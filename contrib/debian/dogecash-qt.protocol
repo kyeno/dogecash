@@ -1,6 +1,6 @@
 [Protocol]
 exec=dogecash-qt '%u'
-protocol=pivx
+protocol=dogecash
 input=none
 output=none
 helper=true

@@ -15,7 +15,7 @@
 #include <QProgressBar>
 
 class BalanceBubble;
-class PIVXGUI;
+class DogeCashGUI;
 class WalletModel;
 class ClientModel;
 
@@ -28,7 +28,7 @@ class TopBar : public PWidget
     Q_OBJECT
 
 public:
-    explicit TopBar(PIVXGUI* _mainWindow, QWidget *parent = nullptr);
+    explicit TopBar(DogeCashGUI* _mainWindow, QWidget *parent = nullptr);
     ~TopBar();
 
     void showTop();

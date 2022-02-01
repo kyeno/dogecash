@@ -24,7 +24,7 @@ class QTimer;
 QT_END_NAMESPACE
 
 class MNModel;
-class PIVXGUI;
+class DogeCashGUI;
 class GovernanceModel;
 class TooltipMenu;
 
@@ -58,7 +58,7 @@ class GovernanceWidget : public PWidget
     Q_OBJECT
 
 public:
-    explicit GovernanceWidget(PIVXGUI* parent);
+    explicit GovernanceWidget(DogeCashGUI* parent);
     ~GovernanceWidget() override;
 
     void showEvent(QShowEvent *event) override;

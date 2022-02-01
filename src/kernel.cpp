@@ -17,7 +17,7 @@
 #include "util/system.h"
 #include "utilmoneystr.h"
 #include "validation.h"
-#include "zpiv/zpos.h"
+#include "zdogec/zpos.h"
 
 /**
  * CStakeKernel Constructor

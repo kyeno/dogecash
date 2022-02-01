@@ -5,8 +5,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef PIVX_SERIALIZE_H
-#define PIVX_SERIALIZE_H
+#ifndef DogeCash_SERIALIZE_H
+#define DogeCash_SERIALIZE_H
 
 #include <algorithm>
 #include <array>
@@ -1368,4 +1368,4 @@ unsigned int GetSerializeSize(const Optional<T> &item)
     }
 }
 
-#endif // PIVX_SERIALIZE_H
+#endif // DogeCash_SERIALIZE_H

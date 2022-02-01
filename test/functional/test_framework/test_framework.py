@@ -73,13 +73,13 @@ TEST_EXIT_PASSED = 0
 TEST_EXIT_FAILED = 1
 TEST_EXIT_SKIPPED = 77
 
-TMPDIR_PREFIX = "pivx_func_test_"
+TMPDIR_PREFIX = "dogecash_func_test_"
 
 
 class PivxTestFramework():
-    """Base class for a pivx test script.
+    """Base class for a dogecash test script.
 
-    Individual pivx test scripts should subclass this class and override the set_test_params() and run_test() methods.
+    Individual dogecash test scripts should subclass this class and override the set_test_params() and run_test() methods.
 
     Individual tests can also override the following methods to customize the test setup:
 
@@ -471,7 +471,7 @@ class PivxTestFramework():
                 from_dir = get_datadir_path(origin, i)
                 to_dir = get_datadir_path(destination, i)
                 shutil.copytree(from_dir, to_dir)
-                initialize_datadir(destination, i)  # Overwrite port/rpcport in pivx.conf
+                initialize_datadir(destination, i)  # Overwrite port/rpcport in dogecash.conf
 
         def clone_cache_from_node_1(cachedir, from_num=4):
             """ Clones cache subdir from node 1 to nodes from 'from_num' to MAX_NODES"""
@@ -486,7 +486,7 @@ class PivxTestFramework():
                 for subdir in ["blocks", "chainstate", "evodb", "sporks", "zerocoin"]:
                     copy_and_overwrite(os.path.join(node_0_datadir, subdir),
                                     os.path.join(node_i_datadir, subdir))
-                initialize_datadir(cachedir, i)  # Overwrite port/rpcport in pivx.conf
+                initialize_datadir(cachedir, i)  # Overwrite port/rpcport in dogecash.conf
 
         def cachedir_valid(cachedir):
             for i in range(MAX_NODES):
@@ -619,7 +619,7 @@ class PivxTestFramework():
         for i in range(self.num_nodes):
             initialize_datadir(self.options.tmpdir, i)
 
-    # PIVX Specific TestFramework
+    # DogeCash Specific TestFramework
     def init_dummy_key(self):
         self.DUMMY_KEY = CECKey()
         self.DUMMY_KEY.set_secretbytes(hash256(pack('<I', 0xffff)))
@@ -1196,7 +1196,7 @@ class PivxTestFramework():
                                    get_collateral_vout(controller.getrawtransaction(dmn.proTx, True)))
 
     """
-    Create a ProReg tx, which references an 100 PIV UTXO as collateral.
+    Create a ProReg tx, which references an 100 DOGEC UTXO as collateral.
     The controller node owns the collateral and creates the ProReg tx.
     """
     def protx_register(self, miner, controller, dmn, collateral_addr):

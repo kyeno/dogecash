@@ -6,7 +6,7 @@
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #if defined(HAVE_CONFIG_H)
-#include "config/pivx-config.h"
+#include "config/dogecash-config.h"
 #endif
 
 #include "clientversion.h"
@@ -50,8 +50,8 @@ static bool AppInitRawTx(int argc, char* argv[])
     if (argc < 2 || gArgs.IsArgSet("-?") || gArgs.IsArgSet("-h") || gArgs.IsArgSet("-help")) {
         // First part of help message is specific to this utility
         std::string strUsage = PACKAGE_NAME " dogecash-tx utility version " + FormatFullVersion() + "\n\n" +
-                               "Usage:  dogecash-tx [options] <hex-tx> [commands]  Update hex-encoded pivx transaction\n" +
-                               "or:     dogecash-tx [options] -create [commands]   Create hex-encoded pivx transaction\n" +
+                               "Usage:  dogecash-tx [options] <hex-tx> [commands]  Update hex-encoded dogecash transaction\n" +
+                               "or:     dogecash-tx [options] -create [commands]   Create hex-encoded dogecash transaction\n" +
                                "\n";
 
         fprintf(stdout, "%s", strUsage.c_str());
@@ -692,7 +692,7 @@ static int CommandLineRawTx(int argc, char* argv[])
             if (argc < 2)
                 throw std::runtime_error("too few parameters");
 
-            // param: hex-encoded pivx transaction
+            // param: hex-encoded dogecash transaction
             std::string strHexTx(argv[1]);
             if (strHexTx == "-") // "-" implies standard input
                 strHexTx = readStdin();

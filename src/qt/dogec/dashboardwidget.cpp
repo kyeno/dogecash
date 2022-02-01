@@ -23,7 +23,7 @@
 #define REQUEST_LOAD_TASK 1
 #define CHART_LOAD_MIN_TIME_INTERVAL 15
 
-DashboardWidget::DashboardWidget(PIVXGUI* parent) :
+DashboardWidget::DashboardWidget(DogeCashGUI* parent) :
     PWidget(parent),
     ui(new Ui::DashboardWidget)
 {
@@ -52,9 +52,9 @@ DashboardWidget::DashboardWidget(PIVXGUI* parent) :
 
     // Staking Information
     setCssSubtitleScreen(ui->labelMessage);
-    setCssProperty(ui->labelSquarePiv, "square-chart-piv");
+    setCssProperty(ui->labelSquarePiv, "square-chart-dogec");
     setCssProperty(ui->labelSquareMN, "square-chart-mn");
-    setCssProperty(ui->labelPiv, "text-chart-piv");
+    setCssProperty(ui->labelPiv, "text-chart-dogec");
     setCssProperty(ui->labelMN, "text-chart-mn");
 
     // Staking Amount
@@ -62,7 +62,7 @@ DashboardWidget::DashboardWidget(PIVXGUI* parent) :
     fontBold.setWeight(QFont::Bold);
 
     setCssProperty(ui->labelChart, "legend-chart");
-    setCssProperty(ui->labelAmountPiv, "text-stake-piv-disable");
+    setCssProperty(ui->labelAmountPiv, "text-stake-dogec-disable");
     setCssProperty(ui->labelAmountMN, "text-stake-mn-disable");
 
     setCssProperty({ui->pushButtonAll,  ui->pushButtonMonth, ui->pushButtonYear}, "btn-check-time");
@@ -144,7 +144,7 @@ bool hasCharts = false;
     connect(ui->pushButtonMonth, &QPushButton::clicked, [this](){setChartShow(MONTH);});
     connect(ui->pushButtonAll, &QPushButton::clicked, [this](){setChartShow(ALL);});
     if (window)
-        connect(window, &PIVXGUI::windowResizeEvent, this, &DashboardWidget::windowResizeEvent);
+        connect(window, &DogeCashGUI::windowResizeEvent, this, &DashboardWidget::windowResizeEvent);
 #endif
 
     if (hasCharts) {
@@ -216,7 +216,7 @@ void DashboardWidget::loadWalletModel()
                 &DashboardWidget::onHideChartsChanged);
 #endif
     }
-    // update the display unit, to not use the default ("PIV")
+    // update the display unit, to not use the default ("DOGEC")
     updateDisplayUnit();
 }
 
@@ -519,7 +519,7 @@ void DashboardWidget::updateStakeFilter()
     }
 }
 
-// pair PIV, MN Reward
+// pair DOGEC, MN Reward
 QMap<int, std::pair<qint64, qint64>> DashboardWidget::getAmountBy()
 {
     if (filterUpdateNeeded) {
@@ -578,7 +578,7 @@ bool DashboardWidget::loadChartData(bool withMonthNames)
     }
 
     chartData = new ChartData();
-    chartData->amountsByCache = getAmountBy(); // pair PIV, MN Reward
+    chartData->amountsByCache = getAmountBy(); // pair DOGEC, MN Reward
 
     std::pair<int,int> range = getChartRange(chartData->amountsByCache);
     if (range.first == 0 && range.second == 0) {
@@ -591,11 +591,11 @@ bool DashboardWidget::loadChartData(bool withMonthNames)
 
     for (int j = range.first; j < range.second; j++) {
         int num = (isOrderedByMonth && j > daysInMonth) ? (j % daysInMonth) : j;
-        qreal piv = 0;
+        qreal dogec = 0;
         qreal mn = 0;
         if (chartData->amountsByCache.contains(num)) {
             std::pair <qint64, qint64> pair = chartData->amountsByCache[num];
-            piv = (pair.first != 0) ? pair.first / 100000000 : 0;
+            dogec = (pair.first != 0) ? pair.first / 100000000 : 0;
             mn = (pair.second != 0) ? pair.second / 100000000 : 0;
             chartData->totalPiv += pair.first;
             chartData->totalMN += pair.second;
@@ -603,10 +603,10 @@ bool DashboardWidget::loadChartData(bool withMonthNames)
 
         chartData->xLabels << ((withMonthNames) ? monthsNames[num - 1] : QString::number(num));
 
-        chartData->valuesPiv.append(piv);
+        chartData->valuesPiv.append(dogec);
         chartData->valuesMN.append(mn);
 
-        int max = std::max(piv, mn);
+        int max = std::max(dogec, mn);
         if (max > chartData->maxValue) {
             chartData->maxValue = max;
         }
@@ -683,10 +683,10 @@ void DashboardWidget::onChartRefreshed()
     // Total
     nDisplayUnit = walletModel->getOptionsModel()->getDisplayUnit();
     if (chartData->totalPiv > 0 || chartData->totalMN > 0) {
-        setCssProperty(ui->labelAmountPiv, "text-stake-piv");
+        setCssProperty(ui->labelAmountPiv, "text-stake-dogec");
         setCssProperty(ui->labelAmountMN, "text-stake-mn");
     } else {
-        setCssProperty(ui->labelAmountPiv, "text-stake-piv-disable");
+        setCssProperty(ui->labelAmountPiv, "text-stake-dogec-disable");
         setCssProperty(ui->labelAmountMN, "text-stake-mn-disable");
     }
     forceUpdateStyle({ui->labelAmountPiv, ui->labelAmountMN});

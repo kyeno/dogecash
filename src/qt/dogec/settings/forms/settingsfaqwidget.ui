@@ -163,7 +163,7 @@
                       <enum>Qt::NoFocus</enum>
                      </property>
                      <property name="text">
-                      <string>1) What is PIVX?</string>
+                      <string>1) What is DogeCash?</string>
                      </property>
                      <property name="checkable">
                       <bool>true</bool>
@@ -194,7 +194,7 @@
                       <enum>Qt::NoFocus</enum>
                      </property>
                      <property name="text">
-                      <string>2) Why are my PIV unspendable?</string>
+                      <string>2) Why are my DOGEC unspendable?</string>
                      </property>
                      <property name="checkable">
                       <bool>true</bool>
@@ -216,7 +216,7 @@
                       <enum>Qt::NoFocus</enum>
                      </property>
                      <property name="text">
-                      <string>3) How do I stake PIV?</string>
+                      <string>3) How do I stake DOGEC?</string>
                      </property>
                      <property name="checkable">
                       <bool>true</bool>
@@ -342,7 +342,7 @@
                   <enum>Qt::NoFocus</enum>
                  </property>
                  <property name="text">
-                  <string notr="true">https://www.PIVX.org</string>
+                  <string notr="true">https://www.DogeCash.org</string>
                  </property>
                 </widget>
                </item>
@@ -495,7 +495,7 @@
                       <item>
                        <widget class="QLabel" name="labelSubtitle_Intro">
                         <property name="text">
-                         <string>What is PIVX?</string>
+                         <string>What is DogeCash?</string>
                         </property>
                         <property name="wordWrap">
                          <bool>true</bool>
@@ -588,7 +588,7 @@
                       <item>
                        <widget class="QLabel" name="labelSubtitle_UnspendablePIV">
                         <property name="text">
-                         <string>Why are my PIV unspendable?</string>
+                         <string>Why are my DOGEC unspendable?</string>
                         </property>
                         <property name="wordWrap">
                          <bool>true</bool>
@@ -678,7 +678,7 @@
                       <item>
                        <widget class="QLabel" name="labelSubtitle_Stake">
                         <property name="text">
-                         <string>How do I stake PIV?</string>
+                         <string>How do I stake DOGEC?</string>
                         </property>
                         <property name="wordWrap">
                          <bool>true</bool>

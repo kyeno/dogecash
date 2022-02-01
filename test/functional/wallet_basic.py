@@ -87,7 +87,7 @@ class WalletTest(PivxTestFramework):
         self.nodes[1].lockunspent(True, [unspent_0])
         assert_equal(len(self.nodes[1].listlockunspent()), 0)
 
-        # Send 21 PIV from 1 to 0 using sendtoaddress call.
+        # Send 21 DOGEC from 1 to 0 using sendtoaddress call.
         # Locked memory should use at least 32 bytes to sign the transaction
         self.log.info("test getmemoryinfo")
         memory_before = self.nodes[0].getmemoryinfo()
@@ -138,7 +138,7 @@ class WalletTest(PivxTestFramework):
         node_2_bal = self.nodes[2].getbalance()
         assert_equal(node_2_bal, node_2_expected_bal)
 
-        # Send 10 PIV normal
+        # Send 10 DOGEC normal
         self.log.info("test sendtoaddress")
         address = self.nodes[0].getnewaddress("test")
         self.nodes[2].settxfee(float(fee_per_kbyte))
@@ -151,7 +151,7 @@ class WalletTest(PivxTestFramework):
         node_0_bal = self.nodes[0].getbalance()
         assert_equal(node_0_bal, Decimal('10'))
 
-        # Sendmany 10 PIV
+        # Sendmany 10 DOGEC
         self.log.info("test sendmany")
         txid = self.nodes[2].sendmany('', {address: 10}, 0, "")
         fee = self.nodes[2].gettransaction(txid)["fee"]
@@ -248,9 +248,9 @@ class WalletTest(PivxTestFramework):
 
         # Excercise query_options parameter in listunspent
         # Node 1 has:
-        # - 1 coin of 1.00 PIV
-        # - 7 coins of 250.00 PIV
-        # - 1 coin of 228.9999xxxx PIV
+        # - 1 coin of 1.00 DOGEC
+        # - 7 coins of 250.00 DOGEC
+        # - 1 coin of 228.9999xxxx DOGEC
         assert_equal(9, self.len_listunspent({}))
         assert_equal(9, self.len_listunspent({"maximumCount": 10}))
         assert_equal(2, self.len_listunspent({"maximumCount": 2}))

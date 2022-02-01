@@ -3,8 +3,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef PIVX_SPECIALTX_H
-#define PIVX_SPECIALTX_H
+#ifndef DogeCash_SPECIALTX_H
+#define DogeCash_SPECIALTX_H
 
 #include "llmq/quorums_commitment.h"
 #include "validation.h" // cs_main needed by CheckLLMQCommitment (!TODO: remove)
@@ -38,4 +38,4 @@ bool VerifyLLMQCommitment(const llmq::CFinalCommitment& qfc, const CBlockIndex* 
 
 uint256 CalcTxInputsHash(const CTransaction& tx);
 
-#endif // PIVX_SPECIALTX_H
+#endif // DogeCash_SPECIALTX_H

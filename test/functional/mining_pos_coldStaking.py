@@ -23,7 +23,7 @@ def getDelegatedUtxos(utxos):
     return [x for x in utxos if x["scriptPubKey"][:10] == '76a97b63d1' or x["scriptPubKey"][:10] == '76a97b63d2']
 
 
-class PIVX_ColdStakingTest(PivxTestFramework):
+class DogeCash_ColdStakingTest(PivxTestFramework):
 
     def set_test_params(self):
         self.num_nodes = 3
@@ -310,7 +310,7 @@ class PIVX_ColdStakingTest(PivxTestFramework):
         assert_greater_than(len(stakeInputs), 0)
         # Create the block
         new_block = self.stake_next_block(1, stakeInputs, self.mocktime, staker_privkey)
-        # Add output (dummy key address) to coinstake (taking 100 PIV from the pot)
+        # Add output (dummy key address) to coinstake (taking 100 DOGEC from the pot)
         self.add_output_to_coinstake(new_block, 100)
         self.log.info("New block created (rawtx) by cold-staking. Trying to submit...")
         # Try to submit the block
@@ -458,4 +458,4 @@ class PIVX_ColdStakingTest(PivxTestFramework):
 
 
 if __name__ == '__main__':
-    PIVX_ColdStakingTest().main()
+    DogeCash_ColdStakingTest().main()

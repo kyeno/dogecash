@@ -3,17 +3,17 @@
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-bin_PROGRAMS += bench/bench_pivx
+bin_PROGRAMS += bench/benchdogecash
 BENCH_SRCDIR = bench
-BENCH_BINARY = bench/bench_pivx$(EXEEXT)
+BENCH_BINARY = bench/benchdogecash$(EXEEXT)
 
 RAW_BENCH_FILES = \
   bench/data/block2680960.raw
 GENERATED_BENCH_FILES = $(RAW_BENCH_FILES:.raw=.raw.h)
 
-bench_bench_pivx_SOURCES = \
+bench_benchdogecash_SOURCES = \
   $(RAW_BENCH_FILES) \
-  bench/bench_pivx.cpp \
+  bench/benchdogecash.cpp \
   bench/bench.cpp \
   bench/bench.h \
   bench/Examples.cpp \
@@ -34,11 +34,11 @@ bench_bench_pivx_SOURCES = \
   bench/util_time.cpp \
   bench/walletprocessblock.cpp
 
-nodist_bench_bench_pivx_SOURCES = $(GENERATED_BENCH_FILES)
+nodist_bench_benchdogecash_SOURCES = $(GENERATED_BENCH_FILES)
 
-bench_bench_pivx_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(EVENT_CFLAGS) $(EVENT_PTHREADS_CFLAGS) -I$(builddir)/bench/
-bench_bench_pivx_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
-bench_bench_pivx_LDADD = \
+bench_benchdogecash_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(EVENT_CFLAGS) $(EVENT_PTHREADS_CFLAGS) -I$(builddir)/bench/
+bench_benchdogecash_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
+bench_benchdogecash_LDADD = \
   $(LIBBITCOIN_SERVER) \
   $(LIBBITCOIN_WALLET) \
   $(LIBBITCOIN_COMMON) \
@@ -55,11 +55,11 @@ bench_bench_pivx_LDADD = \
   $(LIBZCASH_LIBS)
 
 if ENABLE_ZMQ
-bench_bench_pivx_LDADD += $(LIBBITCOIN_ZMQ) $(ZMQ_LIBS)
+bench_benchdogecash_LDADD += $(LIBBITCOIN_ZMQ) $(ZMQ_LIBS)
 endif
 
-bench_bench_pivx_LDADD += $(LIBBITCOIN_CONSENSUS) $(BOOST_LIBS) $(BDB_LIBS) $(MINIUPNPC_LIBS) $(NATPMP_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(BLS_LIBS)
-bench_bench_pivx_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
+bench_benchdogecash_LDADD += $(LIBBITCOIN_CONSENSUS) $(BOOST_LIBS) $(BDB_LIBS) $(MINIUPNPC_LIBS) $(NATPMP_LIBS) $(EVENT_PTHREADS_LIBS) $(EVENT_LIBS) $(BLS_LIBS)
+bench_benchdogecash_LDFLAGS = $(RELDFLAGS) $(AM_LDFLAGS) $(LIBTOOL_APP_LDFLAGS)
 
 CLEAN_BITCOIN_BENCH = bench/*.gcda bench/*.gcno $(GENERATED_BENCH_FILES)
 
@@ -73,7 +73,7 @@ bench: $(BENCH_BINARY) FORCE
 	$(BENCH_BINARY)
 
 bitcoin_bench_clean : FORCE
-	rm -f $(CLEAN_BITCOIN_BENCH) $(bench_bench_pivx_OBJECTS) $(BENCH_BINARY)
+	rm -f $(CLEAN_BITCOIN_BENCH) $(bench_benchdogecash_OBJECTS) $(BENCH_BINARY)
 
 %.raw.h: %.raw
 	@$(MKDIR_P) $(@D)

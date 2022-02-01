@@ -11,7 +11,7 @@
 #include "utilstrencodings.h"
 #include "util/string.h"
 #include "utilmoneystr.h"
-#include "test/test_pivx.h"
+#include "test/test_dogecash.h"
 #include "util/vector.h"
 
 #include <stdint.h>
@@ -966,7 +966,7 @@ BOOST_AUTO_TEST_CASE(test_ToUpper)
 BOOST_AUTO_TEST_CASE(test_Capitalize)
 {
     BOOST_CHECK_EQUAL(Capitalize(""), "");
-    BOOST_CHECK_EQUAL(Capitalize("pivx"), "Pivx");
+    BOOST_CHECK_EQUAL(Capitalize("dogecash"), "Pivx");
     BOOST_CHECK_EQUAL(Capitalize("\x00\xfe\xff"), "\x00\xfe\xff");
 }
 
@@ -976,11 +976,11 @@ BOOST_AUTO_TEST_CASE(test_validateURL)
     BOOST_CHECK(validateURL("http://foo.bar"));
     BOOST_CHECK(validateURL("https://foo.bar"));
     BOOST_CHECK(validateURL("https://foo.bar/"));
-    BOOST_CHECK(validateURL("http://pivx.foo.bar"));
-    BOOST_CHECK(validateURL("https://foo.bar/pivx"));
+    BOOST_CHECK(validateURL("http://dogecash.foo.bar"));
+    BOOST_CHECK(validateURL("https://foo.bar/dogecash"));
     BOOST_CHECK(validateURL("https://foo.bar/dogecash/more/"));
     BOOST_CHECK(validateURL("https://142.2.3.1"));
-    BOOST_CHECK(validateURL("https://foo_bar.pivx.com"));
+    BOOST_CHECK(validateURL("https://foo_bar.dogecash.com"));
     BOOST_CHECK(validateURL("http://foo.bar/?baz=some"));
     BOOST_CHECK(validateURL("http://foo.bar/?baz=some&p=364"));
 

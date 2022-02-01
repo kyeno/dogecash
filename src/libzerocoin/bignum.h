@@ -9,7 +9,7 @@
 #define BITCOIN_BIGNUM_H
 
 #if defined HAVE_CONFIG_H
-#include "config/pivx-config.h"
+#include "config/dogecash-config.h"
 #endif
 
 #include <gmp.h>

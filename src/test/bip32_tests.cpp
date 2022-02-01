@@ -8,7 +8,7 @@
 
 #include "key.h"
 #include "key_io.h"
-#include "test/test_pivx.h"
+#include "test/test_dogecash.h"
 
 #include <string>
 #include <vector>

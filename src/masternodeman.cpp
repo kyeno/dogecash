@@ -795,7 +795,7 @@ bool CMasternodeMan::CheckInputs(CMasternodeBroadcast& mnb, int nChainHeight, in
     }
 
     // verify that sig time is legit in past
-    // should be at least not earlier than block when 1000 PIV tx got MASTERNODE_MIN_CONFIRMATIONS
+    // should be at least not earlier than block when 1000 DOGEC tx got MASTERNODE_MIN_CONFIRMATIONS
     CBlockIndex* pConfIndex = WITH_LOCK(cs_main, return chainActive[utxoHeight + consensus.MasternodeCollateralMinConf() - 1]); // block where tx got MASTERNODE_MIN_CONFIRMATIONS
     if (pConfIndex->GetBlockTime() > mnb.sigTime) {
         LogPrint(BCLog::MASTERNODE,"mnb - Bad sigTime %d for Masternode %s (%i conf block is at %d)\n",
@@ -1159,7 +1159,7 @@ bool CMasternodeMan::IsWithinDepth(const uint256& nHash, int depth) const
 void ThreadCheckMasternodes()
 {
     // Make this thread recognisable as the wallet flushing thread
-    util::ThreadRename("pivx-masternodeman");
+    util::ThreadRename("dogecash-masternodeman");
     LogPrintf("Masternodes thread started\n");
 
     unsigned int c = 0;

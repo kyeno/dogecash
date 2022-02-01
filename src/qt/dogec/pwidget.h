@@ -12,7 +12,7 @@
 #include "qt/dogec/prunnable.h"
 #include "walletmodel.h"
 
-class PIVXGUI;
+class DogeCashGUI;
 class ClientModel;
 class WalletModel;
 class WorkerTask;
@@ -31,13 +31,13 @@ class PWidget : public QWidget, public Runnable, public Translator
 {
     Q_OBJECT
 public:
-    explicit PWidget(PIVXGUI* _window = nullptr, QWidget *parent = nullptr);
+    explicit PWidget(DogeCashGUI* _window = nullptr, QWidget *parent = nullptr);
     explicit PWidget(PWidget *parent = nullptr);
 
     void setClientModel(ClientModel* model);
     void setWalletModel(WalletModel* model);
 
-    PIVXGUI* getWindow() { return this->window; }
+    DogeCashGUI* getWindow() { return this->window; }
 
     void run(int type) override;
     void onError(QString error, int type) override;
@@ -57,7 +57,7 @@ protected Q_SLOTS:
     void onChangeTheme(bool isLightTheme, QString &theme);
 
 protected:
-    PIVXGUI* window = nullptr;
+    DogeCashGUI* window = nullptr;
     ClientModel* clientModel = nullptr;
     WalletModel* walletModel = nullptr;
 

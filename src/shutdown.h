@@ -5,11 +5,11 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef PIVX_SHUTDOWN_H
-#define PIVX_SHUTDOWN_H
+#ifndef DogeCash_SHUTDOWN_H
+#define DogeCash_SHUTDOWN_H
 
 void StartShutdown();
 void AbortShutdown();
 bool ShutdownRequested();
 
-#endif // PIVX_SHUTDOWN_H
+#endif // DogeCash_SHUTDOWN_H

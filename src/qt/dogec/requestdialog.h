@@ -13,7 +13,7 @@
 #include <QPixmap>
 
 class WalletModel;
-class PIVXGUI;
+class DogeCashGUI;
 
 namespace Ui {
 class RequestDialog;
