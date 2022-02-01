@@ -51,10 +51,10 @@ bool TransactionRecord::decomposeCoinStake(const CWallet* wallet, const CWalletT
             sub.address = EncodeDestination(address);
             sub.credit = nCredit - nDebit;
         }
-    } else {
+    } else if (isminetype mine = wallet->IsMine(wtx.tx->vout[2])) {
         //Masternode reward
         CTxDestination destMN;
-        int nIndexMN = (int) wtx.tx->vout.size() - 1;
+        int nIndexMN = (int) wtx.tx->vout.size() - 2;
         if (ExtractDestination(wtx.tx->vout[nIndexMN].scriptPubKey, destMN) && (mine = IsMine(*wallet, destMN)) ) {
             sub.involvesWatchAddress = mine & ISMINE_WATCH_ONLY;
             sub.address = EncodeDestination(destMN);
@@ -63,7 +63,15 @@ bool TransactionRecord::decomposeCoinStake(const CWallet* wallet, const CWalletT
             CAmount mn_reward = Params().GetConsensus().nMNBlockReward;
             sub.type = sub.credit > mn_reward ? TransactionRecord::BudgetPayment : TransactionRecord::MNReward;
         }
-    }
+    } else if (isminetype mine = wallet->IsMine(wtx.tx->vout[3])) {
+        //Developer Fee
+        CTxDestination destDevFee;
+        int nIndexDevFee = (int) wtx.tx->vout.size() - 1;
+        if (ExtractDestination(wtx.tx->vout[nIndexDevFee].scriptPubKey, destDevFee) && (mine = IsMine(*wallet, destDevFee)) ) {
+            sub.involvesWatchAddress = mine & ISMINE_WATCH_ONLY;
+            sub.address = EncodeDestination(destDevFee);
+            sub.credit = wtx.tx->vout[nIndexDevFee].nValue;
+            sub.type = TransactionRecord::DevReward;
 
     parts.append(sub);
     return true;
@@ -616,6 +624,7 @@ void TransactionRecord::updateStatus(const CWalletTx& wtx, int chainHeight)
             type == TransactionRecord::StakeMint ||
             type == TransactionRecord::StakeZPIV ||
             type == TransactionRecord::MNReward ||
+            type == TransactionRecord::DevReward ||
             type == TransactionRecord::BudgetPayment ||
             type == TransactionRecord::StakeDelegated ||
             type == TransactionRecord::StakeHot) {

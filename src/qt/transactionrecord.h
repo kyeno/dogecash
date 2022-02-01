@@ -82,6 +82,7 @@ public:
         SendToOther,
         RecvWithAddress,
         MNReward,
+        DevReward,
         BudgetPayment,
         RecvFromOther,
         SendToSelf,
