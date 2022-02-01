@@ -7,15 +7,15 @@ BUILDDIR=${BUILDDIR:-$TOPDIR}
 BINDIR=${BINDIR:-$BUILDDIR/src}
 MANDIR=${MANDIR:-$TOPDIR/doc/man}
 
-BITCOIND=${BITCOIND:-$BINDIR/dogecashd}
-BITCOINCLI=${BITCOINCLI:-$BINDIR/dogecash-cli}
-BITCOINTX=${BITCOINTX:-$BINDIR/dogecash-tx}
-BITCOINQT=${BITCOINQT:-$BINDIR/qt/dogecash-qt}
+BITCOIND=${BITCOIND:-$BINDIR/pivxd}
+BITCOINCLI=${BITCOINCLI:-$BINDIR/pivx-cli}
+BITCOINTX=${BITCOINTX:-$BINDIR/pivx-tx}
+BITCOINQT=${BITCOINQT:-$BINDIR/qt/pivx-qt}
 
 [ ! -x $BITCOIND ] && echo "$BITCOIND not found or not executable." && exit 1
 
 # The autodetected version git tag can screw up manpage output a little bit
-BTCVER=($($BITCOINCLI --version | head -n1 | awk -F'[ -]' '{ print $6, $7 }'))
+read -r -a BTCVER <<< "$($BITCOINCLI --version | head -n1 | awk -F'[ -]' '{ print $6, $7 }')"
 
 # Create a footer file with copyright content.
 # This gets autodetected fine for bitcoind if --version-string is not set,

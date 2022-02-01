@@ -1,5 +1,5 @@
 ---
-name: "dogecash-dmg-signer"
+name: "pivx-dmg-signer"
 distro: "ubuntu"
 suites:
 - "bionic"
@@ -8,16 +8,16 @@ architectures:
 packages:
 - "faketime"
 remotes:
-- "url": "https://github.com/dogecash/dogecash-detached-sigs.git"
+- "url": "https://github.com/pivx-project/pivx-detached-sigs.git"
   "dir": "signature"
 files:
-- "dogecash-osx-unsigned.tar.gz"
+- "pivx-osx-unsigned.tar.gz"
 script: |
   set -e -o pipefail
 
   WRAP_DIR=$HOME/wrapped
   mkdir -p ${WRAP_DIR}
-  export PATH=`pwd`:$PATH
+  export PATH="$PWD":$PATH
   FAKETIME_PROGS="dmg genisoimage"
 
   # Create global faketime wrappers
@@ -30,8 +30,8 @@ script: |
     chmod +x ${WRAP_DIR}/${prog}
   done
 
-  UNSIGNED=dogecash-osx-unsigned.tar.gz
-  SIGNED=dogecash-osx-signed.dmg
+  UNSIGNED=pivx-osx-unsigned.tar.gz
+  SIGNED=pivx-osx-signed.dmg
 
   tar -xf ${UNSIGNED}
   OSX_VOLNAME="$(cat osx_volname)"

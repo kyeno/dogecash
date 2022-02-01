@@ -52,6 +52,7 @@ $(eval $(1)_file_name=$(if $($(1)_exact_file_name),$($(1)_exact_file_name),$(if 
 $(eval $(1)_sha256_hash=$(if $($(1)_exact_sha256_hash),$($(1)_exact_sha256_hash),$(if $($(1)_sha256_hash_$(host_os)),$($(1)_sha256_hash_$(host_os)),$($(1)_sha256_hash))))
 $(eval $(1)_download_file=$(if $($(1)_exact_download_file),$($(1)_exact_download_file),$(if $($(1)_download_file_$(host_os)),$($(1)_download_file_$(host_os)),$(if $($(1)_download_file),$($(1)_download_file),$($(1)_file_name)))))
 
+
 #compute package-specific paths
 $(1)_build_subdir?=.
 $(1)_source_dir:=$(SOURCES_PATH)

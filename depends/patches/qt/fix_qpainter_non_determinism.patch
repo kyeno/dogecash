@@ -60,3 +60,4 @@ index 92ab6e8375..f018009e0b 100644
              out->coverage = qt_div_255(spans->coverage * clipSpans->coverage);
              ++out;
              --available;
+

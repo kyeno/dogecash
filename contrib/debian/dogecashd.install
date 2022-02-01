@@ -1,3 +1,0 @@
-usr/local/bin/dogecashd usr/bin
-usr/local/bin/dogecash-cli usr/bin
-debian/examples/dogecash.conf etc/dogecash
