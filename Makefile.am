@@ -43,9 +43,9 @@ DIST_DOCS = \
   README.md \
   $(wildcard doc/*.md) \
   $(wildcard doc/release-notes/*.md)
-DIST_CONTRIB = $(top_srcdir)/contrib/pivx-cli.bash-completion \
-	       $(top_srcdir)/contrib/pivx-tx.bash-completion \
-	       $(top_srcdir)/contrib/pivxd.bash-completion \
+DIST_CONTRIB = $(top_srcdir)/contrib/dogecash-cli.bash-completion \
+	       $(top_srcdir)/contrib/dogecash-tx.bash-completion \
+	       $(top_srcdir)/contrib/dogecashd.bash-completion \
            $(top_srcdir)/contrib/init \
            $(top_srcdir)/contrib/install_db4.sh
 

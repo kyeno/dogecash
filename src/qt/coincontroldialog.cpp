@@ -1,6 +1,8 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2020 The PIVX developers
+// Copyright (c) 2022 The DogeCash developers
+// Copyright (c) 2018-2020 The DogeCash developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -18,7 +20,7 @@
 #include "wallet/wallet.h"
 #include "walletmodel.h"
 
-#include "qt/pivx/qtutils.h"
+#include "qt/dogec/qtutils.h"
 
 #include <QApplication>
 #include <QCheckBox>

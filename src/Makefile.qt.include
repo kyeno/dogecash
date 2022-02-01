@@ -2,7 +2,7 @@
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-bin_PROGRAMS += qt/pivx-qt
+bin_PROGRAMS += qt/dogecash-qt
 EXTRA_LIBRARIES += qt/libbitcoinqt.a
 
 # pivx qt core #
@@ -398,22 +398,22 @@ RES_ICONS = \
   qt/pivx/res/img/ic-arrow-drop-up.svg \
   qt/pivx/res/img/ic-coin-zpiv.svg \
   qt/pivx/res/img/ic-received.svg \
-  qt/pivx/res/img/img-logo-pivx.png \
+  qt/pivx/res/img/img-logo-dogecash.png \
   qt/pivx/res/img/ic-arrow-drop-white-down.svg \
   qt/pivx/res/img/ic-combo-box.svg \
   qt/pivx/res/img/ic-send.svg \
-  qt/pivx/res/img/img-logo-pivx@2x.png \
+  qt/pivx/res/img/img-logo-dogecash@2x.png \
   qt/pivx/res/img/ic-arrow-purple-down.svg \
   qt/pivx/res/img/ic-connect.svg \
   qt/pivx/res/img/ic-submenu-lock.svg \
-  qt/pivx/res/img/img-logo-pivx@3x.png \
-  qt/pivx/res/img/img-logo-pivx.svg \
+  qt/pivx/res/img/img-logo-dogecash@3x.png \
+  qt/pivx/res/img/img-logo-dogecash.svg \
   qt/pivx/res/img/ic-arrow-right-white.svg \
   qt/pivx/res/img/ic-arrow-left-white.svg \
   qt/pivx/res/img/ic-arrow-left.svg \
   qt/pivx/res/img/ic-copy-liliac.svg \
   qt/pivx/res/img/ic-submenu-staking.svg \
-  qt/pivx/res/img/img-nav-logo-pivx.png \
+  qt/pivx/res/img/img-nav-logo-dogecash.png \
   qt/pivx/res/img/ic-arrow-right.svg \
   qt/pivx/res/img/ic-copy.svg \
   qt/pivx/res/img/ic-copy-big.svg \
@@ -635,7 +635,7 @@ RES_CSS = \
   qt/pivx/res/css/style_dark.css \
   qt/pivx/res/css/style_light.css
 
-BITCOIN_RC = qt/res/pivx-qt-res.rc
+BITCOIN_RC = qt/res/dogecash-qt-res.rc
 
 BITCOIN_QT_INCLUDES = -I$(builddir)/qt -I$(srcdir)/qt -I$(srcdir)/qt/forms \
   -I$(builddir)/qt/forms -DQT_NO_KEYWORDS
@@ -658,7 +658,7 @@ QT_FORMS_H=$(join $(dir $(QT_FORMS_UI)),$(addprefix ui_, $(notdir $(QT_FORMS_UI:
 $(QT_MOC): $(QT_FORMS_H)
 $(qt_libbitcoinqt_a_OBJECTS) $(qt_pivx_qt_OBJECTS) : | $(QT_MOC)
 
-# pivx-qt binary #
+# dogecash-qt binary #
 qt_pivx_qt_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES) $(BITCOIN_QT_INCLUDES) \
   $(QT_INCLUDES) $(QR_CFLAGS) $(SVG_CFLAGS) $(CHARTS_CFLAGS)
 qt_pivx_qt_CXXFLAGS = $(AM_CXXFLAGS) $(QT_PIE_FLAGS)
@@ -713,9 +713,9 @@ CLEAN_QT = $(nodist_qt_libbitcoinqt_a_SOURCES) $(QT_QM) $(QT_FORMS_H) qt/*.gcda 
 CLEANFILES += $(CLEAN_QT)
 
 pivx_qt_clean: FORCE
-	rm -f $(CLEAN_QT) $(qt_libbitcoinqt_a_OBJECTS) $(qt_pivx_qt_OBJECTS) qt/pivx-qt$(EXEEXT) $(LIBBITCOINQT)
+	rm -f $(CLEAN_QT) $(qt_libbitcoinqt_a_OBJECTS) $(qt_pivx_qt_OBJECTS) qt/dogecash-qt$(EXEEXT) $(LIBBITCOINQT)
 
-pivx_qt : qt/pivx-qt$(EXEEXT)
+pivx_qt : qt/dogecash-qt$(EXEEXT)
 
 ui_%.h: %.ui
 	@test -f $(UIC)

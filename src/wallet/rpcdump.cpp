@@ -1,6 +1,8 @@
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2020 The PIVX developers
+// Copyright (c) 2022 The DogeCash developers
+// Copyright (c) 2018-2020 The DogeCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -1097,7 +1099,7 @@ UniValue importmulti(const JSONRPCRequest& mainRequest)
                                                           "block from time %d, which is after or within %d seconds of key creation, and "
                                                           "could contain transactions pertaining to the key. As a result, transactions "
                                                           "and coins using this key may not appear in the wallet. This error could be "
-                                                          "caused by pruning or data corruption (see pivxd log for details) and could "
+                                                          "caused by pruning or data corruption (see dogecashd log for details) and could "
                                                           "be dealt with by downloading and rescanning the relevant blocks (see -reindex "
                                                           "and -rescan options).",
                                                           GetImportTimestamp(request, now), scannedTime - TIMESTAMP_WINDOW - 1, TIMESTAMP_WINDOW)));

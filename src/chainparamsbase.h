@@ -1,5 +1,6 @@
 // Copyright (c) 2014-2021 The Bitcoin developers
 // Copyright (c) 2017-2021 The PIVX developers
+// Copyright (c) 2022 The DogeCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -11,7 +12,7 @@
 #include <vector>
 
 /**
- * CBaseChainParams defines the base parameters (shared between pivx-cli and pivxd)
+ * CBaseChainParams defines the base parameters (shared between dogecash-cli and dogecashd)
  * of a given instance of the Pivx system.
  */
 class CBaseChainParams

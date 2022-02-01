@@ -23,7 +23,7 @@ Table of Contents
 - [Preparing the Gitian builder host](#preparing-the-gitian-builder-host)
   - [macOS Builds](#macos-builds)
 - [Initial Gitian Setup](#initial-gitian-setup)
-- [Building PIVX Core](#building-pivx-core)
+- [Building PIVX Core](#building-dogecash-core)
 - [Signing externally](#signing-externally)
 - [Uploading signatures](#uploading-signatures)
 

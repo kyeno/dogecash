@@ -1,6 +1,8 @@
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2020 The PIVX developers
+// Copyright (c) 2022 The DogeCash developers
+// Copyright (c) 2018-2020 The DogeCash developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -8,7 +10,7 @@
 #include "config/pivx-config.h"
 #endif
 
-#include "qt/pivx/pivxgui.h"
+#include "qt/dogec/pivxgui.h"
 
 
 #include "fs.h"
@@ -22,8 +24,8 @@
 #include "qt/intro.h"
 #include "qt/optionsmodel.h"
 #include "qt/networkstyle.h"
-#include "qt/pivx/splash.h"
-#include "qt/pivx/welcomecontentwidget.h"
+#include "qt/dogec/splash.h"
+#include "qt/dogec/welcomecontentwidget.h"
 #include "qt/winshutdownmonitor.h"
 #include "rpc/server.h"
 #include "shutdown.h"
@@ -32,8 +34,8 @@
 #include "warnings.h"
 
 #ifdef ENABLE_WALLET
-#include "qt/pivx/governancemodel.h"
-#include "qt/pivx/mnmodel.h"
+#include "qt/dogec/governancemodel.h"
+#include "qt/dogec/mnmodel.h"
 #include "paymentserver.h"
 #include "walletmodel.h"
 #include "interfaces/wallet.h"

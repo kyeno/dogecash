@@ -13,7 +13,7 @@ This version is an optional, but recommended, update for all users and services.
 How to Upgrade
 ==============
 
-If you are running an older version, shut it down. Wait until it has completely shut down (which might take a few minutes for older versions), then run the installer (on Windows) or just copy over /Applications/PIVX-Qt (on Mac) or pivxd/pivx-qt (on Linux).
+If you are running an older version, shut it down. Wait until it has completely shut down (which might take a few minutes for older versions), then run the installer (on Windows) or just copy over /Applications/PIVX-Qt (on Mac) or dogecashd/dogecash-qt (on Linux).
 
 
 Compatibility
@@ -64,7 +64,7 @@ Base58CheckEncode,131072,7697,8065,7785,20015,20971,20242
 
 A new 'label' API has been introduced for the wallet. This is intended as a
 replacement for the deprecated 'account' API. The 'account' can continue to
-be used in v4.2 by starting pivxd with the '-deprecatedrpc=accounts'
+be used in v4.2 by starting dogecashd with the '-deprecatedrpc=accounts'
 argument, and will be fully removed in v5.0.
 
 The label RPC methods mirror the account functionality, with the following functional differences:
@@ -132,7 +132,7 @@ In addition to the afore mentioned 'label' and 'account' API changes, other RPC 
 
 - The `asm` property of each scriptSig now contains the decoded signature hash type for each signature that provides a valid defined hash type ([#1633](https://github.com/PIVX-Project/PIVX/pull/1633)).<br>
 The following items contain assembly representations of scriptSig signatures
-and are affected by this change: RPC `getrawtransaction`, RPC `decoderawtransaction`, REST `/rest/tx/` (JSON format), REST `/rest/block/` (JSON format when including extended tx details), `pivx-tx -json`
+and are affected by this change: RPC `getrawtransaction`, RPC `decoderawtransaction`, REST `/rest/tx/` (JSON format), REST `/rest/block/` (JSON format when including extended tx details), `dogecash-tx -json`
 
 ### Modified input/output for existing commands
 

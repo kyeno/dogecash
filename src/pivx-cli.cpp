@@ -2,6 +2,7 @@
 // Copyright (c) 2009-2021 The Bitcoin developers
 // Copyright (c) 2009-2015 The Dash developers
 // Copyright (c) 2015-2021 The PIVX developers
+// Copyright (c) 2022 The DogeCash developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -47,7 +48,7 @@ std::string HelpMessageCli()
     strUsage += HelpMessageOpt("-rpcuser=<user>", "Username for JSON-RPC connections");
     strUsage += HelpMessageOpt("-rpcpassword=<pw>", "Password for JSON-RPC connections");
     strUsage += HelpMessageOpt("-rpcclienttimeout=<n>", strprintf("Timeout in seconds during HTTP requests, or 0 for no timeout. (default: %d)", DEFAULT_HTTP_CLIENT_TIMEOUT));
-    strUsage += HelpMessageOpt("-rpcwallet=<walletname>", "Send RPC for non-default wallet on RPC server (needs to exactly match corresponding -wallet option passed to pivxd)");
+    strUsage += HelpMessageOpt("-rpcwallet=<walletname>", "Send RPC for non-default wallet on RPC server (needs to exactly match corresponding -wallet option passed to dogecashd)");
 
     return strUsage;
 }
@@ -91,10 +92,10 @@ static bool AppInitRPC(int argc, char* argv[])
         std::string strUsage = PACKAGE_NAME " RPC client version " + FormatFullVersion() + "\n";
         if (!gArgs.IsArgSet("-version")) {
             strUsage += "\n"
-                        "Usage:  pivx-cli [options] <command> [params]  Send command to " PACKAGE_NAME "\n"
-                        "or:     pivx-cli [options] -named <command> [name=value]... Send command to " PACKAGE_NAME " (with named arguments)\n"
-                        "or:     pivx-cli [options] help                List commands\n"
-                        "or:     pivx-cli [options] help <command>      Get help for a command\n";
+                        "Usage:  dogecash-cli [options] <command> [params]  Send command to " PACKAGE_NAME "\n"
+                        "or:     dogecash-cli [options] -named <command> [name=value]... Send command to " PACKAGE_NAME " (with named arguments)\n"
+                        "or:     dogecash-cli [options] help                List commands\n"
+                        "or:     dogecash-cli [options] help <command>      Get help for a command\n";
             strUsage += "\n" + HelpMessageCli();
         }
 
@@ -329,7 +330,7 @@ int CommandLineRPC(int argc, char* argv[])
                             strPrint += "error message:\n"+errMsg.get_str();
 
                         if (errCode.isNum() && errCode.get_int() == RPC_WALLET_NOT_SPECIFIED) {
-                            strPrint += "\nTry adding \"-rpcwallet=<filename>\" option to pivx-cli command line.";
+                            strPrint += "\nTry adding \"-rpcwallet=<filename>\" option to dogecash-cli command line.";
                         }
                     }
                 } else {

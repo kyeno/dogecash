@@ -20,7 +20,7 @@ Please report bugs using the issue tracker at github: <https://github.com/pivx-p
 How to Upgrade
 ==============
 
-If you are running an older version, shut it down. Wait until it has completely shut down (which might take a few minutes for older versions), then run the installer (on Windows) or just copy over /Applications/PIVX-Qt (on Mac) or pivxd/pivx-qt (on Linux).
+If you are running an older version, shut it down. Wait until it has completely shut down (which might take a few minutes for older versions), then run the installer (on Windows) or just copy over /Applications/PIVX-Qt (on Mac) or dogecashd/dogecash-qt (on Linux).
 
 **Important note for Masternodes running over Tor (v2 onion address):**
 Before starting the node, copy the content of the `onion_private_key` file, located inside the data directory into a new `onion_v3_private_key` file inside the same directory.
@@ -136,13 +136,13 @@ PIVX Core now supports loading multiple, separate wallets ([PR #2337](https://gi
 
 Multi-wallet is enabled by using more than one `-wallet` argument when starting PIVX client, either on the command line or in the `pivx.conf` config file.
 
-**In pivx-qt, only the first wallet will be displayed and accessible for creating and signing transactions.** GUI selectable multiple wallets will be supported in a future version. However, even in 5.3, other loaded wallets will remain synchronized to the node's current tip in the background.
+**In dogecash-qt, only the first wallet will be displayed and accessible for creating and signing transactions.** GUI selectable multiple wallets will be supported in a future version. However, even in 5.3, other loaded wallets will remain synchronized to the node's current tip in the background.
 
-PIVX Core 5.3.0 contains the following changes to the RPC interface and pivx-cli for multi-wallet:
+PIVX Core 5.3.0 contains the following changes to the RPC interface and dogecash-cli for multi-wallet:
 
-* When running PIVX Core with a single wallet, there are **no** changes to the RPC interface or `pivx-cli`. All RPC calls and `pivx-cli` commands continue to work as before.
-* When running PIVX Core with multi-wallet, all *node-level* RPC methods continue to work as before. HTTP RPC requests should be send to the normal `<RPC IP address>:<RPC port>` endpoint, and `pivx-cli` commands should be run as before. A *node-level* RPC method is any method which does not require access to the wallet.
-* When running PIVX Core with multi-wallet, *wallet-level* RPC methods must specify the wallet for which they're intended in every request. HTTP RPC requests should be send to the `<RPC IP address>:<RPC port>/wallet/<wallet name>` endpoint, for example `127.0.0.1:8332/wallet/wallet1.dat`. `pivx-cli` commands should be run with a `-rpcwallet` option, for example `pivx-cli -rpcwallet=wallet1.dat getbalance`.
+* When running PIVX Core with a single wallet, there are **no** changes to the RPC interface or `dogecash-cli`. All RPC calls and `dogecash-cli` commands continue to work as before.
+* When running PIVX Core with multi-wallet, all *node-level* RPC methods continue to work as before. HTTP RPC requests should be send to the normal `<RPC IP address>:<RPC port>` endpoint, and `dogecash-cli` commands should be run as before. A *node-level* RPC method is any method which does not require access to the wallet.
+* When running PIVX Core with multi-wallet, *wallet-level* RPC methods must specify the wallet for which they're intended in every request. HTTP RPC requests should be send to the `<RPC IP address>:<RPC port>/wallet/<wallet name>` endpoint, for example `127.0.0.1:8332/wallet/wallet1.dat`. `dogecash-cli` commands should be run with a `-rpcwallet` option, for example `dogecash-cli -rpcwallet=wallet1.dat getbalance`.
 
 * A new *node-level* `listwallets` RPC method is added to display which wallets are currently loaded. The names returned by this method are the same as those used in the HTTP endpoint and for the `rpcwallet` argument.
 
@@ -233,16 +233,16 @@ Low-level RPC changes
 
 #### Support for JSON-RPC Named Arguments
 
-Commands sent over the JSON-RPC interface and through the `pivx-cli` binary can now use named arguments. This follows the [JSON-RPC specification](http://www.jsonrpc.org/specification) for passing parameters by-name with an object.
-`pivx-cli` has been updated to support this by parsing `name=value` arguments when the `-named` option is given. ([PR #2386](https://github.com/PIVX-Project/PIVX/pull/2386))
+Commands sent over the JSON-RPC interface and through the `dogecash-cli` binary can now use named arguments. This follows the [JSON-RPC specification](http://www.jsonrpc.org/specification) for passing parameters by-name with an object.
+`dogecash-cli` has been updated to support this by parsing `name=value` arguments when the `-named` option is given. ([PR #2386](https://github.com/PIVX-Project/PIVX/pull/2386))
 
 Some examples:
 
 ```
-    src/pivx-cli -named help command="help"
-    src/pivx-cli -named getblockhash height=0
-    src/pivx-cli -named getblock blockhash=000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f
-    src/pivx-cli -named sendtoaddress address="DMJRSsuU9zfyrvxVaAEFQqK4MxZg6vgeS6" amount="1.0" comment="donation"
+    src/dogecash-cli -named help command="help"
+    src/dogecash-cli -named getblockhash height=0
+    src/dogecash-cli -named getblock blockhash=000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f
+    src/dogecash-cli -named sendtoaddress address="DMJRSsuU9zfyrvxVaAEFQqK4MxZg6vgeS6" amount="1.0" comment="donation"
 ```
 
 The order of arguments doesn't matter in this case. Named arguments are also useful to leave out arguments that should stay at their default value.
@@ -653,7 +653,7 @@ v5.3.0 Change log
 - #2490 [BugFix] fix app always triggering the tutorial dialog if no manual '-wallet' arg is provided (furszy)
 - #2448 Periodic make translate (Fuzzbawls)
 - #2481 [BUG][GUI] Fix P2CS grouping in coin control (random-zebra)
-- #2506 bugfix, the command line interface is called "pivx-cli" not "pivx-core" (furszy)
+- #2506 bugfix, the command line interface is called "dogecash-cli" not "pivx-core" (furszy)
 - #2513 [GUI] Remove extra jump line in mnb creation error message (furszy)
 - #2516 [GUI][BUG] Console: allow empty arguments (random-zebra)
 

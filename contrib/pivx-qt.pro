@@ -373,8 +373,8 @@ SOURCES += src/activemasternode.cpp \
            src/crypter.cpp \
            src/obfuscation-relay.cpp \
            src/obfuscation.cpp \
-           src/pivx-cli.cpp \
-           src/pivx-tx.cpp \
+           src/dogecash-cli.cpp \
+           src/dogecash-tx.cpp \
            src/pivx.cpp \
            src/db.cpp \
            src/eccryptoverify.cpp \
