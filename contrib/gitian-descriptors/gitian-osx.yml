@@ -30,7 +30,7 @@ packages:
 - "fonts-tuffy"
 remotes:
 - "url": "https://github.com/dogecash/dogecash.git"
-  "dir": "dogec"
+  "dir": "dogecash"
 files:
 - "Xcode-11.3.1-11C505-extracted-SDK-with-libcxx-headers.tar.gz"
 script: |
