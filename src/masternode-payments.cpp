@@ -345,7 +345,7 @@ static void SubtractMnPaymentFromCoinstake(CMutableTransaction& txCoinstake, CAm
     //subtract mn payment from the stake reward
     if (stakerOuts == 2) {
         // Majority of cases; do it quick and move on
-        txCoinstake.vout[1].nValue -= masternodePayment;
+        txCoinstake.vout[1].nValue -= masternodePayment + Params().GetConsensus().nDevReward;
     } else {
         // special case, stake is split between (stakerOuts-1) outputs
         unsigned int outputs = stakerOuts-1;
@@ -356,7 +356,23 @@ static void SubtractMnPaymentFromCoinstake(CMutableTransaction& txCoinstake, CAm
         }
         // in case it's not an even division, take the last bit of dust from the last one
         txCoinstake.vout[outputs].nValue -= mnPaymentRemainder;
+        CAmount devFeeSplit = Params().GetConsensus().nDevReward / outputs;
+        CAmount devFeeRemainder = Params().GetConsensus().nDevReward - (devFeeSplit * outputs);        
+                        
+        for (unsigned int j=1; j<=outputs; j++) {
+            txNew.vout[j].nValue -= devFeeSplit;
+        }
+        txNew.vout[outputs].nValue -= devFeeRemainder;
     }
+    PushDevFee(txNew, nHeight);
+}
+
+void CMasternodePayments::PushDevFee(CMutableTransaction& txNew, const int nHeight) 
+{
+    CTxDestination destination = DecodeDestination(Params().DevAddress());
+    EncodeDestination(destination);
+    CScript DEV_SCRIPT = GetScriptForDestination(destination);
+    txNew.vout.push_back(CTxOut(Params().GetConsensus().nDevReward, CScript(DEV_SCRIPT.begin(), DEV_SCRIPT.end())));
 }
 
 void CMasternodePayments::FillBlockPayee(CMutableTransaction& txCoinbase, CMutableTransaction& txCoinstake, const CBlockIndex* pindexPrev, bool fProofOfStake) const
