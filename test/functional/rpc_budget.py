@@ -1,17 +1,14 @@
 #!/usr/bin/env python3
-# Copyright (c) 2019 The PIVX Developers
-# Copyright (c) 2020 The PIVX developers
-# Copyright (c) 2020 The DogeCash Developers
-
+# Copyright (c) 2019 The PIVX developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test RPC commands for budget proposal creation, submission, and verification."""
 
-from test_framework.test_framework import DogeCashTestFramework
-from test_framework.util import *
+from test_framework.test_framework import PivxTestFramework
+from test_framework.util import assert_equal, assert_raises_rpc_error
+import time
 
-
-class BudgetProposalTest(DogeCashTestFramework):
+class BudgetProposalTest(PivxTestFramework):
     def set_test_params(self):
         self.num_nodes = 1
 
@@ -49,13 +46,13 @@ class BudgetProposalTest(DogeCashTestFramework):
         assert_raises_rpc_error(-8, "Invalid block start", self.nodes[0].preparebudget,
                                 name, scheme + url, numcycles, nextsuperblock - budgetcycleblocks, address, cycleamount)
 
-        self.log.info("Test with invalid DogeCash address")
-        assert_raises_rpc_error(-5, "Invalid DogeCash address", self.nodes[0].preparebudget,
+        self.log.info("Test with invalid PIVX address")
+        assert_raises_rpc_error(-5, "Invalid PIVX address", self.nodes[0].preparebudget,
                                 name, scheme + url, numcycles, nextsuperblock, "DBREvBPNQguwuC4YMoCG5FoH1sA2YntvZm", cycleamount)
 
         self.log.info("Test with too low amount")
         invalid_amt = 9.99999999
-        assert_raises_rpc_error(-8, "Invalid amount - Payment of %.8f is less than minimum 10 DOGEC allowed" % invalid_amt, self.nodes[0].preparebudget,
+        assert_raises_rpc_error(-8, "Invalid amount - Payment of %.8f is less than minimum 10 PIV allowed" % invalid_amt, self.nodes[0].preparebudget,
                                 name, scheme + url, numcycles, nextsuperblock, address, invalid_amt)
 
         self.log.info("Test with too high amount")
@@ -66,16 +63,16 @@ class BudgetProposalTest(DogeCashTestFramework):
 
         self.log.info("Test without URL scheme")
         scheme = ''
-        assert_raises_rpc_error(-8, "Invalid URL, check scheme (e.g. https://)", self.nodes[0].preparebudget, name, scheme + url, 1, nextsuperblock, address, 100)
+        assert_raises_rpc_error(-8, "Invalid URL", self.nodes[0].preparebudget, name, scheme + url, 1, nextsuperblock, address, 100)
 
         self.log.info('Test with invalid URL scheme: ftp://')
         scheme = 'ftp://'
-        assert_raises_rpc_error(-8, "Invalid URL, check scheme (e.g. https://)", self.nodes[0].preparebudget, name, scheme + url, 1, nextsuperblock, address, 100)
+        assert_raises_rpc_error(-8, "Invalid URL", self.nodes[0].preparebudget, name, scheme + url, 1, nextsuperblock, address, 100)
 
         self.log.info("Test with invalid double character scheme: hhttps://")
         scheme = 'hhttps://'
         url = 'test.com'
-        assert_raises_rpc_error(-8, "Invalid URL, check scheme (e.g. https://)", self.nodes[0].preparebudget, name, scheme + url, 1, nextsuperblock, address, 100)
+        assert_raises_rpc_error(-8, "Invalid URL", self.nodes[0].preparebudget, name, scheme + url, 1, nextsuperblock, address, 100)
 
         self.log.info("Test with valid scheme: http://")
         name = 'testvalid1'
@@ -86,6 +83,7 @@ class BudgetProposalTest(DogeCashTestFramework):
 
         self.log.info("Generate 7 blocks to confirm fee transaction")
         self.nodes[0].generate(7)
+        time.sleep(20) # so the tier two sync can update its status
 
         self.log.info("Submit the budget proposal")
         submitret = self.nodes[0].submitbudget(name, scheme + url, numcycles, nextsuperblock, address, cycleamount, feehashret)

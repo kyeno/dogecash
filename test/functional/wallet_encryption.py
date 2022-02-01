@@ -6,7 +6,7 @@
 
 import time
 
-from test_framework.test_framework import DogeCashTestFramework
+from test_framework.test_framework import PivxTestFramework
 from test_framework.util import (
     assert_equal,
     assert_raises_rpc_error,
@@ -14,7 +14,8 @@ from test_framework.util import (
     assert_greater_than_or_equal,
 )
 
-class WalletEncryptionTest(DogeCashTestFramework):
+
+class WalletEncryptionTest(PivxTestFramework):
     def set_test_params(self):
         self.setup_clean_chain = True
         self.num_nodes = 1
@@ -30,8 +31,7 @@ class WalletEncryptionTest(DogeCashTestFramework):
         assert_equal(len(privkey), 52)
 
         # Encrypt the wallet
-        self.nodes[0].node_encrypt_wallet(passphrase)
-        self.start_node(0)
+        self.nodes[0].encryptwallet(passphrase)
 
         # Test that the wallet is encrypted
         assert_raises_rpc_error(-13, "Please enter the wallet passphrase with walletpassphrase first", self.nodes[0].dumpprivkey, address)
@@ -41,7 +41,7 @@ class WalletEncryptionTest(DogeCashTestFramework):
         assert_equal(privkey, self.nodes[0].dumpprivkey(address))
 
         # Check that the timeout is right
-        time.sleep(2)
+        time.sleep(3)
         assert_raises_rpc_error(-13, "Please enter the wallet passphrase with walletpassphrase first", self.nodes[0].dumpprivkey, address)
 
         # Test wrong passphrase

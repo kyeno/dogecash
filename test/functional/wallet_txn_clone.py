@@ -5,12 +5,13 @@
 """Test the wallet accounts properly when there are cloned transactions with malleated scriptsigs."""
 
 import io
-from test_framework.test_framework import DogeCashTestFramework
-from test_framework.util import *
+
 from test_framework.messages import CTransaction, COIN
+from test_framework.test_framework import PivxTestFramework
+from test_framework.util import assert_equal, connect_nodes, disconnect_nodes
 
 
-class TxnMallTest(DogeCashTestFramework):
+class TxnMallTest(PivxTestFramework):
     def set_test_params(self):
         self.num_nodes = 4
 
@@ -25,7 +26,7 @@ class TxnMallTest(DogeCashTestFramework):
         disconnect_nodes(self.nodes[2], 1)
 
     def run_test(self):
-        # All nodes should start with 6,250 DOGEC:
+        # All nodes should start with 6,250 PIV:
         starting_balance = 6250
         for i in range(4):
             assert_equal(self.nodes[i].getbalance(), starting_balance)
@@ -87,7 +88,8 @@ class TxnMallTest(DogeCashTestFramework):
         # Node0's balance should be starting balance, plus 50BTC for another
         # matured block, minus tx1 and tx2 amounts, and minus transaction fees:
         expected = starting_balance + node0_tx1["fee"] + node0_tx2["fee"]
-        if self.options.mine_block: expected += 250
+        if self.options.mine_block:
+            expected += 250
         expected += tx1["amount"] + tx1["fee"]
         expected += tx2["amount"] + tx2["fee"]
         assert_equal(self.nodes[0].getbalance(), expected)

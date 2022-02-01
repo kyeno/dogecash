@@ -3,9 +3,10 @@
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test node disconnect and ban behavior"""
+
 import time
 
-from test_framework.test_framework import DogeCashTestFramework
+from test_framework.test_framework import PivxTestFramework
 from test_framework.util import (
     assert_equal,
     connect_nodes,
@@ -13,7 +14,8 @@ from test_framework.util import (
     wait_until,
 )
 
-class DisconnectBanTest(DogeCashTestFramework):
+
+class DisconnectBanTest(PivxTestFramework):
     def set_test_params(self):
         self.num_nodes = 2
 
@@ -66,7 +68,7 @@ class DisconnectBanTest(DogeCashTestFramework):
         assert_equal("192.168.0.1/32", listBeforeShutdown[2]['address'])
         # Move time forward by 3 seconds so the third ban has expired
         self.nodes[1].setmocktime(old_time + 3)
-        assert_equal(len(self.nodes[1].listbanned()), 4)
+        assert_equal(len(self.nodes[1].listbanned()), 3)
 
         self.stop_node(1)
         self.start_node(1)

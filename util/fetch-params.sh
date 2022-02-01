@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
 #
 # Copyright (c) 2015-2020 The Zcash developers
-# Copyright (c) 2020 The PIVX Developers
-# Copyright (c) 2020 The DogeCash Developers
-
+# Copyright (c) 2020 The PIVX developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -15,9 +13,9 @@ if [ -n "${1:-}" ]; then
     PARAMS_DIR="$1"
 else
     if [[ "$OSTYPE" == "darwin"* ]]; then
-        PARAMS_DIR="$HOME/Library/Application Support/DOGECParams"
+        PARAMS_DIR="$HOME/Library/Application Support/PIVXParams"
     else
-        PARAMS_DIR="$HOME/.dogecash-params"
+        PARAMS_DIR="$HOME/.pivx-params"
     fi
 fi
 
@@ -39,7 +37,7 @@ ZC_DISABLE_IPFS="${ZC_DISABLE_IPFS:-}"
 ZC_DISABLE_CURL="${ZC_DISABLE_CURL:-}"
 
 function fetch_wget {
-    if [ -z "$WGETCMD" ] || ! [ -z "$ZC_DISABLE_WGET" ]; then
+    if [ -z "$WGETCMD" ] || [ -n "$ZC_DISABLE_WGET" ]; then
         return 1
     fi
 
@@ -60,7 +58,7 @@ EOF
 }
 
 function fetch_ipfs {
-    if [ -z "$IPFSCMD" ] || ! [ -z "$ZC_DISABLE_IPFS" ]; then
+    if [ -z "$IPFSCMD" ] || [ -n "$ZC_DISABLE_IPFS" ]; then
         return 1
     fi
 
@@ -76,7 +74,7 @@ EOF
 }
 
 function fetch_curl {
-    if [ -z "$CURLCMD" ] || ! [ -z "$ZC_DISABLE_CURL" ]; then
+    if [ -z "$CURLCMD" ] || [ -n "$ZC_DISABLE_CURL" ]; then
         return 1
     fi
 
@@ -98,7 +96,7 @@ EOF
 function fetch_failure {
     cat >&2 <<EOF
 
-Failed to fetch the DogeCash zkSNARK parameters!
+Failed to fetch the PIVX zkSNARK parameters!
 Try installing one of the following programs and make sure you're online:
 
  * ipfs
@@ -138,7 +136,7 @@ function fetch_params {
         cat "${dlname}.part.1" "${dlname}.part.2" > "${dlname}"
         rm "${dlname}.part.1" "${dlname}.part.2"
 
-        "$SHA256CMD" $SHA256ARGS -c <<EOF
+        "$SHA256CMD" "$SHA256ARGS" -c <<EOF
 $expectedhash  $dlname
 EOF
 
@@ -183,9 +181,9 @@ function main() {
     || exit_locked_error
 
     cat <<EOF
-DogeCash - fetch-params.sh
+PIVX - fetch-params.sh
 
-This script will fetch the DogeCash zkSNARK parameters and verify their
+This script will fetch the PIVX zkSNARK parameters and verify their
 integrity with sha256sum.
 
 If they already exist locally, it will exit now and do nothing else.
@@ -197,7 +195,7 @@ EOF
         mkdir -p "$PARAMS_DIR"
         README_PATH="$PARAMS_DIR/README"
         cat >> "$README_PATH" <<EOF
-This directory stores common DogeCash zkSNARK parameters. Note that it is
+This directory stores common PIVX zkSNARK parameters. Note that it is
 distinct from the daemon's -datadir argument because the parameters are
 large and may be shared across multiple distinct -datadir's such as when
 setting up test networks.

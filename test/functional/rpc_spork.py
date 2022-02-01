@@ -1,17 +1,15 @@
 #!/usr/bin/env python3
 # Copyright (c) 2019-2020 The PIVX developers
-# Copyright (c) 2019-2020 The DogeCash Developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
-# -*- coding: utf-8 -*-
 
 from time import sleep
 
-from test_framework.test_framework import DogeCashTestFramework
+from test_framework.test_framework import PivxTestFramework
 from test_framework.util import set_node_times, assert_equal
 
 
-class DOGEC_RPCSporkTest(DogeCashTestFramework):
+class PIVX_RPCSporkTest(PivxTestFramework):
 
     def set_test_params(self):
         self.setup_clean_chain = True
@@ -72,5 +70,5 @@ class DOGEC_RPCSporkTest(DogeCashTestFramework):
 
 
 if __name__ == '__main__':
-    DOGEC_RPCSporkTest().main()
+    PIVX_RPCSporkTest().main()
 

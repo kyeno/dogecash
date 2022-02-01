@@ -1,16 +1,14 @@
 #!/usr/bin/env python3
 # Copyright (c) 2018 The Zcash developers
-# Copyright (c) 2020 The PIVX Developers
-# Copyright (c) 2020 The DogeCash Developers
-
+# Copyright (c) 2020 The PIVX developers
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or https://www.opensource.org/licenses/mit-license.php .
 
-from test_framework.test_framework import DogeCashTestFramework
+from decimal import Decimal
+from io import BytesIO
 
-from test_framework.messages import (
-    CTransaction,
-)
+from test_framework.messages import CTransaction
+from test_framework.test_framework import PivxTestFramework
 from test_framework.util import (
     assert_equal,
     assert_raises_rpc_error,
@@ -18,10 +16,8 @@ from test_framework.util import (
     hex_str_to_bytes,
 )
 
-from decimal import Decimal
-from io import BytesIO
 
-class MalleableSigsTest(DogeCashTestFramework):
+class MalleableSigsTest(PivxTestFramework):
 
     def set_test_params(self):
         self.num_nodes = 1
@@ -36,8 +32,8 @@ class MalleableSigsTest(DogeCashTestFramework):
         z_addr = node.getnewshieldaddress()
         shield_to = [{"address": z_addr, "amount": Decimal('10')}]
 
-        # Create rawtx shielding 10 DOGEC
-        self.log.info("Shielding 10 DOGEC...")
+        # Create rawtx shielding 10 PIV
+        self.log.info("Shielding 10 PIV...")
         rawtx_hex = node.rawshieldsendmany("from_transparent", shield_to)
         self.log.info("Raw tx created")
 

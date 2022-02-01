@@ -4,11 +4,12 @@
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 """Test the wallet accounts properly when there is a double-spend conflict."""
 
-from test_framework.test_framework import DogeCashTestFramework
-from test_framework.util import *
-import time
+from decimal import Decimal
 
-class TxnMallTest(DogeCashTestFramework):
+from test_framework.test_framework import PivxTestFramework
+from test_framework.util import assert_equal, connect_nodes, disconnect_nodes, find_output
+
+class TxnMallTest(PivxTestFramework):
     def set_test_params(self):
         self.num_nodes = 4
 
@@ -23,7 +24,7 @@ class TxnMallTest(DogeCashTestFramework):
         disconnect_nodes(self.nodes[2], 1)
 
     def run_test(self):
-        # All nodes should start with 6,250 DOGEC:
+        # All nodes should start with 6,250 PIV:
         starting_balance = 6250
         for i in range(4):
             assert_equal(self.nodes[i].getbalance(), starting_balance)
@@ -44,7 +45,7 @@ class TxnMallTest(DogeCashTestFramework):
         # Coins are sent to node1_address
         node1_address = self.nodes[1].getnewaddress()
 
-        # First: use raw transaction API to send 1240 * 5 DOGEC to node1_address,
+        # First: use raw transaction API to send 1240 * 5 PIV to node1_address,
         # but don't broadcast:
         doublespend_fee = Decimal('-.02')
         rawtx_input_0 = {}
@@ -77,7 +78,8 @@ class TxnMallTest(DogeCashTestFramework):
         # Node0's balance should be starting balance, plus 50BTC for another
         # matured block, minus 40, minus 20, and minus transaction fees:
         expected = starting_balance + fund_foo_tx["fee"] + fund_bar_tx["fee"]
-        if self.options.mine_block: expected += 250
+        if self.options.mine_block:
+            expected += 250
         expected += tx1["amount"] + tx1["fee"]
         expected += tx2["amount"] + tx2["fee"]
         assert_equal(self.nodes[0].getbalance(), expected)

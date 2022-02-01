@@ -1,41 +1,41 @@
-DogeCash Core
+PIVX Core
 =============
 
 Setup
 ---------------------
-[DogeCash Core](http://dogec.io/wallet) is the original DogeCash client and it builds the backbone of the network. However, it downloads and stores the entire history of DogeCash transactions; depending on the speed of your computer and network connection, the synchronization process can take anywhere from a few hours to a day or more. Thankfully you only have to do this once.
+[PIVX Core](http://pivx.org/wallet) is the original PIVX client and it builds the backbone of the network. However, it downloads and stores the entire history of PIVX transactions; depending on the speed of your computer and network connection, the synchronization process can take anywhere from a few hours to a day or more. Thankfully you only have to do this once.
 
 Running
 ---------------------
-The following are some helpful notes on how to run DogeCash Core on your native platform.
+The following are some helpful notes on how to run PIVX Core on your native platform.
 
 ### Unix
 
 Unpack the files into a directory and run:
 
-- `bin/dogecash-qt` (GUI) or
-- `bin/dogecashd` (headless)
+- `bin/pivx-qt` (GUI) or
+- `bin/pivxd` (headless)
 
-If this is the first time running DogeCash Core (since v5.0.0), you'll need to install the sapling params by running the included `install-params.sh` script, which copies the two params files to `$HOME/.dogecash-params`
+If this is the first time running PIVX Core (since v5.0.0), you'll need to install the sapling params by running the included `install-params.sh` script, which copies the two params files to `$HOME/.pivx-params`
 
 ### Windows
 
-Unpack the files into a directory, and then run dogecash-qt.exe.
+Unpack the files into a directory, and then run pivx-qt.exe.
 
 ### macOS
 
-Drag DogeCash-Qt to your applications folder, and then run DogeCash-Qt.
+Drag PIVX-Qt to your applications folder, and then run PIVX-Qt.
 
 ### Need Help?
 
-* See the documentation at the [DogeCash Wiki](https://github.com/dogecash/dogecash/wiki)
+* See the documentation at the [PIVX Wiki](https://github.com/PIVX-Project/PIVX/wiki)
 for help and more information.
-* Ask for help on [BitcoinTalk](https://bitcointalk.org/index.php?topic=1262920.0) or on the [DogeCash Forum](http://forum.dogec.io/).
-* Join our Discord server [Discord Server](https://discord.dogec.io)
+* Ask for help on the [PIVX Forum](http://forum.pivx.org/).
+* Join our Discord server [Discord Server](https://discord.pivx.org)
 
 Building
 ---------------------
-The following are developer notes on how to build DogeCash Core on your native platform. They are not complete guides, but include notes on the necessary libraries, compile flags, etc.
+The following are developer notes on how to build PIVX Core on your native platform. They are not complete guides, but include notes on the necessary libraries, compile flags, etc.
 
 - [Dependencies](dependencies.md)
 - [macOS Build Notes](build-osx.md)
@@ -45,25 +45,25 @@ The following are developer notes on how to build DogeCash Core on your native p
 
 Development
 ---------------------
-The DogeCash repo's [root README](/README.md) contains relevant information on the development process and automated testing.
+The PIVX repo's [root README](/README.md) contains relevant information on the development process and automated testing.
 
 - [Developer Notes](developer-notes.md)
 - [Multiwallet Qt Development](multiwallet-qt.md)
 - [Release Notes](release-notes.md)
 - [Release Process](release-process.md)
-- [Source Code Documentation (External Link)](https://www.fuzzbawls.pw/dogecash/doxygen/)
+- [Source Code Documentation (External Link)](https://www.fuzzbawls.pw/pivx/doxygen/)
 - [Translation Process](translation_process.md)
 - [Unit Tests](unit-tests.md)
 - [Unauthenticated REST Interface](REST-interface.md)
 - [Dnsseed Policy](dnsseed-policy.md)
 
 ### Resources
-* Discuss on the [BitcoinTalk](https://bitcointalk.org/index.php?topic=1262920.0) or the [DOGEC](http://forum.dogec.io/) forum.
-* Join the [DogeCash Discord](https://discord.dogec.io).
+* Discuss on the [PIVX](http://forum.pivx.org/) forum.
+* Join the [PIVX Discord](https://discord.pivx.org).
 
 ### Miscellaneous
-- [Assets Attribution](assets-attribution.md)
 - [Files](files.md)
+- [Fuzz-testing](fuzzing.md)
 - [Reduce Memory](reduce-memory.md)
 - [Tor Support](tor.md)
 - [Init Scripts (systemd/upstart/openrc)](init.md)

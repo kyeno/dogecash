@@ -14,13 +14,21 @@ added in the future, they should try to follow the same convention and not
 make assumptions about execution order.
 """
 
-from test_framework.blocktools import send_to_witness
-from test_framework.test_framework import DogeCashTestFramework
-from test_framework import blocktools
-from test_framework.mininode import CTransaction
-from test_framework.util import *
-
+from decimal import Decimal
 import io
+
+from test_framework import blocktools
+from test_framework.blocktools import send_to_witness
+from test_framework.messages import CTransaction
+from test_framework.test_framework import PivxTestFramework
+from test_framework.util import (
+    assert_equal,
+    assert_greater_than,
+    assert_raises_rpc_error,
+    bytes_to_hex_str,
+    hex_str_to_bytes
+)
+
 
 # Sequence number that is BIP 125 opt-in and BIP 68-compliant
 BIP125_SEQUENCE_NUMBER = 0xfffffffd
@@ -29,7 +37,7 @@ WALLET_PASSPHRASE = "test"
 WALLET_PASSPHRASE_TIMEOUT = 3600
 
 
-class BumpFeeTest(DogeCashTestFramework):
+class BumpFeeTest(PivxTestFramework):
     def set_test_params(self):
         self.num_nodes = 2
         self.setup_clean_chain = True
@@ -38,11 +46,9 @@ class BumpFeeTest(DogeCashTestFramework):
 
     def run_test(self):
         # Encrypt wallet for test_locked_wallet_fails test
-        self.nodes[1].node_encrypt_wallet(WALLET_PASSPHRASE)
-        self.start_node(1)
+        self.nodes[1].encryptwallet(WALLET_PASSPHRASE)
         self.nodes[1].walletpassphrase(WALLET_PASSPHRASE, WALLET_PASSPHRASE_TIMEOUT)
 
-        connect_nodes(self.nodes[0], 1)
         self.sync_all()
 
         peer_node, rbf_node = self.nodes

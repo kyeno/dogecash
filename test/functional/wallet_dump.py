@@ -6,7 +6,7 @@
 
 import os
 
-from test_framework.test_framework import DogeCashTestFramework
+from test_framework.test_framework import PivxTestFramework
 from test_framework.util import (assert_equal, assert_raises_rpc_error)
 
 
@@ -68,7 +68,7 @@ def read_dump(file_name, addrs, hd_master_addr_old):
         return found_addr, found_addr_chg, found_addr_rsv, hd_master_addr_ret
 
 
-class WalletDumpTest(DogeCashTestFramework):
+class WalletDumpTest(PivxTestFramework):
     def set_test_params(self):
         self.num_nodes = 1
         self.extra_args = [["-keypool=90"]]
@@ -79,7 +79,7 @@ class WalletDumpTest(DogeCashTestFramework):
         # longer than the default 30 seconds due to an expensive
         # CWallet::TopUpKeyPool call, and the encryptwallet RPC made later in
         # the test often takes even longer.
-        self.add_nodes(self.num_nodes, self.extra_args)
+        self.add_nodes(self.num_nodes, extra_args=self.extra_args)
         self.start_nodes()
 
     def run_test (self):
@@ -107,8 +107,7 @@ class WalletDumpTest(DogeCashTestFramework):
         assert_equal(found_addr_rsv, 90 * 3)  # 90 keys external plus 100% internal keys plus 100% staking keys
 
         #encrypt wallet, restart, unlock and dump
-        self.nodes[0].node_encrypt_wallet('test')
-        self.start_node(0)
+        self.nodes[0].encryptwallet('test')
         self.nodes[0].walletpassphrase('test', 10)
         # Should be a no-op:
         self.nodes[0].keypoolrefill()
