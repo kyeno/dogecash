@@ -1,7 +1,5 @@
 // Copyright (c) 2018-2020 The Zcash developers
-// Copyright (c) 2020 The PIVX Developers
-// Copyright (c) 2020 The DogeCash Developers
-
+// Copyright (c) 2020 The PIVX developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or https://www.opensource.org/licenses/mit-license.php .
 
@@ -131,21 +129,10 @@ std::string TransactionBuilderResult::GetError() {
     }
 }
 
-// Set default values of new CMutableTransaction based on consensus rules at given height.
-CMutableTransaction CreateNewContextualCMutableTransaction(const Consensus::Params& consensusParams, int nHeight)
-{
-    CMutableTransaction mtx;
-    bool isSapling = consensusParams.NetworkUpgradeActive(nHeight, Consensus::UPGRADE_V5_0);
-    mtx.nVersion = isSapling ? CTransaction::TxVersion::SAPLING : CTransaction::TxVersion::LEGACY;
-    return mtx;
-}
-
 TransactionBuilder::TransactionBuilder(
     const Consensus::Params& _consensusParams,
-    int _nHeight,
     CKeyStore* _keystore) :
     consensusParams(_consensusParams),
-    nHeight(_nHeight),
     keystore(_keystore)
 {
     Clear();
@@ -153,7 +140,8 @@ TransactionBuilder::TransactionBuilder(
 
 void TransactionBuilder::Clear()
 {
-    mtx = CreateNewContextualCMutableTransaction(consensusParams, nHeight);
+    mtx = CMutableTransaction();
+    mtx.nVersion = CTransaction::TxVersion::SAPLING;
     spends.clear();
     outputs.clear();
     tIns.clear();
@@ -431,8 +419,8 @@ TransactionBuilderResult TransactionBuilder::Build(bool fDummySig)
 
     if (change > 0) {
         // If we get here and the change is dust, add it to the fee
-        CAmount dustThreshold = (spends.empty() && outputs.empty()) ? GetDustThreshold(minRelayTxFee) :
-                                GetShieldedDustThreshold(minRelayTxFee);
+        CAmount dustThreshold = (spends.empty() && outputs.empty()) ? GetDustThreshold(dustRelayFee)
+                                                                    : GetShieldedDustThreshold(dustRelayFee);
         if (change > dustThreshold) {
             // Send change to the specified change address. If no change address
             // was set, send change to the first Sapling address given as input

@@ -1,12 +1,9 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2018 The Bitcoin developers
-// Copyright (c) 2017-2020 The PIVX Developers
-// Copyright (c) 2020 The DogeCash Developers
-
+// Copyright (c) 2015-2020 The PIVX developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "chainparamsbase.h"
 #include "logging.h"
 #include "utiltime.h"
 
@@ -104,7 +101,7 @@ const CLogCategoryDesc LogCategories[] = {
         {BCLog::TOR,            "tor"},
         {BCLog::MEMPOOL,        "mempool"},
         {BCLog::HTTP,           "http"},
-        {BCLog::BENCH,          "bench"},
+        {BCLog::BENCHMARK,      "bench"},
         {BCLog::ZMQ,            "zmq"},
         {BCLog::DB,             "db"},
         {BCLog::RPC,            "rpc"},
@@ -113,7 +110,7 @@ const CLogCategoryDesc LogCategories[] = {
         {BCLog::SELECTCOINS,    "selectcoins"},
         {BCLog::REINDEX,        "reindex"},
         {BCLog::CMPCTBLOCK,     "cmpctblock"},
-        {BCLog::RAND,           "rand"},
+        {BCLog::RANDOM,         "rand"},
         {BCLog::PRUNE,          "prune"},
         {BCLog::PROXY,          "proxy"},
         {BCLog::MEMPOOLREJ,     "mempoolrej"},
@@ -128,6 +125,9 @@ const CLogCategoryDesc LogCategories[] = {
         {BCLog::MNPING,         "mnping"},
         {BCLog::SAPLING,        "sapling"},
         {BCLog::SPORKS,         "sporks"},
+        {BCLog::VALIDATION,     "validation"},
+        {BCLog::LLMQ,           "llmq"},
+        {BCLog::NET_MN,         "net_mn"},
         {BCLog::ALL,            "1"},
         {BCLog::ALL,            "all"},
 };
@@ -184,9 +184,19 @@ std::string BCLog::Logger::LogTimestampStr(const std::string &str)
     if (!m_log_timestamps)
         return str;
 
-    if (m_started_new_line)
-        strStamped =  DateTimeStrFormat("%Y-%m-%d %H:%M:%S", GetTime()) + ' ' + str;
-    else
+    if (m_started_new_line) {
+        int64_t nTimeMicros = GetTimeMicros();
+        strStamped = FormatISO8601DateTime(nTimeMicros/1000000);
+        if (m_log_time_micros) {
+            strStamped.pop_back();
+            strStamped += strprintf(".%06dZ", nTimeMicros % 1000000);
+        }
+        int64_t mocktime = GetMockTime();
+        if (mocktime) {
+            strStamped += " (mocktime: " + FormatISO8601DateTime(mocktime) + ")";
+        }
+        strStamped += ' ' + str;
+    } else
         strStamped = str;
 
     if (!str.empty() && str[str.size()-1] == '\n')

@@ -1,21 +1,28 @@
-// Copyright (c) 2020 The PIVX Developers
-// Copyright (c) 2020 The DogeCash Developers
-
+// Copyright (c) 2020 The PIVX developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or https://www.opensource.org/licenses/mit-license.php.
 
-#ifndef DOGEC_SAPLING_TEST_FIXTURE_H
-#define DOGEC_SAPLING_TEST_FIXTURE_H
+#ifndef PIVX_SAPLING_TEST_FIXTURE_H
+#define PIVX_SAPLING_TEST_FIXTURE_H
 
-#include "test/test_dogecash.h"
+#include "test/test_pivx.h"
 
 /**
  * Testing setup that configures a complete environment for Sapling testing.
  */
-struct SaplingTestingSetup : public TestingSetup {
-    SaplingTestingSetup();
+struct SaplingTestingSetup : public TestingSetup
+{
+    SaplingTestingSetup(const std::string& chainName = CBaseChainParams::MAIN);
     ~SaplingTestingSetup();
 };
 
+/**
+ * Regtest setup with sapling always active
+ */
+struct SaplingRegTestingSetup : public SaplingTestingSetup
+{
+    SaplingRegTestingSetup();
+};
 
-#endif //DOGEC_SAPLING_TEST_FIXTURE_H
+
+#endif //PIVX_SAPLING_TEST_FIXTURE_H

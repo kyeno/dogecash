@@ -6,7 +6,7 @@
 // Unit tests for block.CheckBlock()
 //
 
-#include "test/test_dogecash.h"
+#include "test/test_pivx.h"
 
 #include "clientversion.h"
 #include "fs.h"
@@ -54,6 +54,7 @@ BOOST_AUTO_TEST_CASE(May15)
     CBlock forkingBlock;
     if (read_block("Mar12Fork.dat", forkingBlock))
     {
+        LOCK(cs_main);
         CValidationState state;
 
         // After May 15'th, big blocks are OK:

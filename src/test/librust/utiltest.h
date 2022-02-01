@@ -1,12 +1,10 @@
 // Copyright (c) 2016-2020 The Zcash developers
-// Copyright (c) 2020 The PIVX Developers
-// Copyright (c) 2020 The DogeCash Developers
-
+// Copyright (c) 2020 The PIVX developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or https://www.opensource.org/licenses/mit-license.php .
 
-#ifndef DOGEC_UTIL_TEST_H
-#define DOGEC_UTIL_TEST_H
+#ifndef PIVX_UTIL_TEST_H
+#define PIVX_UTIL_TEST_H
 
 #include "sapling/address.h"
 #include "sapling/incrementalmerkletree.h"
@@ -30,9 +28,6 @@ struct TransparentInput {
     CAmount amount;
 };
 
-const Consensus::Params& RegtestActivateSapling();
-
-void RegtestDeactivateSapling();
 
 libzcash::SaplingExtendedSpendingKey GetTestMasterSaplingSpendingKey();
 
@@ -79,4 +74,4 @@ CWalletTx GetValidSaplingReceive(const Consensus::Params& consensusParams,
                                  bool genNewKey = false,
                                  const CWallet* pwalletIn = nullptr);
 
-#endif // DOGEC_UTIL_TEST_H
+#endif // PIVX_UTIL_TEST_H

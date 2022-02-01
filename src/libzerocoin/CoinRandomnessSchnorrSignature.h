@@ -1,8 +1,4 @@
-// Copyright (c) 2019 The PIVX Developers
-// Copyright (c) 2020 The PIVX Developers
-// Copyright (c) 2020 The DogeCash Developers
-
-
+// Copyright (c) 2019 The PIVX developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -43,13 +39,7 @@ public:
      */
     bool Verify(const ZerocoinParams* zcparams, const CBigNum& S, const CBigNum& C, const uint256 msghash) const;
 
-    ADD_SERIALIZE_METHODS;
-    template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action)
-    {
-        READWRITE(alpha);
-        READWRITE(beta);
-    }
+    SERIALIZE_METHODS(CoinRandomnessSchnorrSignature, obj) { READWRITE(obj.alpha, obj.beta); }
 
 private:
     // signature components

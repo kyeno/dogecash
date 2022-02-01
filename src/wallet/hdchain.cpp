@@ -1,15 +1,13 @@
-// Copyright (c) 2020 The PIVX Developers
-// Copyright (c) 2020 The DogeCash Developers
-
+// Copyright (c) 2020 The PIVX developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "wallet/hdchain.h"
 
-#include "base58.h"
 #include "chainparams.h"
+#include "key_io.h"
 #include "tinyformat.h"
-#include "util.h"
+#include "util/system.h"
 #include "utilstrencodings.h"
 
 bool CHDChain::SetNull()

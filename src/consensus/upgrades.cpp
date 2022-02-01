@@ -1,7 +1,5 @@
 // Copyright (c) 2018 The Zcash developers
-// Copyright (c) 2020 The PIVX Developers
-// Copyright (c) 2020 The DogeCash Developers
-
+// Copyright (c) 2020 The PIVX developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -17,7 +15,7 @@
 const struct NUInfo NetworkUpgradeInfo[Consensus::MAX_NETWORK_UPGRADES] = {
         {
                 /*.strName =*/ "Base",
-                /*.strInfo =*/ "DogeCash network",
+                /*.strInfo =*/ "PIVX network",
         },
         {
                 /*.strName =*/ "PoS",
@@ -33,7 +31,7 @@ const struct NUInfo NetworkUpgradeInfo[Consensus::MAX_NETWORK_UPGRADES] = {
         },
         {
                 /*.strName =*/ "Zerocoin_v2",
-                /*.strInfo =*/ "new zerocoin serials and zPOS start",
+                /*.strInfo =*/ "New zerocoin serials and zPOS start",
         },
         {
                 /*.strName =*/ "BIP65",
@@ -41,19 +39,31 @@ const struct NUInfo NetworkUpgradeInfo[Consensus::MAX_NETWORK_UPGRADES] = {
         },
         {
                 /*.strName =*/ "Zerocoin_Public",
-                /*.strInfo =*/ "activation of zerocoin public spends (spend v3)",
+                /*.strInfo =*/ "Activation of zerocoin public spends (spend v3)",
         },
         {
-                /*.strName =*/ "DOGEC_v3.4",
-                /*.strInfo =*/ "new 256-bit stake modifier - start block v6",
+                /*.strName =*/ "PIVX_v3.4",
+                /*.strInfo =*/ "New 256-bit stake modifier - start block v6",
         },
         {
-                /*.strName =*/ "DOGEC_v4.0",
-                /*.strInfo =*/ "new message sigs - start block v7 - time protocol - zc spend v4",
+                /*.strName =*/ "PIVX_v4.0",
+                /*.strInfo =*/ "New message sigs - start block v7 - time protocol - zc spend v4",
         },
         {
                 /*.strName =*/ "v5_shield",
                 /*.strInfo =*/ "Sapling Shield - start block v8 - start transaction v3",
+        },
+        {
+                /*.strName =*/ "PIVX_v5.2",
+                /*.strInfo =*/ "New cold-staking rules",
+        },
+        {
+                /*.strName =*/ "PIVX_v5.3",
+                /*.strInfo =*/ "New staking rules",
+        },
+        {
+                /*.strName =*/ "v6_evo",
+                /*.strInfo =*/ "Deterministic Masternodes",
         },
         {
                 /*.strName =*/ "Test_dummy",

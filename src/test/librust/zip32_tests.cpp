@@ -1,11 +1,9 @@
 // Copyright (c) 2016-2020 The ZCash developers
-// Copyright (c) 2020 The PIVX Developers
-// Copyright (c) 2020 The DogeCash Developers
-
+// Copyright (c) 2020 The PIVX developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "test/test_dogecash.h"
+#include "test/test_pivx.h"
 
 #include "sapling/sapling_util.h"
 #include "sapling/zip32.h"

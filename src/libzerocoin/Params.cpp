@@ -10,7 +10,6 @@
 * @license    This project is released under the MIT license.
 **/
 // Copyright (c) 2017-2019 The PIVX developers
-// Copyright (c) 2020 The DogeCash Developers
 
 #include "Params.h"
 #include "ParamGeneration.h"

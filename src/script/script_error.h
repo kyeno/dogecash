@@ -1,8 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin developers
-// Copyright (c) 2017-2020 The PIVX Developers
-// Copyright (c) 2020 The DogeCash Developers
-
+// Copyright (c) 2018-2020 The PIVX developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -51,6 +49,7 @@ typedef enum ScriptError_t
     SCRIPT_ERR_SIG_HIGH_S,
     SCRIPT_ERR_SIG_NULLDUMMY,
     SCRIPT_ERR_PUBKEYTYPE,
+    SCRIPT_ERR_CLEANSTACK,
 
     /* softfork safeness */
     SCRIPT_ERR_DISCOURAGE_UPGRADABLE_NOPS,

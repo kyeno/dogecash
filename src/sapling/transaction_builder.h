@@ -1,7 +1,5 @@
 // Copyright (c) 2018-2020 The Zcash developers
-// Copyright (c) 2020 The PIVX Developers
-// Copyright (c) 2020 The DogeCash Developers
-
+// Copyright (c) 2020 The PIVX developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or https://www.opensource.org/licenses/mit-license.php .
 
@@ -86,7 +84,6 @@ class TransactionBuilder
 {
 private:
     Consensus::Params consensusParams;
-    int nHeight;
     const CKeyStore* keystore;
     CMutableTransaction mtx;
     CAmount fee = -1;   // Verified in Build(). Must be set before.
@@ -101,7 +98,6 @@ private:
 public:
     TransactionBuilder(
         const Consensus::Params& consensusParams,
-        int nHeight,
         CKeyStore* keyStore = nullptr);
 
     void Clear();

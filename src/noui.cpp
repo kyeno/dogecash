@@ -8,7 +8,7 @@
 #include "noui.h"
 
 #include "guiinterface.h"
-#include "util.h"
+#include "util/system.h"
 
 #include <cstdio>
 #include <stdint.h>
@@ -48,7 +48,7 @@ static void noui_InitMessage(const std::string& message)
 
 void noui_connect()
 {
-    // Connect dogecashd signal handlers
+    // Connect pivxd signal handlers
     uiInterface.ThreadSafeMessageBox.connect(noui_ThreadSafeMessageBox);
     uiInterface.InitMessage.connect(noui_InitMessage);
 }

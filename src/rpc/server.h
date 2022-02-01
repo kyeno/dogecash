@@ -1,8 +1,6 @@
 // Copyright (c) 2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin developers
-// Copyright (c) 2017-2020 The PIVX Developers
-// Copyright (c) 2020 The DogeCash Developers
-
+// Copyright (c) 2015-2020 The PIVX developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -27,7 +25,6 @@ namespace RPCServer
     void OnStarted(std::function<void ()> slot);
     void OnStopped(std::function<void ()> slot);
     void OnPreCommand(std::function<void (const CRPCCommand&)> slot);
-    void OnPostCommand(std::function<void (const CRPCCommand&)> slot);
 }
 
 class CBlockIndex;
@@ -76,6 +73,11 @@ bool RPCIsInWarmup(std::string* statusOut);
  */
 void RPCTypeCheck(const UniValue& params,
                   const std::list<UniValue::VType>& typesExpected, bool fAllowNull=false);
+
+/**
+ * Type-check one argument; throws JSONRPCError if wrong type given.
+ */
+void RPCTypeCheckArgument(const UniValue& value, const UniValueType& typeExpected);
 
 /**
  * Check for expected keys/value types in an Object.
@@ -135,10 +137,11 @@ public:
     std::string name;
     rpcfn_type actor;
     bool okSafeMode;
+    std::vector<std::string> argNames;
 };
 
 /**
- * DogeCash RPC command dispatcher.
+ * PIVX RPC command dispatcher.
  */
 class CRPCTable
 {
@@ -148,7 +151,7 @@ private:
 public:
     CRPCTable();
     const CRPCCommand* operator[](const std::string& name) const;
-    std::string help(std::string name) const;
+    std::string help(const std::string& name, const JSONRPCRequest& helpreq) const;
 
     /**
      * Execute a method.
@@ -187,17 +190,11 @@ extern std::vector<unsigned char> ParseHexO(const UniValue& o, std::string strKe
 extern int ParseInt(const UniValue& o, std::string strKey);
 extern bool ParseBool(const UniValue& o, std::string strKey);
 
-extern int64_t nWalletUnlockTime;
 extern CAmount AmountFromValue(const UniValue& value);
 extern UniValue ValueFromAmount(const CAmount& amount);
 extern double GetDifficulty(const CBlockIndex* blockindex = NULL);
-extern std::string HelpRequiringPassphrase();
 extern std::string HelpExampleCli(std::string methodname, std::string args);
 extern std::string HelpExampleRpc(std::string methodname, std::string args);
-
-extern void EnsureWalletIsUnlocked(bool fAllowAnonOnly = false);
-// Ensure the wallet's existence.
-extern void EnsureWallet();
 
 bool StartRPC();
 void InterruptRPC();

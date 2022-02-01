@@ -1,22 +1,23 @@
-// Copyright (c) 2018 The Zcash developers
+// Copyright (c) 2018-2020 The ZCash developers
+// Copyright (c) 2021 The PIVX developers
 // Distributed under the MIT software license, see the accompanying
-// file COPYING or http://www.opensource.org/licenses/mit-license.php.
+// file COPYING or https://www.opensource.org/licenses/mit-license.php.
 
 #include "sapling/zip32.h"
 
 #include "hash.h"
 #include "random.h"
+#include "sapling/prf.h"
 #include "streams.h"
 #include "version.h"
-#include "sapling/prf.h"
 
 #include <librustzcash.h>
 #include <sodium.h>
 
-const unsigned char DOGEC_HD_SEED_FP_PERSONAL[crypto_generichash_blake2b_PERSONALBYTES] =
+const unsigned char PIVX_HD_SEED_FP_PERSONAL[crypto_generichash_blake2b_PERSONALBYTES] =
     {'P', 'I', 'V', 'X', '_', '_', 'H', 'D', '_', 'S', 'e', 'e', 'd', '_', 'F', 'P'};
 
-const unsigned char DOGEC_TADDR_OVK_PERSONAL[crypto_generichash_blake2b_PERSONALBYTES] =
+const unsigned char PIVX_TADDR_OVK_PERSONAL[crypto_generichash_blake2b_PERSONALBYTES] =
         {'P', 'x', 'T', 'a', 'd', 'd', 'r', 'T', 'o', 'S', 'a', 'p', 'l', 'i', 'n', 'g'};
 
 HDSeed HDSeed::Random(size_t len)
@@ -29,7 +30,7 @@ HDSeed HDSeed::Random(size_t len)
 
 uint256 HDSeed::Fingerprint() const
 {
-    CBLAKE2bWriter h(SER_GETHASH, 0, DOGEC_HD_SEED_FP_PERSONAL);
+    CBLAKE2bWriter h(SER_GETHASH, 0, PIVX_HD_SEED_FP_PERSONAL);
     h << seed;
     return h.GetHash();
 }
@@ -44,7 +45,7 @@ uint256 ovkForShieldingFromTaddr(HDSeed& seed) {
             NULL, 0, // No key.
             64,
             NULL,    // No salt.
-            DOGEC_TADDR_OVK_PERSONAL) == 0);
+            PIVX_TADDR_OVK_PERSONAL) == 0);
     crypto_generichash_blake2b_update(&state, rawSeed.data(), rawSeed.size());
     auto intermediate = std::array<unsigned char, 64>();
     crypto_generichash_blake2b_final(&state, intermediate.data(), 64);
@@ -59,7 +60,7 @@ uint256 ovkForShieldingFromTaddr(HDSeed& seed) {
 
 namespace libzcash {
 
-boost::optional<SaplingExtendedFullViewingKey> SaplingExtendedFullViewingKey::Derive(uint32_t i) const
+Optional<SaplingExtendedFullViewingKey> SaplingExtendedFullViewingKey::Derive(uint32_t i) const
 {
     CDataStream ss_p(SER_NETWORK, PROTOCOL_VERSION);
     ss_p << *this;
@@ -76,11 +77,11 @@ boost::optional<SaplingExtendedFullViewingKey> SaplingExtendedFullViewingKey::De
         ss_i >> xfvk_i;
         return xfvk_i;
     } else {
-        return boost::none;
+        return nullopt;
     }
 }
 
-boost::optional<std::pair<diversifier_index_t, libzcash::SaplingPaymentAddress>>
+Optional<std::pair<diversifier_index_t, libzcash::SaplingPaymentAddress>>
     SaplingExtendedFullViewingKey::Address(diversifier_index_t j) const
 {
     CDataStream ss_xfvk(SER_NETWORK, PROTOCOL_VERSION);
@@ -98,7 +99,7 @@ boost::optional<std::pair<diversifier_index_t, libzcash::SaplingPaymentAddress>>
         ss_addr >> addr;
         return std::make_pair(j_ret, addr);
     } else {
-        return boost::none;
+        return nullopt;
     }
 }
 

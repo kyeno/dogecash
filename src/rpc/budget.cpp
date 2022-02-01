@@ -1,22 +1,26 @@
 // Copyright (c) 2014-2015 The Dash developers
-// Copyright (c) 2017-2020 The PIVX Developers
-// Copyright (c) 2020 The DogeCash Developers
-
+// Copyright (c) 2015-2020 The PIVX developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "activemasternode.h"
 #include "chainparams.h"
-#include "db.h"
-#include "init.h"
 #include "budget/budgetmanager.h"
+#include "budget/budgetutil.h"
+#include "db.h"
+#include "evo/deterministicmns.h"
+#include "key_io.h"
 #include "masternode-payments.h"
 #include "masternode-sync.h"
 #include "masternodeconfig.h"
 #include "masternodeman.h"
 #include "messagesigner.h"
+#include "tiertwo/tiertwo_sync_state.h"
 #include "rpc/server.h"
 #include "utilmoneystr.h"
+#ifdef ENABLE_WALLET
+#include "wallet/wallet.h"
+#include "wallet/rpcwallet.h"
+#endif
 
 #include <univalue.h>
 
@@ -86,7 +90,7 @@ void checkBudgetInputs(const UniValue& params, std::string &strProposalName, std
 
     address = DecodeDestination(params[4].get_str());
     if (!IsValidDestination(address))
-        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid DogeCash address");
+        throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid PIVX address");
 
     nAmount = AmountFromValue(params[5]);
     if (nAmount < 10 * COIN)
@@ -99,33 +103,34 @@ void checkBudgetInputs(const UniValue& params, std::string &strProposalName, std
 
 UniValue preparebudget(const JSONRPCRequest& request)
 {
+    CWallet * const pwallet = GetWalletForJSONRPCRequest(request);
+
+    if (!EnsureWalletIsAvailable(pwallet, request.fHelp))
+        return NullUniValue;
+
     if (request.fHelp || request.params.size() != 6)
         throw std::runtime_error(
-            "preparebudget \"proposal-name\" \"url\" payment-count block-start \"dogecash-address\" monthy-payment\n"
+            "preparebudget \"name\" \"url\" npayments start \"address\" monthly_payment\n"
             "\nPrepare proposal for network by signing and creating tx\n"
 
             "\nArguments:\n"
-            "1. \"proposal-name\":  (string, required) Desired proposal name (20 character limit)\n"
-            "2. \"url\":            (string, required) URL of proposal details (64 character limit)\n"
-            "3. payment-count:    (numeric, required) Total number of monthly payments\n"
-            "4. block-start:      (numeric, required) Starting super block height\n"
-            "5. \"dogecash-address\":   (string, required) DogeCash address to send payments to\n"
-            "6. monthly-payment:  (numeric, required) Monthly payment amount\n"
+            "1. \"name\":        (string, required) Desired proposal name (20 character limit)\n"
+            "2. \"url\":         (string, required) URL of proposal details (64 character limit)\n"
+            "3. npayments:       (numeric, required) Total number of monthly payments\n"
+            "4. start:           (numeric, required) Starting super block height\n"
+            "5. \"address\":     (string, required) PIVX address to send payments to\n"
+            "6. monthly_payment: (numeric, required) Monthly payment amount\n"
 
             "\nResult:\n"
             "\"xxxx\"       (string) proposal fee hash (if successful) or error message (if failed)\n"
 
             "\nExamples:\n" +
-            HelpExampleCli("preparebudget", "\"test-proposal\" \"https://forum.dogec.io/t/test-proposal\" 2 820800 \"D9oc6C3dttUbv8zd7zGNq1qKBGf4ZQ1XEE\" 500") +
-            HelpExampleRpc("preparebudget", "\"test-proposal\" \"https://forum.dogec.io/t/test-proposal\" 2 820800 \"D9oc6C3dttUbv8zd7zGNq1qKBGf4ZQ1XEE\" 500"));
+            HelpExampleCli("preparebudget", "\"test-proposal\" \"https://forum.pivx.org/t/test-proposal\" 2 820800 \"D9oc6C3dttUbv8zd7zGNq1qKBGf4ZQ1XEE\" 500") +
+            HelpExampleRpc("preparebudget", "\"test-proposal\" \"https://forum.pivx.org/t/test-proposal\" 2 820800 \"D9oc6C3dttUbv8zd7zGNq1qKBGf4ZQ1XEE\" 500"));
 
-    if (!pwalletMain) {
-        throw JSONRPCError(RPC_IN_WARMUP, "Try again after active chain is loaded");
-    }
+    LOCK2(cs_main, pwallet->cs_wallet);
 
-    LOCK2(cs_main, pwalletMain->cs_wallet);
-
-    EnsureWalletIsUnlocked();
+    EnsureWalletIsUnlocked(pwallet);
 
     std::string strProposalName;
     std::string strURL;
@@ -136,7 +141,7 @@ UniValue preparebudget(const JSONRPCRequest& request)
 
     checkBudgetInputs(request.params, strProposalName, strURL, nPaymentCount, nBlockStart, address, nAmount);
 
-    // Parse DogeCash address
+    // Parse PIVX address
     CScript scriptPubKey = GetScriptForDestination(address);
 
     // create transaction 15 minutes into the future, to allow for confirmation time
@@ -147,19 +152,20 @@ UniValue preparebudget(const JSONRPCRequest& request)
 
     CTransactionRef wtx;
     // make our change address
-    CReserveKey keyChange(pwalletMain);
-    if (!pwalletMain->CreateBudgetFeeTX(wtx, nHash, keyChange, false)) { // 50 DOGEC collateral for proposal
+    CReserveKey keyChange(pwallet);
+    if (!pwallet->CreateBudgetFeeTX(wtx, nHash, keyChange, BUDGET_FEE_TX_OLD)) { // 50 PIV collateral for proposal
         throw std::runtime_error("Error making collateral transaction for proposal. Please check your wallet balance.");
     }
 
     //send the tx to the network
-    const CWallet::CommitResult& res = pwalletMain->CommitTransaction(wtx, keyChange, g_connman.get());
+    const CWallet::CommitResult& res = pwallet->CommitTransaction(wtx, keyChange, g_connman.get());
     if (res.status != CWallet::CommitStatus::OK)
         throw JSONRPCError(RPC_WALLET_ERROR, res.ToString());
 
     // Store proposal name as a comment
-    assert(pwalletMain->mapWallet.count(wtx->GetHash()));
-    pwalletMain->mapWallet.at(wtx->GetHash()).SetComment("Proposal: " + strProposalName);
+    auto it = pwallet->mapWallet.find(wtx->GetHash());
+    assert(it != pwallet->mapWallet.end());
+    it->second.SetComment("Proposal: " + strProposalName);
 
     return wtx->GetHash().ToString();
 }
@@ -168,24 +174,24 @@ UniValue submitbudget(const JSONRPCRequest& request)
 {
     if (request.fHelp || request.params.size() != 7)
         throw std::runtime_error(
-            "submitbudget \"proposal-name\" \"url\" payment-count block-start \"dogecash-address\" monthly-payment \"fee-tx\"\n"
+            "submitbudget \"name\" \"url\" npayments start \"address\" monthly_payment \"fee_txid\"\n"
             "\nSubmit proposal to the network\n"
 
             "\nArguments:\n"
-            "1. \"proposal-name\":  (string, required) Desired proposal name (20 character limit)\n"
-            "2. \"url\":            (string, required) URL of proposal details (64 character limit)\n"
-            "3. payment-count:    (numeric, required) Total number of monthly payments\n"
-            "4. block-start:      (numeric, required) Starting super block height\n"
-            "5. \"dogecash-address\":   (string, required) DogeCash address to send payments to\n"
-            "6. monthly-payment:  (numeric, required) Monthly payment amount\n"
-            "7. \"fee-tx\":         (string, required) Transaction hash from preparebudget command\n"
+            "1. \"name\":         (string, required) Desired proposal name (20 character limit)\n"
+            "2. \"url\":          (string, required) URL of proposal details (64 character limit)\n"
+            "3. npayments:        (numeric, required) Total number of monthly payments\n"
+            "4. start:            (numeric, required) Starting super block height\n"
+            "5. \"address\":      (string, required) PIVX address to send payments to\n"
+            "6. monthly_payment:  (numeric, required) Monthly payment amount\n"
+            "7. \"fee_txid\":     (string, required) Transaction hash from preparebudget command\n"
 
             "\nResult:\n"
             "\"xxxx\"       (string) proposal hash (if successful) or error message (if failed)\n"
 
             "\nExamples:\n" +
-            HelpExampleCli("submitbudget", "\"test-proposal\" \"https://forum.dogec.io/t/test-proposal\" 2 820800 \"D9oc6C3dttUbv8zd7zGNq1qKBGf4ZQ1XEE\" 500") +
-            HelpExampleRpc("submitbudget", "\"test-proposal\" \"https://forum.dogec.io/t/test-proposal\" 2 820800 \"D9oc6C3dttUbv8zd7zGNq1qKBGf4ZQ1XEE\" 500"));
+            HelpExampleCli("submitbudget", "\"test-proposal\" \"https://forum.pivx.org/t/test-proposal\" 2 820800 \"D9oc6C3dttUbv8zd7zGNq1qKBGf4ZQ1XEE\" 500") +
+            HelpExampleRpc("submitbudget", "\"test-proposal\" \"https://forum.pivx.org/t/test-proposal\" 2 820800 \"D9oc6C3dttUbv8zd7zGNq1qKBGf4ZQ1XEE\" 500"));
 
     std::string strProposalName;
     std::string strURL;
@@ -196,11 +202,11 @@ UniValue submitbudget(const JSONRPCRequest& request)
 
     checkBudgetInputs(request.params, strProposalName, strURL, nPaymentCount, nBlockStart, address, nAmount);
 
-    // Parse DogeCash address
+    // Parse PIVX address
     CScript scriptPubKey = GetScriptForDestination(address);
     const uint256& hash = ParseHashV(request.params[6], "parameter 1");
 
-    if (!masternodeSync.IsBlockchainSynced()) {
+    if (!g_tiertwo_sync_state.IsBlockchainSynced()) {
         throw std::runtime_error("Must wait for client to sync with masternode network. Try again in a minute or so.");
     }
 
@@ -215,106 +221,7 @@ UniValue submitbudget(const JSONRPCRequest& request)
     return proposal.GetHash().ToString();
 }
 
-UniValue packRetStatus(const std::string& nodeType, const std::string& result, const std::string& error)
-{
-    UniValue statusObj(UniValue::VOBJ);
-    statusObj.pushKV("node", nodeType);
-    statusObj.pushKV("result", result);
-    statusObj.pushKV("error", error);
-    return statusObj;
-}
-
-UniValue packErrorRetStatus(const std::string& nodeType, const std::string& error)
-{
-    return packRetStatus(nodeType, "failed", error);
-}
-
-bool voteProposal(CPubKey& pubKeyMasternode, CKey& keyMasternode, const std::string& mnAlias,
-                  const uint256& propHash, const CBudgetVote::VoteDirection& nVote,
-                  UniValue& resultsObj)
-{
-    CMasternode* pmn = mnodeman.Find(pubKeyMasternode);
-    if (!pmn) {
-        resultsObj.push_back(packErrorRetStatus(mnAlias, "Can't find masternode by pubkey"));
-        return false;
-    }
-
-    CBudgetVote vote(pmn->vin, propHash, nVote);
-    if (!vote.Sign(keyMasternode, pubKeyMasternode.GetID())) {
-        resultsObj.push_back(packErrorRetStatus(mnAlias, "Failure to sign."));
-        return false;
-    }
-
-    std::string strError;
-    if (!g_budgetman.AddAndRelayProposalVote(vote, strError)) {
-        resultsObj.push_back(packErrorRetStatus(mnAlias, strError));
-        return false;
-    }
-
-    resultsObj.push_back(packRetStatus(mnAlias, "success", ""));
-    return true;
-}
-
-bool voteProposalMasternodeEntry(const CMasternodeConfig::CMasternodeEntry& mne,
-                                 const uint256& propHash, const CBudgetVote::VoteDirection& nVote,
-                                 UniValue& resultsObj) {
-    CPubKey pubKeyMasternode;
-    CKey keyMasternode;
-
-    if (!CMessageSigner::GetKeysFromSecret(mne.getPrivKey(), keyMasternode, pubKeyMasternode)) {
-        resultsObj.push_back(
-                packErrorRetStatus(mne.getAlias(), "Masternode signing error, could not set key correctly."));
-        return false;
-    }
-
-    return voteProposal(pubKeyMasternode, keyMasternode, mne.getAlias(), propHash, nVote, resultsObj);
-}
-
-UniValue packVoteReturnValue(const UniValue& details, int success, int failed)
-{
-    UniValue returnObj(UniValue::VOBJ);
-    returnObj.pushKV("overall", strprintf("Voted successfully %d time(s) and failed %d time(s).", success, failed));
-    returnObj.pushKV("detail", details);
-    return returnObj;
-}
-
-UniValue mnBudgetVoteInner(Optional<std::string> mnAliasFilter, const uint256& propHash,
-                           const CBudgetVote::VoteDirection& nVote)
-{
-    UniValue resultsObj(UniValue::VARR);
-    int success = 0;
-    int failed = 0;
-    for (const CMasternodeConfig::CMasternodeEntry& mne : masternodeConfig.getEntries()) {
-        if (mnAliasFilter && *mnAliasFilter != mne.getAlias()) continue;
-        if (!voteProposalMasternodeEntry(mne, propHash, nVote, resultsObj)) {
-            failed++;
-        } else {
-            success++;
-        }
-    }
-    return packVoteReturnValue(resultsObj, success, failed);
-}
-
-UniValue mnLocalBudgetVoteInner(const uint256& propHash, const CBudgetVote::VoteDirection& nVote)
-{
-    // local node must be a masternode
-    if (!fMasterNode)
-        throw JSONRPCError(RPC_MISC_ERROR, _("This is not a masternode. 'local' option disabled."));
-
-    if (activeMasternode.vin == nullopt)
-        throw JSONRPCError(RPC_MISC_ERROR, _("Active Masternode not initialized."));
-
-    UniValue returnObj(UniValue::VOBJ);
-    UniValue resultsObj(UniValue::VARR);
-    // Get MN keys
-    CPubKey pubKeyMasternode;
-    CKey keyMasternode;
-    activeMasternode.GetKeys(keyMasternode, pubKeyMasternode);
-    bool ret = voteProposal(pubKeyMasternode, keyMasternode, "local", propHash, nVote, resultsObj);
-    return packVoteReturnValue(resultsObj, ret, !ret);
-}
-
-CBudgetVote::VoteDirection parseVote(const std::string& strVote)
+static CBudgetVote::VoteDirection parseVote(const std::string& strVote)
 {
     if (strVote != "yes" && strVote != "no") throw JSONRPCError(RPC_MISC_ERROR, "You can only vote 'yes' or 'no'");
     CBudgetVote::VoteDirection nVote = CBudgetVote::VOTE_ABSTAIN;
@@ -335,17 +242,21 @@ UniValue mnbudgetvote(const JSONRPCRequest& request)
         if (strCommand == "vote-alias") strCommand = "alias";
     }
 
+    CWallet * const pwallet = GetWalletForJSONRPCRequest(request);
+
     if (request.fHelp || (request.params.size() == 3 && (strCommand != "local" && strCommand != "many")) || (request.params.size() == 4 && strCommand != "alias") ||
-        request.params.size() > 4 || request.params.size() < 3)
+        request.params.size() > 5 || request.params.size() < 3)
         throw std::runtime_error(
-            "mnbudgetvote \"local|many|alias\" \"votehash\" \"yes|no\" ( \"alias\" )\n"
+            "mnbudgetvote \"local|many|alias\" \"hash\" \"yes|no\" ( \"alias\" legacy )\n"
             "\nVote on a budget proposal\n"
+            "\nAfter V6 enforcement, the deterministic masternode system is used by default. Set the \"legacy\" parameter to true to vote with legacy masternodes."
 
             "\nArguments:\n"
             "1. \"mode\"      (string, required) The voting mode. 'local' for voting directly from a masternode, 'many' for voting with a MN controller and casting the same vote for each MN, 'alias' for voting with a MN controller and casting a vote for a single MN\n"
-            "2. \"votehash\"  (string, required) The vote hash for the proposal\n"
+            "2. \"hash\"      (string, required) The budget proposal hash\n"
             "3. \"votecast\"  (string, required) Your vote. 'yes' to vote for the proposal, 'no' to vote against\n"
-            "4. \"alias\"     (string, required for 'alias' mode) The MN alias to cast a vote for.\n"
+            "4. \"alias\"     (string, required for 'alias' mode) The MN alias to cast a vote for (for deterministic masternodes it's the hash of the proTx transaction).\n"
+            "5. \"legacy\"    (boolean, optional, default=false) Use the legacy masternode system after deterministic masternodes enforcement.\n"
 
             "\nResult:\n"
             "{\n"
@@ -361,20 +272,33 @@ UniValue mnbudgetvote(const JSONRPCRequest& request)
             "}\n"
 
             "\nExamples:\n" +
-            HelpExampleCli("mnbudgetvote", "\"local\" \"ed2f83cedee59a91406f5f47ec4d60bf5a7f9ee6293913c82976bd2d3a658041\" \"yes\"") +
-            HelpExampleRpc("mnbudgetvote", "\"local\" \"ed2f83cedee59a91406f5f47ec4d60bf5a7f9ee6293913c82976bd2d3a658041\" \"yes\""));
+            HelpExampleCli("mnbudgetvote", "\"alias\" \"ed2f83cedee59a91406f5f47ec4d60bf5a7f9ee6293913c82976bd2d3a658041\" \"yes\" \"4f9de28fca1f0574a217c5d3c59cc51125ec671de82a2f80b6ceb69673115041\"") +
+            HelpExampleRpc("mnbudgetvote", "\"alias\" \"ed2f83cedee59a91406f5f47ec4d60bf5a7f9ee6293913c82976bd2d3a658041\" \"yes\" \"4f9de28fca1f0574a217c5d3c59cc51125ec671de82a2f80b6ceb69673115041\""));
 
     const uint256& hash = ParseHashV(request.params[1], "parameter 1");
     CBudgetVote::VoteDirection nVote = parseVote(request.params[2].get_str());
 
+    bool fLegacyMN = !deterministicMNManager->IsDIP3Enforced() || (request.params.size() > 4 && request.params[4].get_bool());
+
     if (strCommand == "local") {
-        return mnLocalBudgetVoteInner(hash, nVote);
+        if (!fLegacyMN) {
+            throw JSONRPCError(RPC_MISC_ERROR, _("\"local\" vote is no longer available with DMNs. Use \"alias\" from the wallet with the voting key."));
+        }
+        return mnLocalBudgetVoteInner(true, hash, false, nVote);
+    }
+
+    // DMN require wallet with voting key
+    if (!fLegacyMN) {
+        if (!EnsureWalletIsAvailable(pwallet, false)) {
+            return NullUniValue;
+        }
+        EnsureWalletIsUnlocked(pwallet);
     }
 
     bool isAlias = false;
     if (strCommand == "many" || (isAlias = strCommand == "alias")) {
         Optional<std::string> mnAlias = isAlias ? Optional<std::string>(request.params[3].get_str()) : nullopt;
-        return mnBudgetVoteInner(mnAlias, hash, nVote);
+        return mnBudgetVoteInner(pwallet, fLegacyMN, hash, false, nVote, mnAlias);
     }
 
     return NullUniValue;
@@ -384,11 +308,11 @@ UniValue getbudgetvotes(const JSONRPCRequest& request)
 {
     if (request.params.size() != 1)
         throw std::runtime_error(
-            "getbudgetvotes \"proposal-name\"\n"
+            "getbudgetvotes \"name\"\n"
             "\nPrint vote information for a budget proposal\n"
 
             "\nArguments:\n"
-            "1. \"proposal-name\":      (string, required) Name of the proposal\n"
+            "1. \"name\":      (string, required) Name of the proposal\n"
 
             "\nResult:\n"
             "[\n"
@@ -452,18 +376,18 @@ UniValue getbudgetprojection(const JSONRPCRequest& request)
             "    \"BlockEnd\": n,                (numeric) Proposal ending block\n"
             "    \"TotalPaymentCount\": n,       (numeric) Number of payments\n"
             "    \"RemainingPaymentCount\": n,   (numeric) Number of remaining payments\n"
-            "    \"PaymentAddress\": \"xxxx\",     (string) DogeCash address of payment\n"
+            "    \"PaymentAddress\": \"xxxx\",     (string) PIVX address of payment\n"
             "    \"Ratio\": x.xxx,               (numeric) Ratio of yeas vs nays\n"
             "    \"Yeas\": n,                    (numeric) Number of yea votes\n"
             "    \"Nays\": n,                    (numeric) Number of nay votes\n"
             "    \"Abstains\": n,                (numeric) Number of abstains\n"
-            "    \"TotalPayment\": xxx.xxx,      (numeric) Total payment amount in DOGEC\n"
-            "    \"MonthlyPayment\": xxx.xxx,    (numeric) Monthly payment amount in DOGEC\n"
+            "    \"TotalPayment\": xxx.xxx,      (numeric) Total payment amount in PIV\n"
+            "    \"MonthlyPayment\": xxx.xxx,    (numeric) Monthly payment amount in PIV\n"
             "    \"IsEstablished\": true|false,  (boolean) Proposal is considered established, 24 hrs after being submitted to network. (Testnet is 5 mins)\n"
             "    \"IsValid\": true|false,        (boolean) Valid (true) or Invalid (false)\n"
             "    \"IsInvalidReason\": \"xxxx\",  (string) Error message, if any\n"
-            "    \"Allotted\": xxx.xxx,           (numeric) Amount of DOGEC allotted in current period\n"
-            "    \"TotalBudgetAllotted\": xxx.xxx (numeric) Total DOGEC allotted\n"
+            "    \"Allotted\": xxx.xxx,           (numeric) Amount of PIV allotted in current period\n"
+            "    \"TotalBudgetAllotted\": xxx.xxx (numeric) Total PIV allotted\n"
             "  }\n"
             "  ,...\n"
             "]\n"
@@ -491,11 +415,11 @@ UniValue getbudgetinfo(const JSONRPCRequest& request)
 {
     if (request.fHelp || request.params.size() > 1)
         throw std::runtime_error(
-            "getbudgetinfo ( \"proposal\" )\n"
+            "getbudgetinfo ( \"name\" )\n"
             "\nShow current masternode budgets\n"
 
             "\nArguments:\n"
-            "1. \"proposal\"    (string, optional) Proposal name\n"
+            "1. \"name\"    (string, optional) Proposal name\n"
 
             "\nResult:\n"
             "[\n"
@@ -508,13 +432,13 @@ UniValue getbudgetinfo(const JSONRPCRequest& request)
             "    \"BlockEnd\": n,                (numeric) Proposal ending block\n"
             "    \"TotalPaymentCount\": n,       (numeric) Number of payments\n"
             "    \"RemainingPaymentCount\": n,   (numeric) Number of remaining payments\n"
-            "    \"PaymentAddress\": \"xxxx\",     (string) DogeCash address of payment\n"
+            "    \"PaymentAddress\": \"xxxx\",     (string) PIVX address of payment\n"
             "    \"Ratio\": x.xxx,               (numeric) Ratio of yeas vs nays\n"
             "    \"Yeas\": n,                    (numeric) Number of yea votes\n"
             "    \"Nays\": n,                    (numeric) Number of nay votes\n"
             "    \"Abstains\": n,                (numeric) Number of abstains\n"
-            "    \"TotalPayment\": xxx.xxx,      (numeric) Total payment amount in DOGEC\n"
-            "    \"MonthlyPayment\": xxx.xxx,    (numeric) Monthly payment amount in DOGEC\n"
+            "    \"TotalPayment\": xxx.xxx,      (numeric) Total payment amount in PIV\n"
+            "    \"MonthlyPayment\": xxx.xxx,    (numeric) Monthly payment amount in PIV\n"
             "    \"IsEstablished\": true|false,  (boolean) Proposal is considered established, 24 hrs after being submitted to network. (5 mins for Testnet)\n"
             "    \"IsValid\": true|false,        (boolean) Valid (true) or Invalid (false)\n"
             "    \"IsInvalidReason\": \"xxxx\",      (string) Error message, if any\n"
@@ -538,7 +462,7 @@ UniValue getbudgetinfo(const JSONRPCRequest& request)
         return ret;
     }
 
-    std::vector<CBudgetProposal*> winningProps = g_budgetman.GetAllProposals();
+    std::vector<CBudgetProposal*> winningProps = g_budgetman.GetAllProposalsOrdered();
     for (CBudgetProposal* pbudgetProposal : winningProps) {
         if (!pbudgetProposal->IsValid()) continue;
 
@@ -554,16 +478,16 @@ UniValue mnbudgetrawvote(const JSONRPCRequest& request)
 {
     if (request.fHelp || request.params.size() != 6)
         throw std::runtime_error(
-            "mnbudgetrawvote \"masternode-tx-hash\" masternode-tx-index \"proposal-hash\" yes|no time \"vote-sig\"\n"
+            "mnbudgetrawvote \"collat_txid\" collat_vout \"hash\" votecast time \"sig\"\n"
             "\nCompile and relay a proposal vote with provided external signature instead of signing vote internally\n"
 
             "\nArguments:\n"
-            "1. \"masternode-tx-hash\"  (string, required) Transaction hash for the masternode\n"
-            "2. masternode-tx-index   (numeric, required) Output index for the masternode\n"
-            "3. \"proposal-hash\"       (string, required) Proposal vote hash\n"
-            "4. yes|no                (boolean, required) Vote to cast\n"
-            "5. time                  (numeric, required) Time since epoch in seconds\n"
-            "6. \"vote-sig\"            (string, required) External signature\n"
+            "1. \"collat_txid\"   (string, required) Transaction hash for the masternode collateral\n"
+            "2. collat_vout       (numeric, required) Output index for the masternode collateral\n"
+            "3. \"hash\"          (string, required) Budget Proposal hash\n"
+            "4. \"votecast\"      (string, required) Your vote. 'yes' to vote for the proposal, 'no' to vote against\n"
+            "5. time              (numeric, required) Time since epoch in seconds\n"
+            "6. \"sig\"           (string, required) External signature\n"
 
             "\nResult:\n"
             "\"status\"     (string) Vote status or error message\n"
@@ -596,9 +520,7 @@ UniValue mnbudgetrawvote(const JSONRPCRequest& request)
     vote.SetVchSig(vchSig);
 
     if (!vote.CheckSignature(pmn->pubKeyMasternode.GetID())) {
-        // try old message version
-        vote.nMessVersion = MessageVersion::MESS_VER_STRMESS;
-        if (!vote.CheckSignature(pmn->pubKeyMasternode.GetID())) return "Failure to verify signature.";
+        return "Failure to verify signature.";
     }
 
     std::string strError;
@@ -625,14 +547,103 @@ UniValue mnfinalbudgetsuggest(const JSONRPCRequest& request)
     return (budgetHash.IsNull()) ? NullUniValue : budgetHash.ToString();
 }
 
+UniValue createrawmnfinalbudget(const JSONRPCRequest& request)
+{
+    if (request.fHelp || request.params.size() > 4)
+        throw std::runtime_error(
+                "createrawmnfinalbudget\n"
+                "\nTry to submit the raw budget finalization\n"
+                "returns the budget hash if it was broadcasted sucessfully"
+                "\nArguments:\n"
+                "1. \"budgetname\"    (string, required) finalization name\n"
+                "2. \"blockstart\"    (numeric, required) superblock height\n"
+                "3. \"proposals\"     (string, required) A json array of json objects\n"
+                "     [\n"
+                "       {\n"
+                "         \"proposalid\":\"id\",  (string, required) The proposal id\n"
+                "         \"payee\":n,         (hex, required) The payee script\n"
+                "         \"amount\":n            (numeric, optional) The payee amount\n"
+                "       }\n"
+                "       ,...\n"
+                "     ]\n"
+                "4. \"feetxid\"    (string, optional) the transaction fee hash\n"
+                ""
+                "\nResult:\n"
+                "{\n"
+                    "\"result\"     (string) Budget suggest broadcast or error\n"
+                    "\"id\"         (string) id of the fee tx or the finalized budget\n"
+                "}\n"
+                ); // future: add examples.
+
+    if (!Params().IsRegTestNet()) {
+        throw JSONRPCError(RPC_MISC_ERROR, "command available only for RegTest network");
+    }
+
+    // future: add inputs error checking..
+    std::string budName = request.params[0].get_str();
+    int nBlockStart = request.params[1].get_int();
+    std::vector<CTxBudgetPayment> vecTxBudgetPayments;
+    UniValue budgetVec = request.params[2].get_array();
+    for (unsigned int idx = 0; idx < budgetVec.size(); idx++) {
+        const UniValue& prop = budgetVec[idx].get_obj();
+        uint256 propId = ParseHashO(prop, "proposalid");
+        std::vector<unsigned char> scriptData(ParseHexO(prop, "payee"));
+        CScript payee = CScript(scriptData.begin(), scriptData.end());
+        CAmount amount = AmountFromValue(find_value(prop, "amount"));
+        vecTxBudgetPayments.emplace_back(propId, payee, amount);
+    }
+
+    Optional<uint256> txFeeId = nullopt;
+    if (request.params.size() > 3) {
+        txFeeId = ParseHashV(request.params[3], "parameter 4");
+    }
+
+    if (!txFeeId) {
+        CFinalizedBudget tempBudget(budName, nBlockStart, vecTxBudgetPayments, UINT256_ZERO);
+        const uint256& budgetHash = tempBudget.GetHash();
+
+        // create fee tx
+        CTransactionRef wtx;
+        CReserveKey keyChange(vpwallets[0]);
+        if (!vpwallets[0]->CreateBudgetFeeTX(wtx, budgetHash, keyChange, BUDGET_FEE_TX)) {
+            throw std::runtime_error("Can't make collateral transaction");
+        }
+        // Send the tx to the network
+        const CWallet::CommitResult& res = vpwallets[0]->CommitTransaction(wtx, keyChange, g_connman.get());
+        UniValue ret(UniValue::VOBJ);
+        if (res.status == CWallet::CommitStatus::OK) {
+            ret.pushKV("result", "tx_fee_sent");
+            ret.pushKV("id", wtx->GetHash().ToString());
+        } else {
+            ret.pushKV("result", "error");
+        }
+        return ret;
+    }
+
+    UniValue ret(UniValue::VOBJ);
+    // Collateral tx already exists, see if it's mature enough.
+    CFinalizedBudget fb(budName, nBlockStart, vecTxBudgetPayments, *txFeeId);
+    if (g_budgetman.AddFinalizedBudget(fb)) {
+        fb.Relay();
+        ret.pushKV("result", "fin_budget_sent");
+        ret.pushKV("id", fb.GetHash().ToString());
+    } else {
+        // future: add proper error
+        ret.pushKV("result", "error");
+    }
+    return ret;
+}
+
 UniValue mnfinalbudget(const JSONRPCRequest& request)
 {
     std::string strCommand;
     if (request.params.size() >= 1)
         strCommand = request.params[0].get_str();
 
+    CWallet * const pwallet = GetWalletForJSONRPCRequest(request);
+
     if (request.fHelp ||
-        (strCommand != "suggest" && strCommand != "vote-many" && strCommand != "vote" && strCommand != "show" && strCommand != "getvotes"))
+        (strCommand != "vote-many" && strCommand != "vote" && strCommand != "show" && strCommand != "getvotes"))
         throw std::runtime_error(
             "mnfinalbudget \"command\"... ( \"passphrase\" )\n"
             "\nVote or show current budgets\n"
@@ -643,111 +654,20 @@ UniValue mnfinalbudget(const JSONRPCRequest& request)
             "  show        - Show existing finalized budgets\n"
             "  getvotes     - Get vote information for each finalized budget\n");
 
-    if (strCommand == "vote-many") {
-        if (request.params.size() != 2)
-            throw std::runtime_error("Correct usage is 'mnfinalbudget vote-many BUDGET_HASH'");
+    if (strCommand == "vote-many" || strCommand == "vote") {
+        if (request.params.size() < 2 || request.params.size() > 3) {
+            throw std::runtime_error(strprintf("Correct usage is 'mnfinalbudget %s BUDGET_HASH (fLegacy)'", strCommand));
+        }
+        const uint256& hash = ParseHashV(request.params[1], "BUDGET_HASH");
+        bool fLegacyMN = !deterministicMNManager->IsDIP3Enforced() || (request.params.size() > 2 && request.params[2].get_bool());
 
-        std::string strHash = request.params[1].get_str();
-        uint256 hash(uint256S(strHash));
-
-        int success = 0;
-        int failed = 0;
-
-        UniValue resultsObj(UniValue::VOBJ);
-
-        for (CMasternodeConfig::CMasternodeEntry mne : masternodeConfig.getEntries()) {
-            std::vector<unsigned char> vchMasterNodeSignature;
-            std::string strMasterNodeSignMessage;
-
-            CPubKey pubKeyCollateralAddress;
-            CKey keyCollateralAddress;
-            CPubKey pubKeyMasternode;
-            CKey keyMasternode;
-
-            UniValue statusObj(UniValue::VOBJ);
-
-            if (!CMessageSigner::GetKeysFromSecret(mne.getPrivKey(), keyMasternode, pubKeyMasternode)) {
-                failed++;
-                statusObj.pushKV("result", "failed");
-                statusObj.pushKV("errorMessage", "Masternode signing error, could not set key correctly.");
-                resultsObj.pushKV(mne.getAlias(), statusObj);
-                continue;
-            }
-
-            CMasternode* pmn = mnodeman.Find(pubKeyMasternode);
-            if (pmn == NULL) {
-                failed++;
-                statusObj.pushKV("result", "failed");
-                statusObj.pushKV("errorMessage", "Can't find masternode by pubkey");
-                resultsObj.pushKV(mne.getAlias(), statusObj);
-                continue;
-            }
-
-
-            CFinalizedBudgetVote vote(pmn->vin, hash);
-            if (!vote.Sign(keyMasternode, pubKeyMasternode.GetID())) {
-                failed++;
-                statusObj.pushKV("result", "failed");
-                statusObj.pushKV("errorMessage", "Failure to sign.");
-                resultsObj.pushKV(mne.getAlias(), statusObj);
-                continue;
-            }
-
-            std::string strError = "";
-            if (g_budgetman.UpdateFinalizedBudget(vote, NULL, strError)) {
-                g_budgetman.AddSeenFinalizedBudgetVote(vote);
-                vote.Relay();
-                success++;
-                statusObj.pushKV("result", "success");
-            } else {
-                failed++;
-                statusObj.pushKV("result", strError.c_str());
-            }
-
-            resultsObj.pushKV(mne.getAlias(), statusObj);
+        // DMN require wallet with operator keys for vote-many
+        if (!fLegacyMN && strCommand == "vote-many" && !EnsureWalletIsAvailable(pwallet, false)) {
+            return NullUniValue;
         }
 
-        UniValue returnObj(UniValue::VOBJ);
-        returnObj.pushKV("overall", strprintf("Voted successfully %d time(s) and failed %d time(s).", success, failed));
-        returnObj.pushKV("detail", resultsObj);
-
-        return returnObj;
-    }
-
-    if (strCommand == "vote") {
-        if (!fMasterNode)
-            throw JSONRPCError(RPC_MISC_ERROR, _("This is not a masternode. 'local' option disabled."));
-
-        if (activeMasternode.vin == nullopt)
-            throw JSONRPCError(RPC_MISC_ERROR, _("Active Masternode not initialized."));
-
-        if (request.params.size() != 2)
-            throw std::runtime_error("Correct usage is 'mnfinalbudget vote BUDGET_HASH'");
-
-        std::string strHash = request.params[1].get_str();
-        uint256 hash(uint256S(strHash));
-
-        CPubKey pubKeyMasternode; CKey keyMasternode;
-        activeMasternode.GetKeys(keyMasternode, pubKeyMasternode);
-
-        CMasternode* pmn = mnodeman.Find(activeMasternode.vin->prevout);
-        if (pmn == NULL) {
-            return "Failure to find masternode in list : " + activeMasternode.vin->ToString();
-        }
-
-        CFinalizedBudgetVote vote(*(activeMasternode.vin), hash);
-        if (!vote.Sign(keyMasternode, pubKeyMasternode.GetID())) {
-            return "Failure to sign.";
-        }
-
-        std::string strError = "";
-        if (g_budgetman.UpdateFinalizedBudget(vote, NULL, strError)) {
-            g_budgetman.AddSeenFinalizedBudgetVote(vote);
-            vote.Relay();
-            return "success";
-        } else {
-            return "Error voting : " + strError;
-        }
+        return (strCommand == "vote-many" ? mnBudgetVoteInner(pwallet, fLegacyMN, hash, true, CBudgetVote::VOTE_YES, nullopt)
+                                          : mnLocalBudgetVoteInner(fLegacyMN, hash, true, CBudgetVote::VOTE_YES));
     }
 
     if (strCommand == "show") {
@@ -801,29 +721,55 @@ UniValue checkbudgets(const JSONRPCRequest& request)
             "\nExamples:\n" +
             HelpExampleCli("checkbudgets", "") + HelpExampleRpc("checkbudgets", ""));
 
-    if (!masternodeSync.IsSynced())
+    if (!g_tiertwo_sync_state.IsSynced())
         throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "Masternode/Budget sync not finished yet");
 
     g_budgetman.CheckAndRemove();
     return NullUniValue;
 }
 
+UniValue cleanbudget(const JSONRPCRequest& request)
+{
+    if (request.fHelp || request.params.size() > 1)
+        throw std::runtime_error(
+                "cleanbudget ( try_sync )\n"
+                "\nCleans the budget data manually\n"
+                "\nArguments:\n"
+                "1. try_sync          (boolean, optional, default=false) resets tier two sync to a pre-budget data request\n"
+                "\nExamples:\n" +
+                HelpExampleCli("cleanbudget", "") + HelpExampleRpc("cleanbudget", ""));
+
+    g_budgetman.Clear();
+    LogPrintf("Budget data cleaned\n");
+
+    // reset sync if requested
+    bool reset = request.params.size() > 0 ? request.params[0].get_bool() : false;
+    if (reset) {
+        masternodeSync.ClearFulfilledRequest();
+        masternodeSync.Reset();
+        LogPrintf("Masternode sync restarted\n");
+    }
+    return NullUniValue;
+}
+
 static const CRPCCommand commands[] =
-{ //  category              name                      actor (function)         okSafeMode
-  //  --------------------- ------------------------  -----------------------  ----------
-    { "budget",             "preparebudget",          &preparebudget,          true  },
-    { "budget",             "submitbudget",           &submitbudget,           true  },
-    { "budget",             "mnbudgetvote",           &mnbudgetvote,           true  },
-    { "budget",             "getbudgetvotes",         &getbudgetvotes,         true  },
-    { "budget",             "getnextsuperblock",      &getnextsuperblock,      true  },
-    { "budget",             "getbudgetprojection",    &getbudgetprojection,    true  },
-    { "budget",             "getbudgetinfo",          &getbudgetinfo,          true  },
-    { "budget",             "mnbudgetrawvote",        &mnbudgetrawvote,        true  },
-    { "budget",             "mnfinalbudget",          &mnfinalbudget,          true  },
-    { "budget",             "checkbudgets",           &checkbudgets,           true  },
+{ //  category              name                      actor (function)         okSafe argNames
+  //  --------------------- ------------------------  -----------------------  ------ --------
+    { "budget",             "checkbudgets",           &checkbudgets,           true,  {} },
+    { "budget",             "getbudgetinfo",          &getbudgetinfo,          true,  {"name"} },
+    { "budget",             "getbudgetprojection",    &getbudgetprojection,    true,  {} },
+    { "budget",             "getbudgetvotes",         &getbudgetvotes,         true,  {"name"} },
+    { "budget",             "getnextsuperblock",      &getnextsuperblock,      true,  {} },
+    { "budget",             "mnbudgetrawvote",        &mnbudgetrawvote,        true,  {"collat_txid","collat_vout","hash","votecast","time","sig"} },
+    { "budget",             "mnbudgetvote",           &mnbudgetvote,           true,  {"mode","hash","votecast","alias","legacy"} },
+    { "budget",             "mnfinalbudget",          &mnfinalbudget,          true,  {"command"} },
+    { "budget",             "preparebudget",          &preparebudget,          true,  {"name","url","npayments","start","address","monthly_payment"} },
+    { "budget",             "submitbudget",           &submitbudget,           true,  {"name","url","npayments","start","address","monthly_payment","fee_txid"}  },
 
     /* Not shown in help */
-    { "hidden",             "mnfinalbudgetsuggest",   &mnfinalbudgetsuggest,   true  },
+    { "hidden",             "mnfinalbudgetsuggest",   &mnfinalbudgetsuggest,   true,  {} },
+    { "hidden",             "createrawmnfinalbudget", &createrawmnfinalbudget, true,  {"budgetname", "blockstart", "proposals", "feetxid"} },
+    { "hidden",             "cleanbudget",            &cleanbudget,            true,  {"try_sync"} },
 
 };
 

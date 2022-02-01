@@ -1,7 +1,5 @@
-// Copyright (c) 2016 The Bitcoin Core developers
-// Copyright (c) 2020 The PIVX Developers
-// Copyright (c) 2020 The DogeCash Developers
-
+// Copyright (c) 2016-2021 The Bitcoin Core developers
+// Copyright (c) 2020-2021 The PIVX developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -9,33 +7,25 @@
 
 #include "rpc/server.h"
 #include "wallet/db.h"
-#include "wallet/wallet.h"
 #include "wallet/rpcwallet.h"
+#include "wallet/wallet.h"
 
-void clean()
+WalletTestingSetupBase::WalletTestingSetupBase(const std::string& chainName,
+                                               const std::string& wallet_name,
+                                               std::unique_ptr<WalletDatabase> db) :
+        SaplingTestingSetup(chainName), m_wallet(wallet_name, std::move(db))
 {
-    delete pwalletMain;
-    pwalletMain = nullptr;
-
-    bitdb.Flush(true);
-    bitdb.Reset();
-}
-
-WalletTestingSetup::WalletTestingSetup(): SaplingTestingSetup()
-{
-    clean(); // todo: research why we have an initialized bitdb here.
-    bitdb.MakeMock();
-    RegisterWalletRPCCommands(tableRPC);
-
     bool fFirstRun;
-    std::unique_ptr<CWalletDBWrapper> dbw(new CWalletDBWrapper(&bitdb, "wallet_test.dat"));
-    pwalletMain = new CWallet(std::move(dbw));
-    pwalletMain->LoadWallet(fFirstRun);
-    RegisterValidationInterface(pwalletMain);
+    m_wallet.LoadWallet(fFirstRun);
+    RegisterValidationInterface(&m_wallet);
+
+    RegisterWalletRPCCommands(tableRPC);
 }
 
-WalletTestingSetup::~WalletTestingSetup()
+WalletTestingSetupBase::~WalletTestingSetupBase()
 {
-    UnregisterValidationInterface(pwalletMain);
-    clean();
+    UnregisterValidationInterface(&m_wallet);
 }
+
+WalletTestingSetup::WalletTestingSetup(const std::string& chainName) :
+        WalletTestingSetupBase(chainName, "mock", WalletDatabase::CreateMock()) {}

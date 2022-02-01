@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef DOGEC_SCRIPT_KEYORIGIN_H
-#define DOGEC_SCRIPT_KEYORIGIN_H
+#ifndef PIVX_SCRIPT_KEYORIGIN_H
+#define PIVX_SCRIPT_KEYORIGIN_H
 
 #include <serialize.h>
 #include <vector>
@@ -18,13 +18,7 @@ struct KeyOriginInfo
         return std::equal(std::begin(a.fingerprint), std::end(a.fingerprint), std::begin(b.fingerprint)) && a.path == b.path;
     }
 
-    ADD_SERIALIZE_METHODS;
-    template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action)
-    {
-        READWRITE(FLATDATA(fingerprint));
-        READWRITE(path);
-    }
+    SERIALIZE_METHODS(KeyOriginInfo, obj) { READWRITE(obj.fingerprint, obj.path); }
 
     void clear()
     {
@@ -52,4 +46,4 @@ struct KeyOriginInfo
     }
 };
 
-#endif // DOGEC_SCRIPT_KEYORIGIN_H
+#endif // PIVX_SCRIPT_KEYORIGIN_H

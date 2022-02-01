@@ -1,17 +1,15 @@
 // Copyright (c) 2012-2013 The Bitcoin Core developers
 // Copyright (c) 2017-2019 The PIVX developers
-// Copyright (c) 2020 The DogeCash Developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "rpc/server.h"
 #include "rpc/client.h"
 
-#include "base58.h"
 #include "netbase.h"
-#include "util.h"
+#include "util/system.h"
 
-#include "test/test_dogecash.h"
+#include "test/test_pivx.h"
 
 #include <boost/algorithm/string.hpp>
 #include <boost/test/unit_test.hpp>
@@ -94,6 +92,28 @@ BOOST_AUTO_TEST_CASE(rpc_rawparams)
     BOOST_CHECK_THROW(CallRPC("sendrawtransaction null"), std::runtime_error);
     BOOST_CHECK_THROW(CallRPC("sendrawtransaction DEADBEEF"), std::runtime_error);
     BOOST_CHECK_THROW(CallRPC(std::string("sendrawtransaction ")+rawtx+" extra"), std::runtime_error);
+}
+
+BOOST_AUTO_TEST_CASE(rpc_togglenetwork)
+{
+    UniValue r;
+
+    r = CallRPC("getnetworkinfo");
+    bool netState = find_value(r.get_obj(), "networkactive").get_bool();
+    BOOST_CHECK_EQUAL(netState, true);
+
+    BOOST_CHECK_NO_THROW(CallRPC("setnetworkactive false"));
+    r = CallRPC("getnetworkinfo");
+    int numConnection = find_value(r.get_obj(), "connections").get_int();
+    BOOST_CHECK_EQUAL(numConnection, 0);
+
+    netState = find_value(r.get_obj(), "networkactive").get_bool();
+    BOOST_CHECK_EQUAL(netState, false);
+
+    BOOST_CHECK_NO_THROW(CallRPC("setnetworkactive true"));
+    r = CallRPC("getnetworkinfo");
+    netState = find_value(r.get_obj(), "networkactive").get_bool();
+    BOOST_CHECK_EQUAL(netState, true);
 }
 
 BOOST_AUTO_TEST_CASE(rpc_rawsign)

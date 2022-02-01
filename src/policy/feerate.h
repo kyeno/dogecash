@@ -1,12 +1,10 @@
 // Copyright (c) 2009-2017 The Bitcoin Core developers
-// Copyright (c) 2017-2020 The PIVX Developers
-// Copyright (c) 2020 The DogeCash Developers
-
+// Copyright (c) 2017-2020 The PIVX developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef DOGEC_POLICY_FEERATE_H
-#define DOGEC_POLICY_FEERATE_H
+#ifndef PIVX_POLICY_FEERATE_H
+#define PIVX_POLICY_FEERATE_H
 
 #include "amount.h"
 #include "serialize.h"
@@ -16,7 +14,7 @@
 extern const std::string CURRENCY_UNIT;
 
 /**
- * Fee rate in DOGEC per kilobyte: CAmount / kB
+ * Fee rate in PIV per kilobyte: CAmount / kB
  */
 class CFeeRate
 {
@@ -38,13 +36,7 @@ public:
     CFeeRate& operator+=(const CFeeRate& a) { nSatoshisPerK += a.nSatoshisPerK; return *this; }
     std::string ToString() const;
 
-    ADD_SERIALIZE_METHODS;
-
-    template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action)
-    {
-        READWRITE(nSatoshisPerK);
-    }
+    SERIALIZE_METHODS(CFeeRate, obj) { READWRITE(obj.nSatoshisPerK); }
 };
 
-#endif //  DOGEC_POLICY_FEERATE_H
+#endif //  PIVX_POLICY_FEERATE_H

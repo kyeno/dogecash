@@ -1,6 +1,5 @@
 // Copyright (c) 2012-2014 The Bitcoin developers
 // Copyright (c) 2017-2019 The PIVX developers
-// Copyright (c) 2020 The DogeCash Developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -34,11 +33,11 @@ enum bloomflags {
 /**
  * BloomFilter is a probabilistic filter which SPV clients provide
  * so that we can filter the transactions we sends them.
- * 
+ *
  * This allows for significantly more efficient transaction and block downloads.
- * 
+ *
  * Because bloom filters are probabilistic, an SPV node can increase the false-
- * positive rate, making us send them transactions which aren't actually theirs, 
+ * positive rate, making us send them transactions which aren't actually theirs,
  * allowing clients to trade more bandwidth for more privacy by obfuscating which
  * keys are owned by them.
  */
@@ -67,16 +66,7 @@ public:
     CBloomFilter(unsigned int nElements, double nFPRate, unsigned int nTweak, unsigned char nFlagsIn);
     CBloomFilter() : isFull(true), isEmpty(false), nHashFuncs(0), nTweak(0), nFlags(0) {}
 
-    ADD_SERIALIZE_METHODS;
-
-    template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action)
-    {
-        READWRITE(vData);
-        READWRITE(nHashFuncs);
-        READWRITE(nTweak);
-        READWRITE(nFlags);
-    }
+    SERIALIZE_METHODS(CBloomFilter, obj) { READWRITE(obj.vData, obj.nHashFuncs, obj.nTweak, obj.nFlags); }
 
     void insert(const std::vector<unsigned char>& vKey);
     void insert(const COutPoint& outpoint);

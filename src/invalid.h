@@ -1,13 +1,9 @@
-// Copyright (c) 2018 The PIVX Developers
-// Copyright (c) 2020 The PIVX Developers
-// Copyright (c) 2020 The DogeCash Developers
-
-
+// Copyright (c) 2018 The PIVX developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef DOGEC_INVALID_H
-#define DOGEC_INVALID_H
+#ifndef PIVX_INVALID_H
+#define PIVX_INVALID_H
 
 #include <set>
 #include <string>
@@ -25,4 +21,4 @@ namespace invalid_out
     bool LoadOutpoints();
 }
 
-#endif //DOGEC_INVALID_H
+#endif //PIVX_INVALID_H

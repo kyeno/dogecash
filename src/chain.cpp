@@ -1,8 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin developers
-// Copyright (c) 2017-2020 The PIVX Developers
-// Copyright (c) 2020 The DogeCash Developers
-
+// Copyright (c) 2016-2020 The PIVX developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -66,6 +64,13 @@ const CBlockIndex* CChain::FindFork(const CBlockIndex* pindex) const
     return pindex;
 }
 
+CBlockIndex* CChain::FindEarliestAtLeast(int64_t nTime) const
+{
+    std::vector<CBlockIndex*>::const_iterator lower = std::lower_bound(vChain.begin(), vChain.end(), nTime,
+        [](CBlockIndex* pBlock, const int64_t& time) -> bool { return pBlock->GetBlockTimeMax() < time; });
+    return (lower == vChain.end() ? nullptr : *lower);
+}
+
 /** Turn the lowest '1' bit in the binary representation of a number into a '0'. */
 int static inline InvertLowestOne(int n) { return n & (n - 1); }
 
@@ -80,12 +85,13 @@ int static inline GetSkipHeight(int height)
     return (height & 1) ? InvertLowestOne(InvertLowestOne(height - 1)) + 1 : InvertLowestOne(height);
 }
 
-CBlockIndex* CBlockIndex::GetAncestor(int height)
+const CBlockIndex* CBlockIndex::GetAncestor(int height) const
 {
-    if (height > nHeight || height < 0)
-        return NULL;
+    if (height > nHeight || height < 0) {
+        return nullptr;
+    }
 
-    CBlockIndex* pindexWalk = this;
+    const CBlockIndex* pindexWalk = this;
     int heightWalk = nHeight;
     while (heightWalk > height) {
         int heightSkip = GetSkipHeight(heightWalk);
@@ -96,6 +102,7 @@ CBlockIndex* CBlockIndex::GetAncestor(int height)
             pindexWalk = pindexWalk->pskip;
             heightWalk = heightSkip;
         } else {
+            assert(pindexWalk->pprev);
             pindexWalk = pindexWalk->pprev;
             heightWalk--;
         }
@@ -103,9 +110,9 @@ CBlockIndex* CBlockIndex::GetAncestor(int height)
     return pindexWalk;
 }
 
-const CBlockIndex* CBlockIndex::GetAncestor(int height) const
+CBlockIndex* CBlockIndex::GetAncestor(int height)
 {
-    return const_cast<CBlockIndex*>(this)->GetAncestor(height);
+    return const_cast<CBlockIndex*>(static_cast<const CBlockIndex*>(this)->GetAncestor(height));
 }
 
 void CBlockIndex::BuildSkip()
@@ -136,9 +143,9 @@ std::string CBlockIndex::ToString() const
         GetBlockHash().ToString());
 }
 
-CDiskBlockPos CBlockIndex::GetBlockPos() const
+FlatFilePos CBlockIndex::GetBlockPos() const
 {
-    CDiskBlockPos ret;
+    FlatFilePos ret;
     if (nStatus & BLOCK_HAVE_DATA) {
         ret.nFile = nFile;
         ret.nPos = nDataPos;
@@ -146,9 +153,9 @@ CDiskBlockPos CBlockIndex::GetBlockPos() const
     return ret;
 }
 
-CDiskBlockPos CBlockIndex::GetUndoPos() const
+FlatFilePos CBlockIndex::GetUndoPos() const
 {
-    CDiskBlockPos ret;
+    FlatFilePos ret;
     if (nStatus & BLOCK_HAVE_UNDO) {
         ret.nFile = nFile;
         ret.nPos = nUndoPos;
@@ -184,7 +191,7 @@ int64_t CBlockIndex::MinPastBlockTime() const
 
     // on the transition from Time Protocol v1 to v2
     // pindexPrev->nTime might be in the future (up to the allowed drift)
-    // so we allow the nBlockTimeProtocolV2 (DogeCash v4.0) to be at most (180-14) seconds earlier than previous block
+    // so we allow the nBlockTimeProtocolV2 (PIVX v4.0) to be at most (180-14) seconds earlier than previous block
     if (nHeight + 1 == consensus.vUpgrades[Consensus::UPGRADE_V4_0].nActivationHeight)
         return GetBlockTime() - consensus.FutureBlockTimeDrift(nHeight) + consensus.FutureBlockTimeDrift(nHeight + 1);
 
@@ -211,9 +218,6 @@ int64_t CBlockIndex::GetMedianTimePast() const
 unsigned int CBlockIndex::GetStakeEntropyBit() const
 {
     unsigned int nEntropyBit = ((GetBlockHash().GetCheapHash()) & 1);
-    if (gArgs.GetBoolArg("-printstakemodifier", false))
-        LogPrintf("GetStakeEntropyBit: nHeight=%u hashBlock=%s nEntropyBit=%u\n", nHeight, GetBlockHash().ToString().c_str(), nEntropyBit);
-
     return nEntropyBit;
 }
 

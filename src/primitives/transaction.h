@@ -1,8 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin developers
-// Copyright (c) 2017-2020 The PIVX Developers
-// Copyright (c) 2020 The DogeCash Developers
-
+// Copyright (c) 2015-2021 The PIVX developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or https://www.opensource.org/licenses/mit-license.php.
 
@@ -41,13 +39,7 @@ public:
     BaseOutPoint(const uint256& hashIn, const uint32_t nIn, bool isTransparentIn = true) :
         hash(hashIn), n(nIn), isTransparent(isTransparentIn) { }
 
-    ADD_SERIALIZE_METHODS;
-
-    template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action) {
-        READWRITE(hash);
-        READWRITE(n);
-    }
+    SERIALIZE_METHODS(BaseOutPoint, obj) { READWRITE(obj.hash, obj.n); }
 
     void SetNull() { hash.SetNull(); n = (uint32_t) -1; }
     bool IsNull() const { return (hash.IsNull() && n == (uint32_t) -1); }
@@ -104,20 +96,17 @@ public:
     CScript scriptSig;
     uint32_t nSequence;
 
-    CTxIn() { nSequence = std::numeric_limits<unsigned int>::max(); }
-    explicit CTxIn(COutPoint prevoutIn, CScript scriptSigIn=CScript(), uint32_t nSequenceIn=std::numeric_limits<unsigned int>::max());
-    CTxIn(uint256 hashPrevTx, uint32_t nOut, CScript scriptSigIn=CScript(), uint32_t nSequenceIn=std::numeric_limits<uint32_t>::max());
+    /* Setting nSequence to this value for every input in a transaction
+     * disables nLockTime. */
+    static const uint32_t SEQUENCE_FINAL = 0xffffffff;
 
-    ADD_SERIALIZE_METHODS;
+    CTxIn() { nSequence = SEQUENCE_FINAL; }
+    explicit CTxIn(COutPoint prevoutIn, CScript scriptSigIn=CScript(), uint32_t nSequenceIn=SEQUENCE_FINAL);
+    CTxIn(uint256 hashPrevTx, uint32_t nOut, CScript scriptSigIn=CScript(), uint32_t nSequenceIn=SEQUENCE_FINAL);
 
-    template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action) {
-        READWRITE(prevout);
-        READWRITE(scriptSig);
-        READWRITE(nSequence);
-    }
+    SERIALIZE_METHODS(CTxIn, obj) { READWRITE(obj.prevout, obj.scriptSig, obj.nSequence); }
 
-    bool IsFinal() const { return nSequence == std::numeric_limits<uint32_t>::max(); }
+    bool IsFinal() const { return nSequence == SEQUENCE_FINAL; }
     bool IsNull() const { return prevout.IsNull() && scriptSig.empty() && IsFinal(); }
 
     bool IsZerocoinSpend() const;
@@ -157,13 +146,7 @@ public:
 
     CTxOut(const CAmount& nValueIn, CScript scriptPubKeyIn);
 
-    ADD_SERIALIZE_METHODS;
-
-    template <typename Stream, typename Operation>
-    inline void SerializationOp(Stream& s, Operation ser_action) {
-        READWRITE(nValue);
-        READWRITE(scriptPubKey);
-    }
+    SERIALIZE_METHODS(CTxOut, obj) { READWRITE(obj.nValue, obj.scriptPubKey); }
 
     void SetNull()
     {
@@ -189,7 +172,6 @@ public:
     }
 
     uint256 GetHash() const;
-    bool GetKeyIDFromUTXO(CKeyID& keyIDRet) const;
 
     bool IsZerocoinMint() const;
 
@@ -270,6 +252,11 @@ public:
     /** Transaction types */
     enum TxType: int16_t {
         NORMAL = 0,
+        PROREG = 1,
+        PROUPSERV = 2,
+        PROUPREG = 3,
+        PROUPREV = 4,
+        LLMQCOMM = 5,
     };
 
     static const int16_t CURRENT_VERSION = TxVersion::LEGACY;
@@ -279,10 +266,10 @@ public:
     // actually immutable; deserialization and assignment are implemented,
     // and bypass the constness. This is safe, as they update the entire
     // structure, including the hash.
-    const int16_t nVersion;
-    const int16_t nType;
     std::vector<CTxIn> vin;
     std::vector<CTxOut> vout;
+    const int16_t nVersion;
+    const int16_t nType;
     const uint32_t nLockTime;
     Optional<SaplingTxData> sapData{SaplingTxData()}; // Future: Don't initialize it by default
     Optional<std::vector<uint8_t>> extraPayload{nullopt};     // only available for special transaction types
@@ -345,6 +332,16 @@ public:
 
     bool IsNormalType() const { return nType == TxType::NORMAL; }
 
+    bool IsProRegTx() const
+    {
+        return IsSpecialTx() && nType == TxType::PROREG;
+    }
+
+    bool IsQuorumCommitmentTx() const
+    {
+        return IsSpecialTx() && nType == TxType::LLMQCOMM;
+    }
+
     // Ensure that special and sapling fields are signed
     SigVersion GetRequiredSigVersion() const
     {
@@ -366,14 +363,7 @@ public:
     // Return sum of (positive valueBalance or zero) and JoinSplit vpub_new
     CAmount GetShieldedValueIn() const;
 
-    // Compute priority, given priority of inputs and (optionally) tx size
-    double ComputePriority(double dPriorityInputs, unsigned int nTxSize=0) const;
-
-    // Compute modified tx size for priority calculation (optionally given tx size)
-    unsigned int CalculateModifiedSize(unsigned int nTxSize=0) const;
-
     bool HasZerocoinSpendInputs() const;
-    bool HasZerocoinPublicSpendInputs() const;
 
     bool HasZerocoinMintOutputs() const;
 
@@ -382,11 +372,9 @@ public:
         return HasZerocoinSpendInputs() || HasZerocoinMintOutputs();
     }
 
-    CAmount GetZerocoinSpent() const;
-
     bool IsCoinBase() const
     {
-        return (vin.size() == 1 && vin[0].prevout.IsNull() && !ContainsZerocoins());
+        return (vin.size() == 1 && vin[0].prevout.IsNull() && !vin[0].scriptSig.IsZerocoinSpend());
     }
 
     bool IsCoinStake() const;
@@ -417,10 +405,10 @@ private:
 /** A mutable version of CTransaction. */
 struct CMutableTransaction
 {
-    int16_t nVersion;
-    int16_t nType;
     std::vector<CTxIn> vin;
     std::vector<CTxOut> vout;
+    int16_t nVersion;
+    int16_t nType;
     uint32_t nLockTime;
     Optional<SaplingTxData> sapData{SaplingTxData()}; // Future: Don't initialize it by default
     Optional<std::vector<uint8_t>> extraPayload{nullopt};
@@ -451,6 +439,11 @@ struct CMutableTransaction
      */
     uint256 GetHash() const;
 
+    bool hasExtraPayload() const
+    {
+        return extraPayload != nullopt && !extraPayload->empty();
+    }
+
     // Ensure that special and sapling fields are signed
     SigVersion GetRequiredSigVersion() const
     {
@@ -463,5 +456,36 @@ static inline CTransactionRef MakeTransactionRef() { return std::make_shared<con
 template <typename Tx> static inline CTransactionRef MakeTransactionRef(Tx&& txIn) { return std::make_shared<const CTransaction>(std::forward<Tx>(txIn)); }
 static inline CTransactionRef MakeTransactionRef(const CTransactionRef& txIn) { return txIn; }
 static inline CTransactionRef MakeTransactionRef(CTransactionRef&& txIn) { return std::move(txIn); }
+
+/* Special tx payload handling */
+template <typename T>
+inline bool GetTxPayload(const std::vector<unsigned char>& payload, T& obj)
+{
+    CDataStream ds(payload, SER_NETWORK, PROTOCOL_VERSION);
+    try {
+        ds >> obj;
+    } catch (std::exception& e) {
+        return false;
+    }
+    return ds.empty();
+}
+template <typename T>
+inline bool GetTxPayload(const CMutableTransaction& tx, T& obj)
+{
+    return tx.hasExtraPayload() && GetTxPayload(*tx.extraPayload, obj);
+}
+template <typename T>
+inline bool GetTxPayload(const CTransaction& tx, T& obj)
+{
+    return tx.hasExtraPayload() && GetTxPayload(*tx.extraPayload, obj);
+}
+
+template <typename T>
+void SetTxPayload(CMutableTransaction& tx, const T& payload)
+{
+    CDataStream ds(SER_NETWORK, PROTOCOL_VERSION);
+    ds << payload;
+    tx.extraPayload.emplace(ds.begin(), ds.end());
+}
 
 #endif // BITCOIN_PRIMITIVES_TRANSACTION_H

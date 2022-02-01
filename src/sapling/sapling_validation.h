@@ -1,12 +1,10 @@
 // Copyright (c) 2016-2020 The ZCash developers
-// Copyright (c) 2020 The PIVX Developers
-// Copyright (c) 2020 The DogeCash Developers
-
+// Copyright (c) 2020 The PIVX developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef DOGEC_SAPLING_VALIDATION_H
-#define DOGEC_SAPLING_VALIDATION_H
+#ifndef PIVX_SAPLING_VALIDATION_H
+#define PIVX_SAPLING_VALIDATION_H
 
 #include "chainparams.h"
 
@@ -18,7 +16,7 @@ namespace SaplingValidation {
 /** Context-independent validity checks */
 // Note: for v3+, if the tx has no shielded data, this method returns true.
 // Note2: This function only performs shielded data related checks, it does NOT checks regular inputs and outputs.
-bool CheckTransaction(const CTransaction& tx, CValidationState& state, CAmount& nValueOut, bool fIsSaplingActive);
+bool CheckTransaction(const CTransaction& tx, CValidationState& state, CAmount& nValueOut);
 bool CheckTransactionWithoutProofVerification(const CTransaction& tx, CValidationState &state, CAmount& nValueOut);
 
 /** Check a transaction contextually against a set of consensus rules */
@@ -29,4 +27,4 @@ bool ContextualCheckTransaction(const CTransaction &tx, CValidationState &state,
 
 }; // End SaplingValidation namespace
 
-#endif //DOGEC_SAPLING_VALIDATION_H
+#endif //PIVX_SAPLING_VALIDATION_H

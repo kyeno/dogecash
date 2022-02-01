@@ -1,10 +1,9 @@
 // Copyright (c) 2017-2019 The PIVX developers
-// Copyright (c) 2020 The DogeCash Developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef DOGEC_CSPORKDB_H
-#define DOGEC_CSPORKDB_H
+#ifndef PIVX_CSPORKDB_H
+#define PIVX_CSPORKDB_H
 
 #include "fs.h"
 #include "dbwrapper.h"
@@ -26,4 +25,4 @@ public:
 };
 
 
-#endif //DOGEC_CSPORKDB_H
+#endif //PIVX_CSPORKDB_H

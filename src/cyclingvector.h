@@ -1,11 +1,9 @@
-// Copyright (c) 2020 The PIVX Developers
-// Copyright (c) 2020 The DogeCash Developers
-
+// Copyright (c) 2020 The PIVX developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef DOGEC_CYCLINGVECTOR_H
-#define DOGEC_CYCLINGVECTOR_H
+#ifndef PIVX_CYCLINGVECTOR_H
+#define PIVX_CYCLINGVECTOR_H
 
 #include <sync.h>
 #include <vector>
@@ -35,4 +33,4 @@ public:
     std::vector<T> GetCache() const { LOCK(cs); return vec; }
 };
 
-#endif // DOGEC_CYCLINGVECTOR_H
+#endif // PIVX_CYCLINGVECTOR_H

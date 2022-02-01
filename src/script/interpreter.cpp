@@ -1,21 +1,17 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin developers
-// Copyright (c) 2017-2020 The PIVX Developers
-// Copyright (c) 2020 The DogeCash Developers
-
+// Copyright (c) 2017-2020 The PIVX developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "interpreter.h"
 
 #include "consensus/upgrades.h"
-#include "primitives/transaction.h"
 #include "crypto/ripemd160.h"
 #include "crypto/sha1.h"
 #include "crypto/sha256.h"
 #include "pubkey.h"
 #include "script/script.h"
-#include "uint256.h"
 
 
 typedef std::vector<unsigned char> valtype;
@@ -242,10 +238,7 @@ bool EvalScript(std::vector<std::vector<unsigned char> >& stack, const CScript& 
 {
     static const CScriptNum bnZero(0);
     static const CScriptNum bnOne(1);
-    static const CScriptNum bnFalse(0);
-    static const CScriptNum bnTrue(1);
     static const valtype vchFalse(0);
-    static const valtype vchZero(0);
     static const valtype vchTrue(1, 1);
 
     CScript::const_iterator pc = script.begin();
@@ -875,7 +868,7 @@ bool EvalScript(std::vector<std::vector<unsigned char> >& stack, const CScript& 
                         return set_error(serror, SCRIPT_ERR_INVALID_STACK_OPERATION);
 
                     int nKeysCount = CScriptNum(stacktop(-i), fRequireMinimal).getint();
-                    if (nKeysCount < 0 || nKeysCount > 20)
+                    if (nKeysCount < 0 || nKeysCount > MAX_PUBKEYS_PER_MULTISIG)
                         return set_error(serror, SCRIPT_ERR_PUBKEY_COUNT);
                     nOpCount += nKeysCount;
                     if (nOpCount > 201)
@@ -964,28 +957,19 @@ bool EvalScript(std::vector<std::vector<unsigned char> >& stack, const CScript& 
 
                 case OP_CHECKCOLDSTAKEVERIFY:
                 {
-                    // check it is used in a valid cold stake transaction.
-                    if (g_IsV6Active) {
-                         // the stack can contain only <sig> <pk> <pkh> at this point
-                         if ((int)stack.size() != 3) {
-                             return set_error(serror, SCRIPT_ERR_INVALID_STACK_OPERATION);
-                         }
-                         // check pubkey/signature encoding
-                         valtype& vchSig    = stacktop(-3);
-                         valtype& vchPubKey = stacktop(-2);
-                         if (!CheckSignatureEncoding(vchSig, flags, serror) ||
-                                 !CheckPubKeyEncoding(vchPubKey, flags, serror)) {
-                             // serror is set
-                             return false;
-                         }
-                         // check hash size
-                         valtype& vchPubKeyHash = stacktop(-1);
-                         if ((int)vchPubKeyHash.size() != 20) {
-                             return set_error(serror, SCRIPT_ERR_SCRIPT_SIZE);
-                         }
-                     }
-                    if(!checker.CheckColdStake(script)) {
-                        return set_error(serror, SCRIPT_ERR_CHECKCOLDSTAKEVERIFY);
+                    if (!checker.CheckColdStake(false, script, stack, flags, serror)) {
+                        // serror set
+                        return false;
+                    }
+                }
+                break;
+
+                case OP_CHECKCOLDSTAKEVERIFY_LOF:
+                {
+                    // Allow last output script "free"
+                    if (!checker.CheckColdStake(true, script, stack, flags, serror)) {
+                        // serror set
+                        return false;
                     }
                 }
                 break;
@@ -1110,21 +1094,21 @@ public:
     }
 };
 
-const unsigned char DOGEC_PREVOUTS_HASH_PERSONALIZATION[crypto_generichash_blake2b_PERSONALBYTES] =
+const unsigned char PIVX_PREVOUTS_HASH_PERSONALIZATION[crypto_generichash_blake2b_PERSONALBYTES] =
         {'P','I','V','X','P','r','e','v','o','u','t','H','a','s','h'};
-const unsigned char DOGEC_SEQUENCE_HASH_PERSONALIZATION[crypto_generichash_blake2b_PERSONALBYTES] =
+const unsigned char PIVX_SEQUENCE_HASH_PERSONALIZATION[crypto_generichash_blake2b_PERSONALBYTES] =
         {'P','I','V','X','S','e','q','u','e','n','c','H','a','s','h'};
-const unsigned char DOGEC_OUTPUTS_HASH_PERSONALIZATION[crypto_generichash_blake2b_PERSONALBYTES] =
+const unsigned char PIVX_OUTPUTS_HASH_PERSONALIZATION[crypto_generichash_blake2b_PERSONALBYTES] =
         {'P','I','V','X','O','u','t','p','u','t','s','H','a','s','h'};
-const unsigned char DOGEC_SHIELDED_SPENDS_HASH_PERSONALIZATION[crypto_generichash_blake2b_PERSONALBYTES] =
+const unsigned char PIVX_SHIELDED_SPENDS_HASH_PERSONALIZATION[crypto_generichash_blake2b_PERSONALBYTES] =
         {'P','I','V','X','S','S','p','e','n','d','s','H','a','s','h'};
-const unsigned char DOGEC_SHIELDED_OUTPUTS_HASH_PERSONALIZATION[crypto_generichash_blake2b_PERSONALBYTES] =
+const unsigned char PIVX_SHIELDED_OUTPUTS_HASH_PERSONALIZATION[crypto_generichash_blake2b_PERSONALBYTES] =
         {'P','I','V','X','S','O','u','t','p','u','t','H','a','s','h'};
 
 
 
 uint256 GetPrevoutHash(const CTransaction& txTo) {
-    CBLAKE2bWriter ss(SER_GETHASH, 0, DOGEC_PREVOUTS_HASH_PERSONALIZATION);
+    CBLAKE2bWriter ss(SER_GETHASH, 0, PIVX_PREVOUTS_HASH_PERSONALIZATION);
     for (unsigned int n = 0; n < txTo.vin.size(); n++) {
         ss << txTo.vin[n].prevout;
     }
@@ -1132,7 +1116,7 @@ uint256 GetPrevoutHash(const CTransaction& txTo) {
 }
 
 uint256 GetSequenceHash(const CTransaction& txTo) {
-    CBLAKE2bWriter ss(SER_GETHASH, 0, DOGEC_SEQUENCE_HASH_PERSONALIZATION);
+    CBLAKE2bWriter ss(SER_GETHASH, 0, PIVX_SEQUENCE_HASH_PERSONALIZATION);
     for (unsigned int n = 0; n < txTo.vin.size(); n++) {
         ss << txTo.vin[n].nSequence;
     }
@@ -1140,7 +1124,7 @@ uint256 GetSequenceHash(const CTransaction& txTo) {
 }
 
 uint256 GetOutputsHash(const CTransaction& txTo) {
-    CBLAKE2bWriter ss(SER_GETHASH, 0, DOGEC_OUTPUTS_HASH_PERSONALIZATION);
+    CBLAKE2bWriter ss(SER_GETHASH, 0, PIVX_OUTPUTS_HASH_PERSONALIZATION);
     for (unsigned int n = 0; n < txTo.vout.size(); n++) {
         ss << txTo.vout[n];
     }
@@ -1149,7 +1133,7 @@ uint256 GetOutputsHash(const CTransaction& txTo) {
 
 uint256 GetShieldedSpendsHash(const CTransaction& txTo) {
     assert(txTo.sapData);
-    CBLAKE2bWriter ss(SER_GETHASH, 0, DOGEC_SHIELDED_SPENDS_HASH_PERSONALIZATION);
+    CBLAKE2bWriter ss(SER_GETHASH, 0, PIVX_SHIELDED_SPENDS_HASH_PERSONALIZATION);
     auto sapData = txTo.sapData;
     for (const auto& n : sapData->vShieldedSpend) {
         ss << n.cv;
@@ -1163,7 +1147,7 @@ uint256 GetShieldedSpendsHash(const CTransaction& txTo) {
 
 uint256 GetShieldedOutputsHash(const CTransaction& txTo) {
     assert(txTo.sapData);
-    CBLAKE2bWriter ss(SER_GETHASH, 0, DOGEC_SHIELDED_OUTPUTS_HASH_PERSONALIZATION);
+    CBLAKE2bWriter ss(SER_GETHASH, 0, PIVX_SHIELDED_OUTPUTS_HASH_PERSONALIZATION);
     auto sapData = txTo.sapData;
     for (const auto& n : sapData->vShieldedOutput) {
         ss << n;
@@ -1215,7 +1199,7 @@ uint256 SignatureHash(const CScript& scriptCode, const CTransaction& txTo, unsig
         if ((nHashType & 0x1f) != SIGHASH_SINGLE && (nHashType & 0x1f) != SIGHASH_NONE) {
             hashOutputs = cache ? cache->hashOutputs : GetOutputsHash(txTo);
         } else if ((nHashType & 0x1f) == SIGHASH_SINGLE && nIn < txTo.vout.size()) {
-            CBLAKE2bWriter ss(SER_GETHASH, 0, DOGEC_OUTPUTS_HASH_PERSONALIZATION);
+            CBLAKE2bWriter ss(SER_GETHASH, 0, PIVX_OUTPUTS_HASH_PERSONALIZATION);
             ss << txTo.vout[nIn];
             hashOutputs = ss.GetHash();
         }
@@ -1235,7 +1219,7 @@ uint256 SignatureHash(const CScript& scriptCode, const CTransaction& txTo, unsig
         // todo: complete branch id with the active network upgrade
         uint32_t leConsensusBranchId = htole32(0);
         unsigned char personalization[16] = {};
-        memcpy(personalization, "DOGECSigHash", 12);
+        memcpy(personalization, "PIVXSigHash", 12);
         memcpy(personalization+12, &leConsensusBranchId, 4);
 
         CBLAKE2bWriter ss(SER_GETHASH, 0, personalization);
@@ -1360,36 +1344,57 @@ bool TransactionSignatureChecker::CheckLockTime(const CScriptNum& nLockTime) con
     return true;
 }
 
-bool TransactionSignatureChecker::CheckColdStake(const CScript& prevoutScript) const
+bool TransactionSignatureChecker::CheckColdStake(bool fAllowLastOutputFree, const CScript& prevoutScript, std::vector<valtype>& stack, unsigned int flags, ScriptError* serror) const
 {
+    // the stack can contain only <sig> <pk> <pkh> at this point
+    if ((int)stack.size() != 3) {
+        return set_error(serror, SCRIPT_ERR_INVALID_STACK_OPERATION);
+    }
+    // check pubkey/signature encoding
+    valtype& vchSig    = stacktop(-3);
+    valtype& vchPubKey = stacktop(-2);
+    if (!CheckSignatureEncoding(vchSig, flags, serror) ||
+            !CheckPubKeyEncoding(vchPubKey, flags, serror)) {
+        // serror is set
+        return false;
+    }
+    // check hash size
+    valtype& vchPubKeyHash = stacktop(-1);
+    if ((int)vchPubKeyHash.size() != 20) {
+        return set_error(serror, SCRIPT_ERR_SCRIPT_SIZE);
+    }
+
+    // check it is used in a valid cold stake transaction.
     // Transaction must be a coinstake tx
     if (!txTo->IsCoinStake()) {
-        return false;
+        return set_error(serror, SCRIPT_ERR_CHECKCOLDSTAKEVERIFY);
     }
     // There must be one single input
     if (txTo->vin.size() != 1) {
-        return false;
+        return set_error(serror, SCRIPT_ERR_CHECKCOLDSTAKEVERIFY);
     }
     // Since this is a coinstake, it has at least 2 outputs
     const unsigned int outs = txTo->vout.size();
     assert(outs >= 2);
-    // All outputs, except the first, and (for cold stakes with outs >=3) the last one,
-    // must have the same pubKeyScript, and it must match the script we are spending.
-    // If the coinstake has at least 3 outputs, the last one is left free, to be used for
-    // budget/masternode payments, and is checked in CheckColdstakeFreeOutput().
+    // All outputs must have the same pubKeyScript, and it must match the script we are spending.
+    // If the coinstake has at least 3 outputs, the last one can be left free, to be used for
+    // budget/masternode payments (before v6.0 enforcement), and is checked in CheckColdstakeFreeOutput().
     // Here we verify only that input amount goes to the non-free outputs.
     CAmount outValue{0};
     for (unsigned int i = 1; i < outs; i++) {
         if (txTo->vout[i].scriptPubKey != prevoutScript) {
-            // Only the last one can be different (and only when outs >=3)
-            if (i != outs-1 || outs < 3) {
-                return false;
+            // Only the last one can be different (and only when outs >=3 and fAllowLastOutputFree=true)
+            if (!fAllowLastOutputFree || i != outs-1 || outs < 3) {
+                return set_error(serror, SCRIPT_ERR_CHECKCOLDSTAKEVERIFY);
             }
         } else {
             outValue += txTo->vout[i].nValue;
         }
     }
-    return outValue > amount;
+    if (outValue < amount) {
+        return set_error(serror, SCRIPT_ERR_CHECKCOLDSTAKEVERIFY);
+    }
+    return true;
 }
 
 
@@ -1412,7 +1417,6 @@ bool VerifyScript(const CScript& scriptSig, const CScript& scriptPubKey, unsigne
         return false;
     if (stack.empty())
         return set_error(serror, SCRIPT_ERR_EVAL_FALSE);
-
     if (CastToBool(stack.back()) == false)
         return set_error(serror, SCRIPT_ERR_EVAL_FALSE);
 
@@ -1423,24 +1427,37 @@ bool VerifyScript(const CScript& scriptSig, const CScript& scriptPubKey, unsigne
         if (!scriptSig.IsPushOnly())
             return set_error(serror, SCRIPT_ERR_SIG_PUSHONLY);
 
-        // stackCopy cannot be empty here, because if it was the
+        // Restore stack.
+        swap(stack, stackCopy);
+
+        // stack cannot be empty here, because if it was the
         // P2SH  HASH <> EQUAL  scriptPubKey would be evaluated with
         // an empty stack and the EvalScript above would return false.
-        assert(!stackCopy.empty());
+        assert(!stack.empty());
 
-        const valtype& pubKeySerialized = stackCopy.back();
+        const valtype& pubKeySerialized = stack.back();
         CScript pubKey2(pubKeySerialized.begin(), pubKeySerialized.end());
-        popstack(stackCopy);
+        popstack(stack);
 
-        if (!EvalScript(stackCopy, pubKey2, flags, checker, sigversion, serror))
+        if (!EvalScript(stack, pubKey2, flags, checker, sigversion, serror))
             // serror is set
             return false;
-        if (stackCopy.empty())
+        if (stack.empty())
             return set_error(serror, SCRIPT_ERR_EVAL_FALSE);
-        if (!CastToBool(stackCopy.back()))
+        if (!CastToBool(stack.back()))
             return set_error(serror, SCRIPT_ERR_EVAL_FALSE);
-        else
-            return set_success(serror);
+    }
+
+    // The CLEANSTACK check is only performed after potential P2SH evaluation,
+    // as the non-P2SH evaluation of a P2SH script will obviously not result in
+    // a clean stack (the P2SH inputs remain).
+    if ((flags & SCRIPT_VERIFY_CLEANSTACK) != 0) {
+        // Disallow CLEANSTACK without P2SH, as otherwise a switch CLEANSTACK->P2SH+CLEANSTACK
+        // would be possible, which is not a softfork (and P2SH should be one).
+        assert((flags & SCRIPT_VERIFY_P2SH) != 0);
+        if (stack.size() != 1) {
+            return set_error(serror, SCRIPT_ERR_CLEANSTACK);
+        }
     }
 
     return set_success(serror);
