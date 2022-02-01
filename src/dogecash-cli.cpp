@@ -38,7 +38,7 @@ std::string HelpMessageCli()
     std::string strUsage;
     strUsage += HelpMessageGroup("Options:");
     strUsage += HelpMessageOpt("-?", "This help message");
-    strUsage += HelpMessageOpt("-conf=<file>", strprintf("Specify configuration file (default: %s)", DogeCash_CONF_FILENAME));
+    strUsage += HelpMessageOpt("-conf=<file>", strprintf("Specify configuration file (default: %s)", DOGECASH_CONF_FILENAME));
     strUsage += HelpMessageOpt("-datadir=<dir>", "Specify data directory");
     AppendParamsHelpMessages(strUsage);
     strUsage += HelpMessageOpt("-named", strprintf("Pass named instead of positional arguments (default: %s)", DEFAULT_NAMED));
@@ -107,7 +107,7 @@ static bool AppInitRPC(int argc, char* argv[])
         return false;
     }
     try {
-        gArgs.ReadConfigFile(gArgs.GetArg("-conf", DogeCash_CONF_FILENAME));
+        gArgs.ReadConfigFile(gArgs.GetArg("-conf", DOGECASH_CONF_FILENAME));
     } catch (const std::exception& e) {
         fprintf(stderr, "Error reading configuration file: %s\n", e.what());
         return false;
@@ -220,7 +220,7 @@ UniValue CallRPC(const std::string& strMethod, const UniValue& params)
         if (!GetAuthCookie(&strRPCUserColonPass)) {
             throw std::runtime_error(strprintf(
                  _("Could not locate RPC credentials. No authentication cookie could be found, and no rpcpassword is set in the configuration file (%s)"),
-                    GetConfigFile(gArgs.GetArg("-conf", DogeCash_CONF_FILENAME)).string().c_str()));
+                    GetConfigFile(gArgs.GetArg("-conf", DOGECASH_CONF_FILENAME)).string().c_str()));
 
         }
     } else {

@@ -419,7 +419,7 @@ bool openDebugLogfile()
 
 bool openConfigfile()
 {
-    return openFile(GetConfigFile(gArgs.GetArg("-conf", DogeCash_CONF_FILENAME)), true);
+    return openFile(GetConfigFile(gArgs.GetArg("-conf", DOGECASH_CONF_FILENAME)), true);
 }
 
 bool openMNConfigfile()

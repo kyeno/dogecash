@@ -73,7 +73,7 @@ bool CheckBlockSignature(const CBlock& block)
     CPubKey pubkey;
     bool fzDOGECStake = block.vtx[1]->vin[0].IsZerocoinSpend();
     if (fzDOGECStake) {
-        libzerocoin::CoinSpend spend = ZPIVModule::TxInToZerocoinSpend(block.vtx[1]->vin[0]);
+        libzerocoin::CoinSpend spend = ZDOGECModule::TxInToZerocoinSpend(block.vtx[1]->vin[0]);
         pubkey = spend.getPubKey();
     } else {
         txnouttype whichType;

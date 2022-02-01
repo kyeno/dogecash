@@ -622,7 +622,7 @@ void TransactionRecord::updateStatus(const CWalletTx& wtx, int chainHeight)
     // For generated transactions, determine maturity
     else if (type == TransactionRecord::Generated ||
             type == TransactionRecord::StakeMint ||
-            type == TransactionRecord::StakeZPIV ||
+            type == TransactionRecord::StakeZDOGEC ||
             type == TransactionRecord::MNReward ||
             type == TransactionRecord::DevReward ||
             type == TransactionRecord::BudgetPayment ||
@@ -666,7 +666,7 @@ int TransactionRecord::getOutputIndex() const
 
 bool TransactionRecord::isCoinStake() const
 {
-    return type == TransactionRecord::StakeMint || type == TransactionRecord::Generated || type == TransactionRecord::StakeZPIV;
+    return type == TransactionRecord::StakeMint || type == TransactionRecord::Generated || type == TransactionRecord::StakeZDOGEC;
 }
 
 bool TransactionRecord::isMNReward() const

@@ -56,12 +56,12 @@ static bool CheckZerocoinSpend(const CTransactionRef _tx, CValidationState& stat
             }
             libzerocoin::ZerocoinParams* params = consensus.Zerocoin_Params(false);
             PublicCoinSpend publicSpend(params);
-            if (!ZPIVModule::parseCoinSpend(txin, tx, prevOut, publicSpend)){
+            if (!ZDOGECModule::parseCoinSpend(txin, tx, prevOut, publicSpend)){
                 return state.DoS(100, error("%s: public zerocoin spend parse failed", __func__));
             }
             newSpend = publicSpend;
         } else {
-            newSpend = ZPIVModule::TxInToZerocoinSpend(txin);
+            newSpend = ZDOGECModule::TxInToZerocoinSpend(txin);
         }
 
         //check that the denomination is valid
@@ -79,7 +79,7 @@ static bool CheckZerocoinSpend(const CTransactionRef _tx, CValidationState& stat
         if (isPublicSpend) {
             libzerocoin::ZerocoinParams* params = consensus.Zerocoin_Params(false);
             PublicCoinSpend ret(params);
-            if (!ZPIVModule::validateInput(txin, prevOut, tx, ret)){
+            if (!ZDOGECModule::validateInput(txin, prevOut, tx, ret)){
                 return state.DoS(100, error("%s: public zerocoin spend did not verify", __func__));
             }
         }
@@ -285,7 +285,7 @@ bool ParseAndValidateZerocoinSpends(const Consensus::Params& consensus,
         if (isPublicSpend) {
             libzerocoin::ZerocoinParams* params = consensus.Zerocoin_Params(false);
             PublicCoinSpend publicSpend(params);
-            if (!ZPIVModule::ParseZerocoinPublicSpend(txIn, tx, state, publicSpend)) {
+            if (!ZDOGECModule::ParseZerocoinPublicSpend(txIn, tx, state, publicSpend)) {
                 return false;
             }
             //queue for db write after the 'justcheck' section has concluded
@@ -296,7 +296,7 @@ bool ParseAndValidateZerocoinSpends(const Consensus::Params& consensus,
             }
             vSpendsRet.emplace_back(publicSpend.getCoinSerialNumber(), tx.GetHash());
         } else {
-            libzerocoin::CoinSpend spend = ZPIVModule::TxInToZerocoinSpend(txIn);
+            libzerocoin::CoinSpend spend = ZDOGECModule::TxInToZerocoinSpend(txIn);
             //queue for db write after the 'justcheck' section has concluded
             if (!ContextualCheckZerocoinSpend(tx, &spend, chainHeight)) {
                 return state.DoS(100, error("%s: failed to add block %s with invalid zerocoinspend", __func__,

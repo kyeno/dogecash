@@ -48,7 +48,7 @@ public:
     boost::signals2::signal<std::string (const char* psz)> Translate;
 };
 
-extern const char * const DogeCash_CONF_FILENAME;
+extern const char * const DOGECASH_CONF_FILENAME;
 extern const char * const DogeCash_PID_FILENAME;
 extern const char * const DogeCash_MASTERNODE_CONF_FILENAME;
 extern const char * const DEFAULT_DEBUGLOGFILE;

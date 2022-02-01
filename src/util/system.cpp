@@ -80,7 +80,7 @@
 #include <CoreFoundation/CoreFoundation.h>
 #endif
 
-const char * const DogeCash_CONF_FILENAME = "dogecash.conf";
+const char * const DOGECASH_CONF_FILENAME = "dogecash.conf";
 const char * const DogeCash_MASTERNODE_CONF_FILENAME = "masternode.conf";
 
 

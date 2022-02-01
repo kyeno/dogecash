@@ -25,12 +25,12 @@ bool DisconnectZerocoinTx(const CTransaction& tx)
                     if (isPublicSpend) {
                         PublicCoinSpend publicSpend(params);
                         CValidationState state;
-                        if (!ZPIVModule::ParseZerocoinPublicSpend(txin, tx, state, publicSpend)) {
+                        if (!ZDOGECModule::ParseZerocoinPublicSpend(txin, tx, state, publicSpend)) {
                             return error("Failed to parse public spend");
                         }
                         serial = publicSpend.getCoinSerialNumber();
                     } else {
-                        libzerocoin::CoinSpend spend = ZPIVModule::TxInToZerocoinSpend(txin);
+                        libzerocoin::CoinSpend spend = ZDOGECModule::TxInToZerocoinSpend(txin);
                         serial = spend.getCoinSerialNumber();
                     }
 

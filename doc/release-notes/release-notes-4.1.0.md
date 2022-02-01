@@ -446,7 +446,7 @@ Detailed release notes follow. For convenience in locating the code changes and 
  - #1281 `a293072cdb` [Trivial][Cleanup] Remove extra checks before GetBlocksToMaturity (random-zebra)
  - #1282 `76f29fccf3` [Trivial][Cleanup] Add IsRegTestNet() function in chainparams (random-zebra)
  - #1290 `2ceeb2cca0` [zDOGEC][Cleanup] Zerocoin Cleanup 1: remove Accumulators values (random-zebra)
- - #1291 `16d7dac5f7` [zDOGEC][Cleanup] Zerocoin Cleanup 2: remove CZPivStake class (random-zebra)
+ - #1291 `16d7dac5f7` [zDOGEC][Cleanup] Zerocoin Cleanup 2: remove CZDogecStake class (random-zebra)
  - #1293 `28e0048b3e` [zDOGEC][Cleanup] Zerocoin Cleanup 3: remove old ZK proofs (random-zebra)
  - #1314 `185194bd7e` [zDOGEC][Cleanup] Zerocoin Cleanup 4: further wallet cleaning (random-zebra)
  - #1322 `5bd387e18d` [zDOGEC][Cleanup] Zerocoin Cleanup 5: further main.cpp cleaning (random-zebra)

@@ -34,7 +34,7 @@ void TxViewHolder::init(QWidget* holder, const QModelIndex &index, bool isHovere
 
     if (type != TransactionRecord::ZerocoinMint &&
             type !=  TransactionRecord::ZerocoinSpend_Change_zDogec &&
-            type !=  TransactionRecord::StakeZPIV &&
+            type !=  TransactionRecord::StakeZDOGEC &&
             type != TransactionRecord::Other) {
 
         QString address = rIndex.data(Qt::DisplayRole).toString();

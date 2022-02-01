@@ -623,7 +623,7 @@ int main(int argc, char* argv[])
         return 1;
     }
     try {
-        gArgs.ReadConfigFile(gArgs.GetArg("-conf", DogeCash_CONF_FILENAME));
+        gArgs.ReadConfigFile(gArgs.GetArg("-conf", DOGECASH_CONF_FILENAME));
     } catch (const std::exception& e) {
         QMessageBox::critical(nullptr, PACKAGE_NAME,
             QObject::tr("Error: Cannot parse configuration file: %1. Only use key=value syntax.").arg(e.what()));

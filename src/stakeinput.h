@@ -25,7 +25,7 @@ public:
     virtual const CBlockIndex* GetIndexFrom() const = 0;
     virtual bool GetTxOutFrom(CTxOut& out) const = 0;
     virtual CAmount GetValue() const = 0;
-    virtual bool IsZPIV() const = 0;
+    virtual bool IsZDOGEC() const = 0;
     virtual CDataStream GetUniqueness() const = 0;
 };
 
@@ -48,7 +48,7 @@ public:
     CDataStream GetUniqueness() const override;
     CTxIn GetTxIn() const;
     bool CreateTxOuts(const CWallet* pwallet, std::vector<CTxOut>& vout, CAmount nTotal) const;
-    bool IsZPIV() const override { return false; }
+    bool IsZDOGEC() const override { return false; }
 };
 
 
