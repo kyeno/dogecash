@@ -50,11 +50,11 @@ class ReorgStakeTest(PivxTestFramework):
         assert_equal(self.nodes[nodeid].getblockcount(), wi['last_processed_block'])
         return wi['balance'] + wi['immature_balance']
 
-    def check_money_supply(self, expected_piv):
+    def check_money_supply(self, expected_dogec):
         # verify that nodes have the expected DOGEC supply
         dogec_supply = [self.nodes[i].getsupplyinfo(True)['transparentsupply']
                       for i in range(self.num_nodes)]
-        assert_equal(dogec_supply, [DecimalAmt(expected_piv)] * self.num_nodes)
+        assert_equal(dogec_supply, [DecimalAmt(expected_dogec)] * self.num_nodes)
 
 
     def run_test(self):

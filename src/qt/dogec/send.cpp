@@ -888,14 +888,14 @@ void SendWidget::onContactMultiClicked()
         }
 
         bool isStakingAddr = false;
-        auto pivAdd = Standard::DecodeDestination(address.toStdString(), isStakingAddr);
+        auto dogecAdd = Standard::DecodeDestination(address.toStdString(), isStakingAddr);
 
-        if (!Standard::IsValidDestination(pivAdd) || isStakingAddr) {
+        if (!Standard::IsValidDestination(dogecAdd) || isStakingAddr) {
             inform(tr("Invalid address"));
             return;
         }
 
-        if (walletModel->isMine(pivAdd)) {
+        if (walletModel->isMine(dogecAdd)) {
             inform(tr("Cannot store your own address as contact"));
             return;
         }
@@ -915,7 +915,7 @@ void SendWidget::onContactMultiClicked()
             if (label == dialog->getLabel()) {
                 return;
             }
-            if (walletModel->updateAddressBookLabels(pivAdd, dialog->getLabel().toStdString(),
+            if (walletModel->updateAddressBookLabels(dogecAdd, dialog->getLabel().toStdString(),
                     AddressBook::AddressBookPurpose::SEND)) {
                 inform(tr("New Contact Stored"));
             } else {
