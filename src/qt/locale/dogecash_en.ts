@@ -4,7 +4,7 @@
 <context>
     <name>AddNewAddressDialog</name>
     <message>
-        <location filename="../pivx/forms/addnewaddressdialog.ui" line="+53"/>
+        <location filename="../dogecash/forms/addnewaddressdialog.ui" line="+53"/>
         <source>New Address</source>
         <translation type="unfinished"></translation>
     </message>
@@ -27,7 +27,7 @@
 <context>
     <name>AddNewContactDialog</name>
     <message>
-        <location filename="../pivx/forms/addnewcontactdialog.ui" line="+254"/>
+        <location filename="../dogecash/forms/addnewcontactdialog.ui" line="+254"/>
         <source>CANCEL</source>
         <translation type="unfinished"></translation>
     </message>
@@ -52,7 +52,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pivx/addnewcontactdialog.cpp" line="+48"/>
+        <location filename="../dogecash/addnewcontactdialog.cpp" line="+48"/>
         <source>Edit label for the selected address:
 %1</source>
         <translation type="unfinished"></translation>
@@ -212,7 +212,7 @@
 <context>
     <name>AddressesWidget</name>
     <message>
-        <location filename="../pivx/forms/addresseswidget.ui" line="+356"/>
+        <location filename="../dogecash/forms/addresseswidget.ui" line="+356"/>
         <source>Contact name</source>
         <translation type="unfinished"></translation>
     </message>
@@ -242,7 +242,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pivx/addresseswidget.cpp" line="+89"/>
+        <location filename="../dogecash/addresseswidget.cpp" line="+89"/>
         <source>Add new contact</source>
         <translation type="unfinished"></translation>
     </message>
@@ -486,7 +486,7 @@ for staking</source>
 <context>
     <name>BalanceBubble</name>
     <message>
-        <location filename="../pivx/forms/balancebubble.ui" line="+75"/>
+        <location filename="../dogecash/forms/balancebubble.ui" line="+75"/>
         <source>Transparent</source>
         <translation type="unfinished"></translation>
     </message>
@@ -512,7 +512,7 @@ for staking</source>
 <context>
     <name>CSRow</name>
     <message>
-        <location filename="../pivx/forms/csrow.ui" line="+85"/>
+        <location filename="../dogecash/forms/csrow.ui" line="+85"/>
         <source>Savings</source>
         <translation type="unfinished"></translation>
     </message>
@@ -527,7 +527,7 @@ for staking</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pivx/csrow.cpp" line="+27"/>
+        <location filename="../dogecash/csrow.cpp" line="+27"/>
         <source>Own delegation</source>
         <translation type="unfinished"></translation>
     </message>
@@ -786,7 +786,7 @@ for staking</source>
 <context>
     <name>ColdStakingWidget</name>
     <message>
-        <location filename="../pivx/forms/coldstakingwidget.ui" line="+355"/>
+        <location filename="../dogecash/forms/coldstakingwidget.ui" line="+355"/>
         <source>Owner address (optional, if empty a new address will be created)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -836,7 +836,7 @@ for staking</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pivx/coldstakingwidget.cpp" line="+806"/>
+        <location filename="../dogecash/coldstakingwidget.cpp" line="+806"/>
         <source>Total Staking: %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -846,7 +846,7 @@ for staking</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pivx/forms/coldstakingwidget.ui" line="-603"/>
+        <location filename="../dogecash/forms/coldstakingwidget.ui" line="-603"/>
         <source>You can delegate your PIVs, letting a hot node (24/7 online node)
 stake on your behalf, while you keep the keys securely offline.</source>
         <translation type="unfinished"></translation>
@@ -867,7 +867,7 @@ stake on your behalf, while you keep the keys securely offline.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pivx/coldstakingwidget.cpp" line="+18"/>
+        <location filename="../dogecash/coldstakingwidget.cpp" line="+18"/>
         <source>No receive addresses available, you can go to the receive screen and create some there!</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1068,7 +1068,7 @@ address</source>
 <context>
     <name>CreateProposalDialog</name>
     <message>
-        <location filename="../pivx/forms/createproposaldialog.ui" line="+520"/>
+        <location filename="../dogecash/forms/createproposaldialog.ui" line="+520"/>
         <location line="+613"/>
         <source>Name</source>
         <translation type="unfinished">Name</translation>
@@ -1148,7 +1148,7 @@ address</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pivx/createproposaldialog.cpp" line="+60"/>
+        <location filename="../dogecash/createproposaldialog.cpp" line="+60"/>
         <source>NEXT</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1196,7 +1196,7 @@ address</source>
 <context>
     <name>DashboardWidget</name>
     <message>
-        <location filename="../pivx/forms/dashboardwidget.ui" line="+93"/>
+        <location filename="../dogecash/forms/dashboardwidget.ui" line="+93"/>
         <source>Transactions</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1251,12 +1251,12 @@ address</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pivx/dashboardwidget.cpp" line="+115"/>
+        <location filename="../dogecash/dashboardwidget.cpp" line="+115"/>
         <source>Please wait until the wallet is fully synced to see your correct balance</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pivx/forms/dashboardwidget.ui" line="-658"/>
+        <location filename="../dogecash/forms/dashboardwidget.ui" line="-658"/>
         <source>No transactions yet</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1267,7 +1267,7 @@ It will start automatically as soon as the wallet has enough confirmations on an
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pivx/dashboardwidget.cpp" line="+36"/>
+        <location filename="../dogecash/dashboardwidget.cpp" line="+36"/>
         <location line="+274"/>
         <source>You have no staking rewards</source>
         <translation type="unfinished"></translation>
@@ -1303,7 +1303,7 @@ It will start automatically as soon as the wallet has enough confirmations on an
 <context>
     <name>DefaultDialog</name>
     <message>
-        <location filename="../pivx/forms/defaultdialog.ui" line="+242"/>
+        <location filename="../dogecash/forms/defaultdialog.ui" line="+242"/>
         <source>OK</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1412,7 +1412,7 @@ It will start automatically as soon as the wallet has enough confirmations on an
 <context>
     <name>GovernanceWidget</name>
     <message>
-        <location filename="../pivx/governancewidget.cpp" line="+44"/>
+        <location filename="../dogecash/governancewidget.cpp" line="+44"/>
         <source>Governance</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1657,7 +1657,7 @@ Be part of the DAO.</source>
 <context>
     <name>LoadingDialog</name>
     <message>
-        <location filename="../pivx/forms/loadingdialog.ui" line="+127"/>
+        <location filename="../dogecash/forms/loadingdialog.ui" line="+127"/>
         <source>Loading</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1665,7 +1665,7 @@ Be part of the DAO.</source>
 <context>
     <name>LockUnlock</name>
     <message>
-        <location filename="../pivx/forms/lockunlock.ui" line="+104"/>
+        <location filename="../dogecash/forms/lockunlock.ui" line="+104"/>
         <source>Unlock Wallet</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1683,7 +1683,7 @@ Be part of the DAO.</source>
 <context>
     <name>MNRow</name>
     <message>
-        <location filename="../pivx/mnrow.cpp" line="+25"/>
+        <location filename="../dogecash/mnrow.cpp" line="+25"/>
         <source>Collateral tx not found</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1696,7 +1696,7 @@ Be part of the DAO.</source>
 <context>
     <name>MasterNodeWizardDialog</name>
     <message>
-        <location filename="../pivx/forms/masternodewizarddialog.ui" line="+196"/>
+        <location filename="../dogecash/forms/masternodewizarddialog.ui" line="+196"/>
         <source>1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1771,7 +1771,7 @@ Be part of the DAO.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pivx/masternodewizarddialog.cpp" line="+192"/>
+        <location filename="../dogecash/masternodewizarddialog.cpp" line="+192"/>
         <source>address label cannot be empty</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1864,7 +1864,7 @@ Be part of the DAO.</source>
 <context>
     <name>MasterNodesWidget</name>
     <message>
-        <location filename="../pivx/forms/masternodeswidget.ui" line="+295"/>
+        <location filename="../dogecash/forms/masternodeswidget.ui" line="+295"/>
         <source>Start All</source>
         <translation type="unfinished"></translation>
     </message>
@@ -1895,7 +1895,7 @@ and vote on the treasury system receiving a periodic reward.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pivx/masternodeswidget.cpp" line="+167"/>
+        <location filename="../dogecash/masternodeswidget.cpp" line="+167"/>
         <source>Start</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2060,7 +2060,7 @@ Are you sure?</source>
 <context>
     <name>MnInfoDialog</name>
     <message>
-        <location filename="../pivx/forms/mninfodialog.ui" line="+104"/>
+        <location filename="../dogecash/forms/mninfodialog.ui" line="+104"/>
         <source>Masternode Information</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2100,7 +2100,7 @@ Are you sure?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pivx/mninfodialog.cpp" line="+25"/>
+        <location filename="../dogecash/mninfodialog.cpp" line="+25"/>
         <source>Masternode public key copied</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2113,7 +2113,7 @@ Are you sure?</source>
 <context>
     <name>MnSelectionDialog</name>
     <message>
-        <location filename="../pivx/forms/mnselectiondialog.ui" line="+117"/>
+        <location filename="../dogecash/forms/mnselectiondialog.ui" line="+117"/>
         <source>Select Masternodes</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2129,7 +2129,7 @@ Are you sure?</source>
     </message>
     <message>
         <location line="+45"/>
-        <location filename="../pivx/mnselectiondialog.cpp" line="+104"/>
+        <location filename="../dogecash/mnselectiondialog.cpp" line="+104"/>
         <source>Select All</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2159,7 +2159,7 @@ Are you sure?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pivx/mnselectiondialog.cpp" line="+0"/>
+        <location filename="../dogecash/mnselectiondialog.cpp" line="+0"/>
         <source>Unselect All</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2192,7 +2192,7 @@ Are you sure?</source>
 <context>
     <name>NavMenuWidget</name>
     <message>
-        <location filename="../pivx/forms/navmenuwidget.ui" line="+170"/>
+        <location filename="../dogecash/forms/navmenuwidget.ui" line="+170"/>
         <source>HOME
 </source>
         <translation type="unfinished"></translation>
@@ -2239,7 +2239,7 @@ STAKING</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pivx/navmenuwidget.cpp" line="+23"/>
+        <location filename="../dogecash/navmenuwidget.cpp" line="+23"/>
         <source>v%1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2270,7 +2270,7 @@ STAKING</source>
 <context>
     <name>PIVXGUI</name>
     <message>
-        <location filename="../pivx/pivxgui.cpp" line="+70"/>
+        <location filename="../dogecash/pivxgui.cpp" line="+70"/>
         <source>Wallet</source>
         <translation type="unfinished">Wallet</translation>
     </message>
@@ -2408,12 +2408,12 @@ Address: %4
 <context>
     <name>ProposalCard</name>
     <message>
-        <location filename="../pivx/forms/proposalcard.ui" line="+355"/>
+        <location filename="../dogecash/forms/proposalcard.ui" line="+355"/>
         <source>Vote</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pivx/proposalcard.cpp" line="+43"/>
+        <location filename="../dogecash/proposalcard.cpp" line="+43"/>
         <source>Inactive proposal</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2466,7 +2466,7 @@ Address: %4
 <context>
     <name>ProposalInfoDialog</name>
     <message>
-        <location filename="../pivx/forms/proposalinfodialog.ui" line="+116"/>
+        <location filename="../dogecash/forms/proposalinfodialog.ui" line="+116"/>
         <source>Proposal Information</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2621,25 +2621,25 @@ Address: %4
     </message>
     <message>
         <location line="+2"/>
-        <location filename="../pivx/qtutils.cpp" line="+135"/>
+        <location filename="../dogecash/qtutils.cpp" line="+135"/>
         <source>Receiving</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
-        <location filename="../pivx/qtutils.cpp" line="+3"/>
+        <location filename="../dogecash/qtutils.cpp" line="+3"/>
         <source>Delegator</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
-        <location filename="../pivx/qtutils.cpp" line="+1"/>
+        <location filename="../dogecash/qtutils.cpp" line="+1"/>
         <source>Delegable</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+2"/>
-        <location filename="../pivx/qtutils.cpp" line="-2"/>
+        <location filename="../dogecash/qtutils.cpp" line="-2"/>
         <source>Cold Staking</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2669,7 +2669,7 @@ Address: %4
         <translation type="unfinished">Unknown</translation>
     </message>
     <message>
-        <location filename="../pivx/qtutils.cpp" line="-3"/>
+        <location filename="../dogecash/qtutils.cpp" line="-3"/>
         <location line="+24"/>
         <source>All</source>
         <translation type="unfinished">All</translation>
@@ -2785,7 +2785,7 @@ Address: %4
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pivx/dashboardwidget.cpp" line="-531"/>
+        <location filename="../dogecash/dashboardwidget.cpp" line="-531"/>
         <source>Jan</source>
         <translation type="unfinished"></translation>
     </message>
@@ -2845,7 +2845,7 @@ Address: %4
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pivx/coldstakingwidget.cpp" line="-716"/>
+        <location filename="../dogecash/coldstakingwidget.cpp" line="-716"/>
         <source>Address with no label</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3343,7 +3343,7 @@ Address: %4
 <context>
     <name>ReceiveDialog</name>
     <message>
-        <location filename="../pivx/forms/receivedialog.ui" line="+95"/>
+        <location filename="../dogecash/forms/receivedialog.ui" line="+95"/>
         <source>My Address</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3361,7 +3361,7 @@ Address: %4
 <context>
     <name>ReceiveWidget</name>
     <message>
-        <location filename="../pivx/forms/receivewidget.ui" line="+81"/>
+        <location filename="../dogecash/forms/receivewidget.ui" line="+81"/>
         <source>Scan the QR code or copy the address to receive PIV</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3382,7 +3382,7 @@ Address: %4
     </message>
     <message>
         <location line="+179"/>
-        <location filename="../pivx/receivewidget.cpp" line="+185"/>
+        <location filename="../dogecash/receivewidget.cpp" line="+185"/>
         <source>Add Label</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3407,7 +3407,7 @@ Address: %4
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pivx/receivewidget.cpp" line="-127"/>
+        <location filename="../dogecash/receivewidget.cpp" line="-127"/>
         <source>My Addresses</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3536,7 +3536,7 @@ try unlocking the wallet</source>
 <context>
     <name>RequestDialog</name>
     <message>
-        <location filename="../pivx/forms/requestdialog.ui" line="+256"/>
+        <location filename="../dogecash/forms/requestdialog.ui" line="+256"/>
         <source>Amount</source>
         <translation type="unfinished">Amount</translation>
     </message>
@@ -3586,17 +3586,17 @@ try unlocking the wallet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pivx/requestdialog.cpp" line="+47"/>
+        <location filename="../dogecash/requestdialog.cpp" line="+47"/>
         <source>Error</source>
         <translation type="unfinished">Error</translation>
     </message>
     <message>
-        <location filename="../pivx/forms/requestdialog.ui" line="+222"/>
+        <location filename="../dogecash/forms/requestdialog.ui" line="+222"/>
         <source>GENERATE</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pivx/requestdialog.cpp" line="+28"/>
+        <location filename="../dogecash/requestdialog.cpp" line="+28"/>
         <source>Creates an address to receive coin delegations and be able to stake them.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3634,8 +3634,8 @@ try unlocking the wallet</source>
 <context>
     <name>SendChangeAddressDialog</name>
     <message>
-        <location filename="../pivx/forms/sendchangeaddressdialog.ui" line="+252"/>
-        <location filename="../pivx/sendchangeaddressdialog.cpp" line="+64"/>
+        <location filename="../dogecash/forms/sendchangeaddressdialog.ui" line="+252"/>
+        <location filename="../dogecash/sendchangeaddressdialog.cpp" line="+64"/>
         <source>CANCEL</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3655,7 +3655,7 @@ try unlocking the wallet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pivx/sendchangeaddressdialog.cpp" line="-17"/>
+        <location filename="../dogecash/sendchangeaddressdialog.cpp" line="-17"/>
         <source>RESET</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3673,7 +3673,7 @@ try unlocking the wallet</source>
 <context>
     <name>SendCustomFeeDialog</name>
     <message>
-        <location filename="../pivx/forms/sendcustomfeedialog.ui" line="+204"/>
+        <location filename="../dogecash/forms/sendcustomfeedialog.ui" line="+204"/>
         <source>Recommended</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3698,7 +3698,7 @@ try unlocking the wallet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pivx/sendcustomfeedialog.cpp" line="+36"/>
+        <location filename="../dogecash/sendcustomfeedialog.cpp" line="+36"/>
         <source>Normal</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3718,12 +3718,12 @@ try unlocking the wallet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pivx/forms/sendcustomfeedialog.ui" line="+260"/>
+        <location filename="../dogecash/forms/sendcustomfeedialog.ui" line="+260"/>
         <source>SAVE</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pivx/sendcustomfeedialog.cpp" line="-32"/>
+        <location filename="../dogecash/sendcustomfeedialog.cpp" line="-32"/>
         <source>Fee too high. Must be below: %1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3736,7 +3736,7 @@ try unlocking the wallet</source>
 <context>
     <name>SendMemoDialog</name>
     <message>
-        <location filename="../pivx/forms/sendmemodialog.ui" line="+151"/>
+        <location filename="../dogecash/forms/sendmemodialog.ui" line="+151"/>
         <source>Private message only visible for the recipient(s)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3746,7 +3746,7 @@ try unlocking the wallet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pivx/sendmemodialog.cpp" line="+49"/>
+        <location filename="../dogecash/sendmemodialog.cpp" line="+49"/>
         <source>RESET</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3759,7 +3759,7 @@ try unlocking the wallet</source>
 <context>
     <name>SendMultiRow</name>
     <message>
-        <location filename="../pivx/forms/sendmultirow.ui" line="+144"/>
+        <location filename="../dogecash/forms/sendmultirow.ui" line="+144"/>
         <source>Enter address</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3784,7 +3784,7 @@ try unlocking the wallet</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pivx/sendmultirow.cpp" line="+93"/>
+        <location filename="../dogecash/sendmultirow.cpp" line="+93"/>
         <source>Update memo</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3802,7 +3802,7 @@ try unlocking the wallet</source>
 <context>
     <name>SendWidget</name>
     <message>
-        <location filename="../pivx/send.cpp" line="+159"/>
+        <location filename="../dogecash/send.cpp" line="+159"/>
         <source>Total remaining from the selected UTXO</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4056,7 +4056,7 @@ Do you want to continue?
 <context>
     <name>SettingsBackupWallet</name>
     <message>
-        <location filename="../pivx/settings/forms/settingsbackupwallet.ui" line="+161"/>
+        <location filename="../dogecash/settings/forms/settingsbackupwallet.ui" line="+161"/>
         <source>Change Wallet Passphrase</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4073,7 +4073,7 @@ This option creates a wallet.dat file that can be used to recover your whole bal
     </message>
     <message>
         <location line="+53"/>
-        <location filename="../pivx/settings/settingsbackupwallet.cpp" line="+57"/>
+        <location filename="../dogecash/settings/settingsbackupwallet.cpp" line="+57"/>
         <source>Select folder...</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4090,12 +4090,12 @@ Remember to write it down and store it safely, otherwise you might lose access t
     </message>
     <message>
         <location line="-172"/>
-        <location filename="../pivx/settings/settingsbackupwallet.cpp" line="-7"/>
+        <location filename="../dogecash/settings/settingsbackupwallet.cpp" line="-7"/>
         <source>Backup Wallet</source>
         <translation type="unfinished">Backup Wallet</translation>
     </message>
     <message>
-        <location filename="../pivx/settings/settingsbackupwallet.cpp" line="+1"/>
+        <location filename="../dogecash/settings/settingsbackupwallet.cpp" line="+1"/>
         <source>Wallet Data (*.dat)</source>
         <translation type="unfinished">Wallet Data (*.dat)</translation>
     </message>
@@ -4118,7 +4118,7 @@ Remember to write it down and store it safely, otherwise you might lose access t
 <context>
     <name>SettingsBitToolWidget</name>
     <message>
-        <location filename="../pivx/settings/forms/settingsbittoolwidget.ui" line="+473"/>
+        <location filename="../dogecash/settings/forms/settingsbittoolwidget.ui" line="+473"/>
         <source>Import Address</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4216,7 +4216,7 @@ Using this mechanism you can share your keys without middle-man risk, only need 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pivx/settings/settingsbittoolwidget.cpp" line="+142"/>
+        <location filename="../dogecash/settings/settingsbittoolwidget.cpp" line="+142"/>
         <source>The entered passphrase is invalid. </source>
         <translation type="unfinished"></translation>
     </message>
@@ -4311,17 +4311,17 @@ Using this mechanism you can share your keys without middle-man risk, only need 
 <context>
     <name>SettingsConsoleWidget</name>
     <message>
-        <location filename="../pivx/settings/forms/settingsconsolewidget.ui" line="+60"/>
+        <location filename="../dogecash/settings/forms/settingsconsolewidget.ui" line="+60"/>
         <source>Console</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pivx/settings/settingsconsolewidget.cpp" line="+72"/>
+        <location filename="../dogecash/settings/settingsconsolewidget.cpp" line="+72"/>
         <source>Console input</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pivx/settings/forms/settingsconsolewidget.ui" line="+29"/>
+        <location filename="../dogecash/settings/forms/settingsconsolewidget.ui" line="+29"/>
         <source>Open Debug File</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4336,7 +4336,7 @@ Using this mechanism you can share your keys without middle-man risk, only need 
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pivx/settings/settingsconsolewidget.cpp" line="+13"/>
+        <location filename="../dogecash/settings/settingsconsolewidget.cpp" line="+13"/>
         <source>Cannot open debug file.
 Verify that you have installed a predetermined text editor.</source>
         <translation type="unfinished"></translation>
@@ -4370,13 +4370,13 @@ Verify that you have installed a predetermined text editor.</source>
 <context>
     <name>SettingsDisplayOptionsWidget</name>
     <message>
-        <location filename="../pivx/settings/forms/settingsdisplayoptionswidget.ui" line="+208"/>
+        <location filename="../dogecash/settings/forms/settingsdisplayoptionswidget.ui" line="+208"/>
         <source>Hide stake charts in the dashboard</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+91"/>
-        <location filename="../pivx/settings/settingsdisplayoptionswidget.cpp" line="+92"/>
+        <location filename="../dogecash/settings/settingsdisplayoptionswidget.cpp" line="+92"/>
         <source>Reset to default</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4421,7 +4421,7 @@ Verify that you have installed a predetermined text editor.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pivx/settings/settingsdisplayoptionswidget.cpp" line="-1"/>
+        <location filename="../dogecash/settings/settingsdisplayoptionswidget.cpp" line="-1"/>
         <source>SAVE</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4439,7 +4439,7 @@ Verify that you have installed a predetermined text editor.</source>
 <context>
     <name>SettingsExportCSV</name>
     <message>
-        <location filename="../pivx/settings/forms/settingsexportcsv.ui" line="+55"/>
+        <location filename="../dogecash/settings/forms/settingsexportcsv.ui" line="+55"/>
         <source>Export Accounting</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4450,26 +4450,26 @@ Verify that you have installed a predetermined text editor.</source>
     </message>
     <message>
         <location line="+35"/>
-        <location filename="../pivx/settings/settingsexportcsv.cpp" line="+61"/>
+        <location filename="../dogecash/settings/settingsexportcsv.cpp" line="+61"/>
         <source>Export Transaction History</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="+58"/>
         <location line="+115"/>
-        <location filename="../pivx/settings/settingsexportcsv.cpp" line="+8"/>
+        <location filename="../dogecash/settings/settingsexportcsv.cpp" line="+8"/>
         <location line="+7"/>
         <source>Select folder...</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="-48"/>
-        <location filename="../pivx/settings/settingsexportcsv.cpp" line="-15"/>
+        <location filename="../dogecash/settings/settingsexportcsv.cpp" line="-15"/>
         <source>Export Address Book</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pivx/settings/settingsexportcsv.cpp" line="+1"/>
+        <location filename="../dogecash/settings/settingsexportcsv.cpp" line="+1"/>
         <source>Comma separated file (*.csv)</source>
         <translation type="unfinished">Comma separated file (*.csv)</translation>
     </message>
@@ -4547,7 +4547,7 @@ There was an error trying to save the address list to %1. Please try again.</sou
 <context>
     <name>SettingsFaqWidget</name>
     <message>
-        <location filename="../pivx/settings/forms/settingsfaqwidget.ui" line="+166"/>
+        <location filename="../dogecash/settings/forms/settingsfaqwidget.ui" line="+166"/>
         <source>1) What is PIVX?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4652,7 +4652,7 @@ There was an error trying to save the address list to %1. Please try again.</sou
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pivx/settings/settingsfaqwidget.cpp" line="+78"/>
+        <location filename="../dogecash/settings/settingsfaqwidget.cpp" line="+78"/>
         <source>PIVX is a form of digital online money using blockchain technology that can be easily transferred globally, instantly, and with near zero fees. PIVX incorporates market leading security &amp; privacy and is also the first PoS (Proof of Stake) Cryptocurrency to implement Sapling(SHIELD), a zk-SNARKs based privacy protocol.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4795,7 +4795,7 @@ There was an error trying to save the address list to %1. Please try again.</sou
 <context>
     <name>SettingsInformationWidget</name>
     <message>
-        <location filename="../pivx/settings/forms/settingsinformationwidget.ui" line="+116"/>
+        <location filename="../dogecash/settings/forms/settingsinformationwidget.ui" line="+116"/>
         <source>Network Monitor</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4885,12 +4885,12 @@ There was an error trying to save the address list to %1. Please try again.</sou
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pivx/settings/settingsinformationwidget.cpp" line="+74"/>
+        <location filename="../dogecash/settings/settingsinformationwidget.cpp" line="+74"/>
         <source>Main</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pivx/settings/forms/settingsinformationwidget.ui" line="-587"/>
+        <location filename="../dogecash/settings/forms/settingsinformationwidget.ui" line="-587"/>
         <source>Wallet Conf</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4900,7 +4900,7 @@ There was an error trying to save the address list to %1. Please try again.</sou
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pivx/settings/settingsinformationwidget.cpp" line="+21"/>
+        <location filename="../dogecash/settings/settingsinformationwidget.cpp" line="+21"/>
         <source>No information</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4933,7 +4933,7 @@ There was an error trying to save the address list to %1. Please try again.</sou
 <context>
     <name>SettingsMainOptionsWidget</name>
     <message>
-        <location filename="../pivx/settings/forms/settingsmainoptionswidget.ui" line="+292"/>
+        <location filename="../dogecash/settings/forms/settingsmainoptionswidget.ui" line="+292"/>
         <source>Window</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4988,7 +4988,7 @@ There was an error trying to save the address list to %1. Please try again.</sou
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pivx/settings/settingsmainoptionswidget.cpp" line="+54"/>
+        <location filename="../dogecash/settings/settingsmainoptionswidget.cpp" line="+54"/>
         <source>Start %1 on system login</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5014,7 +5014,7 @@ Are you sure?
 <context>
     <name>SettingsSignMessageWidgets</name>
     <message>
-        <location filename="../pivx/settings/forms/settingssignmessagewidgets.ui" line="+78"/>
+        <location filename="../dogecash/settings/forms/settingssignmessagewidgets.ui" line="+78"/>
         <source>Sign/Verify Message</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5034,12 +5034,12 @@ Are you sure?
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pivx/settings/settingssignmessagewidgets.cpp" line="+48"/>
+        <location filename="../dogecash/settings/settingssignmessagewidgets.cpp" line="+48"/>
         <source>Select mode</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pivx/settings/forms/settingssignmessagewidgets.ui" line="-19"/>
+        <location filename="../dogecash/settings/forms/settingssignmessagewidgets.ui" line="-19"/>
         <source>Message</source>
         <translation type="unfinished">Message</translation>
     </message>
@@ -5061,7 +5061,7 @@ Are you sure?
     </message>
     <message>
         <location line="+88"/>
-        <location filename="../pivx/settings/settingssignmessagewidgets.cpp" line="+64"/>
+        <location filename="../dogecash/settings/settingssignmessagewidgets.cpp" line="+64"/>
         <source>SIGN</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5071,7 +5071,7 @@ Are you sure?
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pivx/settings/settingssignmessagewidgets.cpp" line="-1"/>
+        <location filename="../dogecash/settings/settingssignmessagewidgets.cpp" line="-1"/>
         <source>You can sign messages with your addresses to prove you own them. Be careful not to sign anything vague, as phishing attacks may try to trick you into signing your identity over to them. Only sign fully-detailed statements you agree to.</source>
         <translation type="unfinished">You can sign messages with your addresses to prove you own them. Be careful not to sign anything vague, as phishing attacks may try to trick you into signing your identity over to them. Only sign fully-detailed statements you agree to.</translation>
     </message>
@@ -5154,7 +5154,7 @@ Are you sure?
 <context>
     <name>SettingsWalletOptionsWidget</name>
     <message>
-        <location filename="../pivx/settings/forms/settingswalletoptionswidget.ui" line="+464"/>
+        <location filename="../dogecash/settings/forms/settingswalletoptionswidget.ui" line="+464"/>
         <source>Reset to default</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5185,7 +5185,7 @@ Are you sure?
     </message>
     <message>
         <location line="+71"/>
-        <location filename="../pivx/settings/settingswalletoptionswidget.cpp" line="+43"/>
+        <location filename="../dogecash/settings/settingswalletoptionswidget.cpp" line="+43"/>
         <source>Network</source>
         <translation type="unfinished">Network</translation>
     </message>
@@ -5245,7 +5245,7 @@ Are you sure?
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pivx/settings/settingswalletoptionswidget.cpp" line="+28"/>
+        <location filename="../dogecash/settings/settingswalletoptionswidget.cpp" line="+28"/>
         <source>Options reset succeed</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5258,8 +5258,8 @@ Are you sure?
 <context>
     <name>SettingsWalletRepairWidget</name>
     <message>
-        <location filename="../pivx/settings/forms/settingswalletrepairwidget.ui" line="+108"/>
-        <location filename="../pivx/settings/settingswalletrepairwidget.cpp" line="+22"/>
+        <location filename="../dogecash/settings/forms/settingswalletrepairwidget.ui" line="+108"/>
+        <location filename="../dogecash/settings/settingswalletrepairwidget.cpp" line="+22"/>
         <source>Wallet Repair</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5339,7 +5339,7 @@ Are you sure?
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pivx/settings/settingswalletrepairwidget.cpp" line="+63"/>
+        <location filename="../dogecash/settings/settingswalletrepairwidget.cpp" line="+63"/>
         <source>This will delete your local blockchain folders and the wallet will synchronize the complete Blockchain from scratch.&lt;br /&gt;&lt;br /&gt;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5367,7 +5367,7 @@ Are you sure?
 <context>
     <name>SettingsWidget</name>
     <message>
-        <location filename="../pivx/settings/forms/settingswidget.ui" line="+269"/>
+        <location filename="../dogecash/settings/forms/settingswidget.ui" line="+269"/>
         <source>Wallet Data</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5453,7 +5453,7 @@ Are you sure?
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pivx/settings/settingswidget.cpp" line="+211"/>
+        <location filename="../dogecash/settings/settingswidget.cpp" line="+211"/>
         <source>Confirm options reset</source>
         <translation type="unfinished">Confirm options reset</translation>
     </message>
@@ -5533,7 +5533,7 @@ Are you sure?
 <context>
     <name>Splash</name>
     <message>
-        <location filename="../pivx/forms/splash.ui" line="+169"/>
+        <location filename="../dogecash/forms/splash.ui" line="+169"/>
         <source>Loading…</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5549,7 +5549,7 @@ Are you sure?
 <context>
     <name>TooltipMenu</name>
     <message>
-        <location filename="../pivx/forms/tooltipmenu.ui" line="+86"/>
+        <location filename="../dogecash/forms/tooltipmenu.ui" line="+86"/>
         <source>Copy</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5572,7 +5572,7 @@ Are you sure?
 <context>
     <name>TopBar</name>
     <message>
-        <location filename="../pivx/forms/topbar.ui" line="+129"/>
+        <location filename="../dogecash/forms/topbar.ui" line="+129"/>
         <source>transparent</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5583,7 +5583,7 @@ Are you sure?
     </message>
     <message>
         <location line="+213"/>
-        <location filename="../pivx/topbar.cpp" line="+669"/>
+        <location filename="../dogecash/topbar.cpp" line="+669"/>
         <source>Available</source>
         <translation type="unfinished"></translation>
     </message>
@@ -5598,7 +5598,7 @@ Are you sure?
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pivx/topbar.cpp" line="-370"/>
+        <location filename="../dogecash/topbar.cpp" line="-370"/>
         <location line="+342"/>
         <source>Wallet Unlocked for staking</source>
         <translation type="unfinished"></translation>
@@ -6091,8 +6091,8 @@ backup will be created.
 <context>
     <name>TxDetailDialog</name>
     <message>
-        <location filename="../pivx/forms/sendconfirmdialog.ui" line="+116"/>
-        <location filename="../pivx/sendconfirmdialog.cpp" line="+75"/>
+        <location filename="../dogecash/forms/sendconfirmdialog.ui" line="+116"/>
+        <location filename="../dogecash/sendconfirmdialog.cpp" line="+75"/>
         <source>Transaction Details</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6103,13 +6103,13 @@ backup will be created.
     </message>
     <message>
         <location line="+117"/>
-        <location filename="../pivx/sendconfirmdialog.cpp" line="+12"/>
+        <location filename="../dogecash/sendconfirmdialog.cpp" line="+12"/>
         <source>Previous Transaction</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
         <location line="-16"/>
-        <location filename="../pivx/sendconfirmdialog.cpp" line="+1"/>
+        <location filename="../dogecash/sendconfirmdialog.cpp" line="+1"/>
         <source>Output Index</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6179,7 +6179,7 @@ backup will be created.
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pivx/sendconfirmdialog.cpp" line="-34"/>
+        <location filename="../dogecash/sendconfirmdialog.cpp" line="-34"/>
         <source>Confirm Your Transaction</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6227,7 +6227,7 @@ backup will be created.
 <context>
     <name>VoteDialog</name>
     <message>
-        <location filename="../pivx/forms/votedialog.ui" line="+92"/>
+        <location filename="../dogecash/forms/votedialog.ui" line="+92"/>
         <source>Vote For Proposal</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6238,7 +6238,7 @@ backup will be created.
     </message>
     <message>
         <location line="+276"/>
-        <location filename="../pivx/votedialog.cpp" line="+170"/>
+        <location filename="../dogecash/votedialog.cpp" line="+170"/>
         <source>Select Voting Masternodes</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6258,7 +6258,7 @@ backup will be created.
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pivx/votedialog.cpp" line="-110"/>
+        <location filename="../dogecash/votedialog.cpp" line="-110"/>
         <source>%1 months remaining</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6322,7 +6322,7 @@ Select fewer inputs with coin control.</source>
 <context>
     <name>WelcomeContentWidget</name>
     <message>
-        <location filename="../pivx/forms/welcomecontentwidget.ui" line="+244"/>
+        <location filename="../dogecash/forms/welcomecontentwidget.ui" line="+244"/>
         <source>1</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6398,7 +6398,7 @@ Select fewer inputs with coin control.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../pivx/welcomecontentwidget.cpp" line="+183"/>
+        <location filename="../dogecash/welcomecontentwidget.cpp" line="+183"/>
         <source>default</source>
         <translation type="unfinished">default</translation>
     </message>
@@ -6406,7 +6406,7 @@ Select fewer inputs with coin control.</source>
 <context>
     <name>governancewidget</name>
     <message>
-        <location filename="../pivx/forms/governancewidget.ui" line="+436"/>
+        <location filename="../dogecash/forms/governancewidget.ui" line="+436"/>
         <source>No active proposals yet</source>
         <translation type="unfinished"></translation>
     </message>
@@ -7271,7 +7271,7 @@ Please run &apos;sapling-fetch-params&apos; or &apos;./util/fetch-params.sh&apos
 <context>
     <name>send</name>
     <message>
-        <location filename="../pivx/forms/send.ui" line="+74"/>
+        <location filename="../dogecash/forms/send.ui" line="+74"/>
         <location line="+629"/>
         <source>Send</source>
         <translation type="unfinished"></translation>

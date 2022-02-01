@@ -16,17 +16,17 @@ These are the dependencies currently used by PIVX Core. You can find instruction
 | HarfBuzz-NG |  |  |  |  |  |
 | libevent | [2.1.8-stable](https://github.com/libevent/libevent/releases) | 2.0.22 | No |  |  |
 | libnatpmp | [20150609](https://miniupnp.tuxfamily.org/files) |  | No |  |  |
-| libjpeg |  |  |  |  | [Yes](https://github.com/pivx-project/pivx/blob/master/depends/packages/qt.mk#L65) |
-| libpng |  |  |  |  | [Yes](https://github.com/pivx-project/pivx/blob/master/depends/packages/qt.mk#L64) |
+| libjpeg |  |  |  |  | [Yes](https://github.com/pivx-project/dogecash/blob/master/depends/packages/qt.mk#L65) |
+| libpng |  |  |  |  | [Yes](https://github.com/pivx-project/dogecash/blob/master/depends/packages/qt.mk#L64) |
 | librsvg | |  |  |  |  |
 | MiniUPnPc | [2.2.2](https://miniupnp.tuxfamily.org/files) |  | No |  |  |
 | GMP | [6.1.2](https://gmplib.org/) | | No | | |
-| PCRE |  |  |  |  | [Yes](https://github.com/pivx-project/pivx/blob/master/depends/packages/qt.mk#L66) |
+| PCRE |  |  |  |  | [Yes](https://github.com/pivx-project/dogecash/blob/master/depends/packages/qt.mk#L66) |
 | Python (tests) |  | [3.5](https://www.python.org/downloads) |  |  |  |
 | qrencode | [3.4.4](https://fukuchi.org/works/qrencode) |  | No |  |  |
 | Qt | [5.9.7](https://download.qt.io/official_releases/qt/) | [5.5.1](https://github.com/bitcoin/bitcoin/issues/13478) | No |  |  |
-| XCB |  |  |  |  | [Yes](https://github.com/pivx-project/pivx/blob/master/depends/packages/qt.mk#L87) (Linux only) |
-| xkbcommon |  |  |  |  | [Yes](https://github.com/pivx-project/pivx/blob/master/depends/packages/qt.mk#L86) (Linux only) |
+| XCB |  |  |  |  | [Yes](https://github.com/pivx-project/dogecash/blob/master/depends/packages/qt.mk#L87) (Linux only) |
+| xkbcommon |  |  |  |  | [Yes](https://github.com/pivx-project/dogecash/blob/master/depends/packages/qt.mk#L86) (Linux only) |
 | ZeroMQ | [4.3.1](https://github.com/zeromq/libzmq/releases) | 4.0.0 | No |  |  |
 | zlib | [1.2.11](https://zlib.net/) |  |  |  | No |
 | Sodium | [1.0.15](https://github.com/jedisct1/libsodium) |

@@ -144,25 +144,25 @@ def build():
 
     subprocess.check_call(['wget', '-O', 'inputs/osslsigncode-2.0.tar.gz', 'https://github.com/mtrojnar/osslsigncode/archive/2.0.tar.gz'])
     subprocess.check_call(["echo '5a60e0a4b3e0b4d655317b2f12a810211c50242138322b16e7e01c6fbb89d92f inputs/osslsigncode-2.0.tar.gz' | sha256sum -c"], shell=True)
-    subprocess.check_call(['make', '-C', '../pivx/depends', 'download', 'SOURCES_PATH=' + os.getcwd() + '/cache/common'])
+    subprocess.check_call(['make', '-C', '../dogecash/depends', 'download', 'SOURCES_PATH=' + os.getcwd() + '/cache/common'])
 
     if args.linux:
         print('\nCompiling ' + args.version + ' Linux')
-        subprocess.check_call(['bin/gbuild', '-j', args.jobs, '-m', args.memory, '--commit', 'pivx='+args.commit, '--url', 'pivx='+args.url, '../pivx/contrib/gitian-descriptors/gitian-linux.yml'])
-        subprocess.check_call(['bin/gsign', '-p', args.sign_prog, '--signer', args.signer, '--release', args.version+'-linux', '--destination', '../gitian.sigs/', '../pivx/contrib/gitian-descriptors/gitian-linux.yml'])
+        subprocess.check_call(['bin/gbuild', '-j', args.jobs, '-m', args.memory, '--commit', 'pivx='+args.commit, '--url', 'pivx='+args.url, '../dogecash/contrib/gitian-descriptors/gitian-linux.yml'])
+        subprocess.check_call(['bin/gsign', '-p', args.sign_prog, '--signer', args.signer, '--release', args.version+'-linux', '--destination', '../gitian.sigs/', '../dogecash/contrib/gitian-descriptors/gitian-linux.yml'])
         subprocess.check_call('mv build/out/pivx-*.tar.gz build/out/src/pivx-*.tar.gz ../pivx-binaries/'+args.version, shell=True)
 
     if args.windows:
         print('\nCompiling ' + args.version + ' Windows')
-        subprocess.check_call(['bin/gbuild', '-j', args.jobs, '-m', args.memory, '--commit', 'pivx='+args.commit, '--url', 'pivx='+args.url, '../pivx/contrib/gitian-descriptors/gitian-win.yml'])
-        subprocess.check_call(['bin/gsign', '-p', args.sign_prog, '--signer', args.signer, '--release', args.version+'-win-unsigned', '--destination', '../gitian.sigs/', '../pivx/contrib/gitian-descriptors/gitian-win.yml'])
+        subprocess.check_call(['bin/gbuild', '-j', args.jobs, '-m', args.memory, '--commit', 'pivx='+args.commit, '--url', 'pivx='+args.url, '../dogecash/contrib/gitian-descriptors/gitian-win.yml'])
+        subprocess.check_call(['bin/gsign', '-p', args.sign_prog, '--signer', args.signer, '--release', args.version+'-win-unsigned', '--destination', '../gitian.sigs/', '../dogecash/contrib/gitian-descriptors/gitian-win.yml'])
         subprocess.check_call('mv build/out/pivx-*-win-unsigned.tar.gz inputs/', shell=True)
         subprocess.check_call('mv build/out/pivx-*.zip build/out/pivx-*.exe build/out/src/pivx-*.tar.gz ../pivx-binaries/'+args.version, shell=True)
 
     if args.macos:
         print('\nCompiling ' + args.version + ' MacOS')
-        subprocess.check_call(['bin/gbuild', '-j', args.jobs, '-m', args.memory, '--commit', 'pivx='+args.commit, '--url', 'pivx='+args.url, '../pivx/contrib/gitian-descriptors/gitian-osx.yml'])
-        subprocess.check_call(['bin/gsign', '-p', args.sign_prog, '--signer', args.signer, '--release', args.version+'-osx-unsigned', '--destination', '../gitian.sigs/', '../pivx/contrib/gitian-descriptors/gitian-osx.yml'])
+        subprocess.check_call(['bin/gbuild', '-j', args.jobs, '-m', args.memory, '--commit', 'pivx='+args.commit, '--url', 'pivx='+args.url, '../dogecash/contrib/gitian-descriptors/gitian-osx.yml'])
+        subprocess.check_call(['bin/gsign', '-p', args.sign_prog, '--signer', args.signer, '--release', args.version+'-osx-unsigned', '--destination', '../gitian.sigs/', '../dogecash/contrib/gitian-descriptors/gitian-osx.yml'])
         subprocess.check_call('mv build/out/pivx-*-osx-unsigned.tar.gz inputs/', shell=True)
         subprocess.check_call('mv build/out/pivx-*.tar.gz build/out/pivx-*.dmg build/out/src/pivx-*.tar.gz ../pivx-binaries/'+args.version, shell=True)
 
@@ -185,15 +185,15 @@ def sign():
     # TODO: Skip making signed windows sigs until we actually start producing signed windows binaries
     #print('\nSigning ' + args.version + ' Windows')
     #subprocess.check_call('cp inputs/pivx-' + args.version + '-win-unsigned.tar.gz inputs/pivx-win-unsigned.tar.gz', shell=True)
-    #subprocess.check_call(['bin/gbuild', '--skip-image', '--upgrade', '--commit', 'signature='+args.commit, '../pivx/contrib/gitian-descriptors/gitian-win-signer.yml'])
-    #subprocess.check_call(['bin/gsign', '-p', args.sign_prog, '--signer', args.signer, '--release', args.version+'-win-signed', '--destination', '../gitian.sigs/', '../pivx/contrib/gitian-descriptors/gitian-win-signer.yml'])
+    #subprocess.check_call(['bin/gbuild', '--skip-image', '--upgrade', '--commit', 'signature='+args.commit, '../dogecash/contrib/gitian-descriptors/gitian-win-signer.yml'])
+    #subprocess.check_call(['bin/gsign', '-p', args.sign_prog, '--signer', args.signer, '--release', args.version+'-win-signed', '--destination', '../gitian.sigs/', '../dogecash/contrib/gitian-descriptors/gitian-win-signer.yml'])
     #subprocess.check_call('mv build/out/pivx-*win64-setup.exe ../pivx-binaries/'+args.version, shell=True)
     #subprocess.check_call('mv build/out/pivx-*win32-setup.exe ../pivx-binaries/'+args.version, shell=True)
 
     print('\nSigning ' + args.version + ' MacOS')
     subprocess.check_call('cp inputs/pivx-' + args.version + '-osx-unsigned.tar.gz inputs/pivx-osx-unsigned.tar.gz', shell=True)
-    subprocess.check_call(['bin/gbuild', '--skip-image', '--upgrade', '--commit', 'signature='+args.commit, '../pivx/contrib/gitian-descriptors/gitian-osx-signer.yml'])
-    subprocess.check_call(['bin/gsign', '-p', args.sign_prog, '--signer', args.signer, '--release', args.version+'-osx-signed', '--destination', '../gitian.sigs/', '../pivx/contrib/gitian-descriptors/gitian-osx-signer.yml'])
+    subprocess.check_call(['bin/gbuild', '--skip-image', '--upgrade', '--commit', 'signature='+args.commit, '../dogecash/contrib/gitian-descriptors/gitian-osx-signer.yml'])
+    subprocess.check_call(['bin/gsign', '-p', args.sign_prog, '--signer', args.signer, '--release', args.version+'-osx-signed', '--destination', '../gitian.sigs/', '../dogecash/contrib/gitian-descriptors/gitian-osx-signer.yml'])
     subprocess.check_call('mv build/out/pivx-osx-signed.dmg ../pivx-binaries/'+args.version+'/pivx-'+args.version+'-osx.dmg', shell=True)
 
     os.chdir(workdir)
@@ -221,28 +221,28 @@ def verify():
     os.chdir('gitian-builder')
 
     print('\nVerifying v'+args.version+' Linux\n')
-    if subprocess.call(['bin/gverify', '-v', '-d', '../gitian.sigs/', '-r', args.version+'-linux', '../pivx/contrib/gitian-descriptors/gitian-linux.yml']):
+    if subprocess.call(['bin/gverify', '-v', '-d', '../gitian.sigs/', '-r', args.version+'-linux', '../dogecash/contrib/gitian-descriptors/gitian-linux.yml']):
         print('Verifying v'+args.version+' Linux FAILED\n')
         rc = 1
 
     print('\nVerifying v'+args.version+' Windows\n')
-    if subprocess.call(['bin/gverify', '-v', '-d', '../gitian.sigs/', '-r', args.version+'-win-unsigned', '../pivx/contrib/gitian-descriptors/gitian-win.yml']):
+    if subprocess.call(['bin/gverify', '-v', '-d', '../gitian.sigs/', '-r', args.version+'-win-unsigned', '../dogecash/contrib/gitian-descriptors/gitian-win.yml']):
         print('Verifying v'+args.version+' Windows FAILED\n')
         rc = 1
 
     print('\nVerifying v'+args.version+' MacOS\n')
-    if subprocess.call(['bin/gverify', '-v', '-d', '../gitian.sigs/', '-r', args.version+'-osx-unsigned', '../pivx/contrib/gitian-descriptors/gitian-osx.yml']):
+    if subprocess.call(['bin/gverify', '-v', '-d', '../gitian.sigs/', '-r', args.version+'-osx-unsigned', '../dogecash/contrib/gitian-descriptors/gitian-osx.yml']):
         print('Verifying v'+args.version+' MacOS FAILED\n')
         rc = 1
 
     # TODO: Skip checking signed windows sigs until we actually start producing signed windows binaries
     #print('\nVerifying v'+args.version+' Signed Windows\n')
-    #if subprocess.call(['bin/gverify', '-v', '-d', '../gitian.sigs/', '-r', args.version+'-win-signed', '../pivx/contrib/gitian-descriptors/gitian-win-signer.yml']):
+    #if subprocess.call(['bin/gverify', '-v', '-d', '../gitian.sigs/', '-r', args.version+'-win-signed', '../dogecash/contrib/gitian-descriptors/gitian-win-signer.yml']):
     #    print('Verifying v'+args.version+' Signed Windows FAILED\n')
     #    rc = 1
 
     print('\nVerifying v'+args.version+' Signed MacOS\n')
-    if subprocess.call(['bin/gverify', '-v', '-d', '../gitian.sigs/', '-r', args.version+'-osx-signed', '../pivx/contrib/gitian-descriptors/gitian-osx-signer.yml']):
+    if subprocess.call(['bin/gverify', '-v', '-d', '../gitian.sigs/', '-r', args.version+'-osx-signed', '../dogecash/contrib/gitian-descriptors/gitian-osx-signer.yml']):
         print('Verifying v'+args.version+' Signed MacOS FAILED\n')
         rc = 1
 

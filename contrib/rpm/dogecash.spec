@@ -24,18 +24,18 @@ URL:		https://pivx.org/
 Source0:	https://pivx.org/bin/pivx-core-%{version}/pivx-%{version}.tar.gz
 Source1:	http://download.oracle.com/berkeley-db/db-%{bdbv}.NC.tar.gz
 
-Source10:	https://raw.githubusercontent.com/pivx-project/pivx/v%{version}/contrib/debian/examples/pivx.conf
+Source10:	https://raw.githubusercontent.com/pivx-project/dogecash/v%{version}/contrib/debian/examples/pivx.conf
 
 #man pages
-Source20:	https://raw.githubusercontent.com/pivx-project/pivx/v%{version}/doc/man/dogecashd.1
-Source21:	https://raw.githubusercontent.com/pivx-project/pivx/v%{version}/doc/man/dogecash-cli.1
-Source22:	https://raw.githubusercontent.com/pivx-project/pivx/v%{version}/doc/man/dogecash-qt.1
+Source20:	https://raw.githubusercontent.com/pivx-project/dogecash/v%{version}/doc/man/dogecashd.1
+Source21:	https://raw.githubusercontent.com/pivx-project/dogecash/v%{version}/doc/man/dogecash-cli.1
+Source22:	https://raw.githubusercontent.com/pivx-project/dogecash/v%{version}/doc/man/dogecash-qt.1
 
 #selinux
-Source30:	https://raw.githubusercontent.com/pivx-project/pivx/v%{version}/contrib/rpm/pivx.te
+Source30:	https://raw.githubusercontent.com/pivx-project/dogecash/v%{version}/contrib/rpm/pivx.te
 # Source31 - what about dogecash-tx and bench_pivx ???
-Source31:	https://raw.githubusercontent.com/pivx-project/pivx/v%{version}/contrib/rpm/pivx.fc
-Source32:	https://raw.githubusercontent.com/pivx-project/pivx/v%{version}/contrib/rpm/pivx.if
+Source31:	https://raw.githubusercontent.com/pivx-project/dogecash/v%{version}/contrib/rpm/pivx.fc
+Source32:	https://raw.githubusercontent.com/pivx-project/dogecash/v%{version}/contrib/rpm/pivx.if
 
 Source100:	https://upload.wikimedia.org/wikipedia/commons/4/46/Bitcoin.svg
 
@@ -200,7 +200,7 @@ OPTIONS=""
 
 # System service defaults.
 # Don't change these unless you know what you're doing.
-CONFIG_FILE="%{_sysconfdir}/pivx/pivx.conf"
+CONFIG_FILE="%{_sysconfdir}/dogecash/pivx.conf"
 DATA_DIR="%{_localstatedir}/lib/pivx"
 PID_FILE="/run/dogecashd/dogecashd.pid"
 EOF
@@ -439,4 +439,4 @@ rm -rf %{buildroot}
 - Initial spec file for 0.12.0 release
 
 # This spec file is written from scratch but a lot of the packaging decisions are directly
-# based upon the 0.11.2 package spec file from https://www.ringingliberty.com/pivx/
+# based upon the 0.11.2 package spec file from https://www.ringingliberty.com/dogecash/

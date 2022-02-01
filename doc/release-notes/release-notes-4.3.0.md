@@ -1,8 +1,8 @@
-PIVX Core version *4.3.0* is now available from:  <https://github.com/pivx-project/pivx/releases>
+PIVX Core version *4.3.0* is now available from:  <https://github.com/pivx-project/dogecash/releases>
 
 This is a new major version release, including various bug fixes and performance improvements, as well as updated translations.
 
-Please report bugs using the issue tracker at github: <https://github.com/pivx-project/pivx/issues>
+Please report bugs using the issue tracker at github: <https://github.com/pivx-project/dogecash/issues>
 
 
 Recommended Update

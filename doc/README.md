@@ -51,7 +51,7 @@ The PIVX repo's [root README](/README.md) contains relevant information on the d
 - [Multiwallet Qt Development](multiwallet-qt.md)
 - [Release Notes](release-notes.md)
 - [Release Process](release-process.md)
-- [Source Code Documentation (External Link)](https://www.fuzzbawls.pw/pivx/doxygen/)
+- [Source Code Documentation (External Link)](https://www.fuzzbawls.pw/dogecash/doxygen/)
 - [Translation Process](translation_process.md)
 - [Unit Tests](unit-tests.md)
 - [Unauthenticated REST Interface](REST-interface.md)

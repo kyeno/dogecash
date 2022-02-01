@@ -1,4 +1,4 @@
-PIVX Core version v5.3.0 is now available from: <https://github.com/pivx-project/pivx/releases>
+PIVX Core version v5.3.0 is now available from: <https://github.com/pivx-project/dogecash/releases>
 
 Mandatory Update
 ==============
@@ -15,7 +15,7 @@ If you are running a Masternode over Tor, please read the "How To Upgrade" secti
 
 Note: In preparation for the enforcement, upgraded peers will start rejecting non-upgraded peers few hours before the enforcement block height, we recommend everyone to be updated at max a day before the final time.
 
-Please report bugs using the issue tracker at github: <https://github.com/pivx-project/pivx/issues>
+Please report bugs using the issue tracker at github: <https://github.com/pivx-project/dogecash/issues>
 
 How to Upgrade
 ==============
