@@ -6,10 +6,10 @@
 
 from decimal import Decimal
 
-from test_framework.test_framework import PivxTestFramework
+from test_framework.test_framework import DogeCashTestFramework
 from test_framework.util import assert_equal, connect_nodes, get_coinstake_address
 
-class WalletAnchorForkTest(PivxTestFramework):
+class WalletAnchorForkTest(DogeCashTestFramework):
 
     def set_test_params(self):
         self.num_nodes = 3

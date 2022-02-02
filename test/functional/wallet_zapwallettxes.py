@@ -15,18 +15,16 @@
   been zapped.
 """
 
-from test_framework.test_framework import PivxTestFramework
+from test_framework.test_framework import DogeCashTestFramework
 from test_framework.util import (
     assert_equal,
     assert_raises_rpc_error,
 )
 
-class ZapWalletTXesTest (PivxTestFramework):
+class ZapWalletTXesTest (DogeCashTestFramework):
     def set_test_params(self):
         self.setup_clean_chain = True
         self.num_nodes = 2
-        # whitelist all peers to speed up tx relay / mempool sync
-        self.extra_args = [["-whitelist=127.0.0.1"]] * self.num_nodes
 
     def run_test(self):
         self.log.info("Mining blocks...")
@@ -56,9 +54,9 @@ class ZapWalletTXesTest (PivxTestFramework):
         assert_equal(self.nodes[1].getwalletinfo()["unconfirmed_balance"], 20)
         assert_equal(self.nodes[1].getunconfirmedbalance(), 20)
 
-        # Restart node0. Both confirmed and unconfirmed transactions remain in the wallet.
-        self.restart_node(0)
-
+        # Stop-start node0. Both confirmed and unconfirmed transactions remain in the wallet.
+        self.stop_node(0)
+        self.start_node(0)
         assert_equal(self.nodes[0].gettransaction(txid1)['txid'], txid1)
         assert_equal(self.nodes[0].gettransaction(txid2)['txid'], txid2)
 

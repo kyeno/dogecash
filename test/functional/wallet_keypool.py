@@ -6,11 +6,11 @@
 
 import time
 
-from test_framework.test_framework import PivxTestFramework
+from test_framework.test_framework import DogeCashTestFramework
 from test_framework.util import assert_equal, assert_raises_rpc_error
 
 
-class KeyPoolTest(PivxTestFramework):
+class KeyPoolTest(DogeCashTestFramework):
     def set_test_params(self):
         self.num_nodes = 1
         self.extra_args = [['-keypool=1']]
@@ -21,7 +21,9 @@ class KeyPoolTest(PivxTestFramework):
         nodes[0].validateaddress(addr_before_encrypting)
 
         # Encrypt wallet and wait to terminate
-        nodes[0].encryptwallet('test')
+        nodes[0].node_encrypt_wallet('test')
+        # Restart node 0
+        self.start_node(0, self.extra_args[0])
         # Keep creating keys
         addr = nodes[0].getnewaddress()
         nodes[0].validateaddress(addr)

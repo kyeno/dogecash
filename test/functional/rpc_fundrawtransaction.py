@@ -3,13 +3,14 @@
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-from test_framework.test_framework import PivxTestFramework
+from test_framework.test_framework import DogeCashTestFramework
 from test_framework.util import (
     assert_fee_amount,
     assert_equal,
     assert_raises_rpc_error,
     assert_greater_than,
     assert_greater_than_or_equal,
+    connect_nodes,
     count_bytes,
     find_vout_for_address,
     Decimal,
@@ -36,7 +37,7 @@ def check_outputs(outputs, dec_tx):
     return True
 
 
-class RawTransactionsTest(PivxTestFramework):
+class RawTransactionsTest(DogeCashTestFramework):
 
     def set_test_params(self):
         self.num_nodes = 4
@@ -351,7 +352,7 @@ class RawTransactionsTest(PivxTestFramework):
         addrs = [self.nodes[2].getnewaddress() for _ in range(2)]
         mSigAddr = self.nodes[2].addmultisigaddress(2, addrs)
 
-        # Send 50.1 DOGEC to mSigAddr.
+        # Send 50.1 PIV to mSigAddr.
         self.nodes[0].sendtoaddress(mSigAddr, 50.1)
         self.nodes[0].generate(1)
         self.sync_all()
@@ -370,7 +371,11 @@ class RawTransactionsTest(PivxTestFramework):
     def test_locked_wallet(self):
         self.log.info("test locked wallet")
 
-        self.nodes[1].encryptwallet("test")
+        self.nodes[1].node_encrypt_wallet("test")
+        self.start_node(1)
+        connect_nodes(self.nodes[0], 1)
+        connect_nodes(self.nodes[1], 2)
+        self.sync_all()
 
         # Drain the keypool.
         self.nodes[1].getnewaddress()

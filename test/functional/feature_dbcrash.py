@@ -33,7 +33,7 @@ import sys
 import time
 
 from test_framework.messages import COIN, COutPoint, CTransaction, CTxIn, CTxOut, ToHex
-from test_framework.test_framework import PivxTestFramework
+from test_framework.test_framework import DogeCashTestFramework
 from test_framework.util import assert_equal, create_confirmed_utxos, hex_str_to_bytes
 
 
@@ -44,7 +44,7 @@ except AttributeError:
     pass
 
 
-class ChainstateWriteCrashTest(PivxTestFramework):
+class ChainstateWriteCrashTest(DogeCashTestFramework):
 
     def set_test_params(self):
         self.num_nodes = 4
@@ -52,8 +52,8 @@ class ChainstateWriteCrashTest(PivxTestFramework):
         self.setup_clean_chain = False
         # Need a bit of extra time for the nodes to start up for this test
 
-        self.chain_params = ['-nuparams=v5_shield:90000', '-nuparams=DogeCash_v4.0:90000',
-                             '-nuparams=DogeCash_v3.4:90000', '-nuparams=Zerocoin_Public:90000',
+        self.chain_params = ['-nuparams=v5_shield:90000', '-nuparams=DOGECASH_v4.0:90000',
+                             '-nuparams=DOGECASH_v3.4:90000', '-nuparams=Zerocoin_Public:90000',
                              '-nuparams=Zerocoin_v2:90000', '-nuparams=Zerocoin:90000',
                              '-nuparams=PoS_v2:90000', '-nuparams=PoS:90000']
         # Set -maxmempool=0 to turn off mempool memory sharing with dbcache

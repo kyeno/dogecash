@@ -29,7 +29,7 @@ from .siphash import siphash256
 from .util import hex_str_to_bytes, bytes_to_hex_str
 
 MIN_VERSION_SUPPORTED = 60001
-MY_VERSION = 70925
+MY_VERSION = 70924
 MY_SUBVERSION = "/python-mininode-tester:0.0.3/"
 MY_RELAY = 1 # from version 70001 onwards, fRelay should be appended to version messages (BIP37)
 
@@ -37,7 +37,7 @@ MAX_INV_SZ = 50000
 MAX_BLOCK_BASE_SIZE = 2000000
 CURRENT_BLK_VERSION = 11
 
-COIN = 100000000 # 1 DOGEC in satoshis
+COIN = 100000000 # 1 PIV in satoshis
 
 NODE_NETWORK = (1 << 0)
 # NODE_GETUTXO = (1 << 1)
@@ -959,7 +959,7 @@ class CMerkleBlock:
 class msg_version:
     command = b"version"
 
-    def __init__(self, mn_auth_challenge=0):
+    def __init__(self):
         self.nVersion = MY_VERSION
         self.nServices = NODE_NETWORK
         self.nTime = int(time.time())
@@ -969,7 +969,6 @@ class msg_version:
         self.strSubVer = MY_SUBVERSION
         self.nStartingHeight = -1
         self.nRelay = MY_RELAY
-        self.mn_auth_challenge = mn_auth_challenge
 
     def deserialize(self, f):
         self.nVersion = struct.unpack("<i", f.read(4))[0]
@@ -1005,13 +1004,6 @@ class msg_version:
         else:
             self.nRelay = 0
 
-        if self.nVersion >= 70925:
-            try:
-                self.mn_auth_challenge = deser_uint256(f)
-            except:
-                self.mn_auth_challenge = 0
-
-
     def serialize(self):
         r = b""
         r += struct.pack("<i", self.nVersion)
@@ -1023,8 +1015,6 @@ class msg_version:
         r += ser_string(self.strSubVer.encode('utf-8'))
         r += struct.pack("<i", self.nStartingHeight)
         r += struct.pack("<b", self.nRelay)
-        if self.mn_auth_challenge != 0:
-            r += ser_uint256(self.mn_auth_challenge)
         return r
 
     def __repr__(self):

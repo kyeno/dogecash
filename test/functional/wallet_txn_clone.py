@@ -7,11 +7,11 @@
 import io
 
 from test_framework.messages import CTransaction, COIN
-from test_framework.test_framework import PivxTestFramework
+from test_framework.test_framework import DogeCashTestFramework
 from test_framework.util import assert_equal, connect_nodes, disconnect_nodes
 
 
-class TxnMallTest(PivxTestFramework):
+class TxnMallTest(DogeCashTestFramework):
     def set_test_params(self):
         self.num_nodes = 4
 
@@ -26,7 +26,7 @@ class TxnMallTest(PivxTestFramework):
         disconnect_nodes(self.nodes[2], 1)
 
     def run_test(self):
-        # All nodes should start with 6,250 DOGEC:
+        # All nodes should start with 6,250 PIV:
         starting_balance = 6250
         for i in range(4):
             assert_equal(self.nodes[i].getbalance(), starting_balance)

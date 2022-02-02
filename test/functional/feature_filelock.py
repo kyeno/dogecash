@@ -5,10 +5,10 @@
 """Check that it's not possible to start a second dogecashd instance using the same datadir or wallet."""
 import os
 
-from test_framework.test_framework import PivxTestFramework
+from test_framework.test_framework import DogeCashTestFramework
 from test_framework.test_node import ErrorMatch
 
-class FilelockTest(PivxTestFramework):
+class FilelockTest(DogeCashTestFramework):
     def set_test_params(self):
         self.setup_clean_chain = True
         self.num_nodes = 2

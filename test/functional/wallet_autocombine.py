@@ -6,14 +6,14 @@
 
 import time
 
-from test_framework.test_framework import PivxTestFramework
+from test_framework.test_framework import DogeCashTestFramework
 from test_framework.util import (
     assert_equal,
     assert_raises_rpc_error
 )
 
 
-class AutoCombineTest(PivxTestFramework):
+class AutoCombineTest(DogeCashTestFramework):
     def set_test_params(self):
         self.num_nodes = 1
         self.setup_clean_chain = True
@@ -40,7 +40,7 @@ class AutoCombineTest(PivxTestFramework):
         assert_equal(walletinfo['balance'], 500)
         assert_equal(walletinfo['txcount'], 102)
 
-        self.log.info("Set autocombine to 500 DOGEC")
+        self.log.info("Set autocombine to 500 PIV")
         setautocombine = self.nodes[0].setautocombinethreshold(True, 500)
         assert_equal(setautocombine['enabled'], True)
         assert_equal(setautocombine['threshold'], 500)

@@ -277,6 +277,14 @@ class TestNode():
                 if re.search(re.escape(expected_msg), log, flags=re.MULTILINE) is None:
                     raise AssertionError('Expected message "{}" does not partially match log:\n\n{}\n\n'.format(expected_msg, print_log))
 
+    def node_encrypt_wallet(self, passphrase):
+        """"Encrypts the wallet.
+
+        This causes dogecashd to shutdown, so this method takes
+        care of cleaning up resources."""
+        self.encryptwallet(passphrase)
+        self.wait_until_stopped()
+
     def add_p2p_connection(self, p2p_conn, *args, wait_for_verack=True, **kwargs):
         """Add a p2p connection to the node.
 
@@ -304,8 +312,8 @@ class TestNode():
             # So syncing here is redundant when we only want to send a message, but the cost is low (a few milliseconds)
             # in comparison to the upside of making tests less fragile and unexpected intermittent errors less likely.
             p2p_conn.sync_with_ping()
-            # Consistency check that the DogeCash Core has received our user agent string. This checks the
-            # node's newest peer. It could be racy if another DogeCash Core node has connected since we opened
+            # Consistency check that the DogeCash has received our user agent string. This checks the
+            # node's newest peer. It could be racy if another DogeCash node has connected since we opened
             # our connection, but we don't expect that to happen.
             assert_equal(self.getpeerinfo()[-1]['subver'], MY_SUBVERSION)
 

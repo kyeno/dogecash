@@ -6,19 +6,19 @@
 import random
 from time import sleep
 
-from test_framework.test_framework import PivxTestFramework
+from test_framework.test_framework import DogeCashTestFramework
 from test_framework.util import (
     assert_equal,
 )
 
 
-class BlockHashCacheTest(PivxTestFramework):
+class BlockHashCacheTest(DogeCashTestFramework):
 
     def set_test_params(self):
         self.num_nodes = 1
         self.setup_clean_chain = True
         # This test can go up to block 400 (2 * CACHE_SIZE). Delay POS activation
-        self.extra_args = [['-nuparams=PoS:401', '-nuparams=DogeCash_v3.4:402']]
+        self.extra_args = [['-nuparams=PoS:401', '-nuparams=DOGECASH_v3.4:402']]
 
     def log_title(self):
         title = "*** Starting %s ***" % self.__class__.__name__

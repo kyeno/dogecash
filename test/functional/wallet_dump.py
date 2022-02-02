@@ -6,7 +6,7 @@
 
 import os
 
-from test_framework.test_framework import PivxTestFramework
+from test_framework.test_framework import DogeCashTestFramework
 from test_framework.util import (assert_equal, assert_raises_rpc_error)
 
 
@@ -68,7 +68,7 @@ def read_dump(file_name, addrs, hd_master_addr_old):
         return found_addr, found_addr_chg, found_addr_rsv, hd_master_addr_ret
 
 
-class WalletDumpTest(PivxTestFramework):
+class WalletDumpTest(DogeCashTestFramework):
     def set_test_params(self):
         self.num_nodes = 1
         self.extra_args = [["-keypool=90"]]
@@ -107,7 +107,8 @@ class WalletDumpTest(PivxTestFramework):
         assert_equal(found_addr_rsv, 90 * 3)  # 90 keys external plus 100% internal keys plus 100% staking keys
 
         #encrypt wallet, restart, unlock and dump
-        self.nodes[0].encryptwallet('test')
+        self.nodes[0].node_encrypt_wallet('test')
+        self.start_node(0)
         self.nodes[0].walletpassphrase('test', 10)
         # Should be a no-op:
         self.nodes[0].keypoolrefill()

@@ -5,11 +5,11 @@
 
 from time import sleep
 
-from test_framework.test_framework import PivxTestFramework
+from test_framework.test_framework import DogeCashTestFramework
 from test_framework.util import set_node_times, assert_equal
 
 
-class DogeCash_RPCSporkTest(PivxTestFramework):
+class DOGECASH_RPCSporkTest(DogeCashTestFramework):
 
     def set_test_params(self):
         self.setup_clean_chain = True
@@ -70,5 +70,5 @@ class DogeCash_RPCSporkTest(PivxTestFramework):
 
 
 if __name__ == '__main__':
-    DogeCash_RPCSporkTest().main()
+    DOGECASH_RPCSporkTest().main()
 

@@ -10,7 +10,7 @@ forward all unrecognized arguments onto the individual test scripts.
 Functional tests are disabled on Windows by default. Use --force to run them anyway.
 
 For a description of arguments recognized by test scripts, see
-`test/functional/test_framework/test_framework.py:PivxTestFramework.main`.
+`test/functional/test_framework/test_framework.py:DogeCashTestFramework.main`.
 
 """
 
@@ -76,7 +76,6 @@ BASE_SCRIPTS= [
     'p2p_addr_relay.py',
     'p2p_addrv2_relay.py',
     'p2p_invalid_messages.py',
-    'p2p_quorum_connect.py',
     'feature_reindex.py',                       # ~ 205 sec
     'feature_logging.py',                       # ~ 195 sec
     'wallet_multiwallet.py',                    # ~ 190 sec
@@ -116,7 +115,6 @@ BASE_SCRIPTS= [
     'rpc_deprecated.py',                        # ~ 80 sec
     'interface_bitcoin_cli.py',                 # ~ 80 sec
     'mempool_packages.py',                      # ~ 63 sec
-    'sapling_wallet_encryption.py',
 
     # vv Tests less than 60s vv
     'rpc_users.py',
@@ -133,10 +131,8 @@ BASE_SCRIPTS= [
     'wallet_disable.py',                        # ~ 50 sec
     'wallet_autocombine.py',                    # ~ 49 sec
     'mining_v5_upgrade.py',                     # ~ 48 sec
-    'p2p_timeouts.py',
     'p2p_mempool.py',                           # ~ 46 sec
     'rpc_named_arguments.py',                   # ~ 45 sec
-    'p2p_leak.py',
     'feature_filelock.py',
     'feature_help.py',                          # ~ 30 sec
 
@@ -148,6 +144,7 @@ BASE_SCRIPTS= [
     # 'mining_basic.py',
     # 'wallet_bumpfee.py',
     # 'wallet_listsinceblock.py',
+    # 'p2p_leak.py',
     # 'feature_cltv.py',
     # 'feature_minchainwork.py',
     # 'p2p_fingerprint.py',
@@ -173,10 +170,10 @@ SAPLING_SCRIPTS = [
     'sapling_wallet_anchorfork.py',             # ~ 345 sec
     'sapling_wallet_nullifiers.py',             # ~ 190 sec
     'sapling_wallet_listreceived.py',           # ~ 157 sec
+    'sapling_changeaddresses.py',               # ~ 151 sec
     'sapling_wallet_send.py',                   # ~ 126 sec
     'sapling_mempool.py',                       # ~ 98 sec
     'sapling_wallet_persistence.py',            # ~ 90 sec
-    'sapling_changeaddresses.py',               # ~ 66 sec
     'sapling_supply.py',                        # ~ 58 sec
     'sapling_malleable_sigs.py',                # ~ 44 sec
 ]
@@ -190,6 +187,7 @@ EXTENDED_SCRIPTS = [
     'feature_fee_estimation.py',                # ~ 360 sec
     # vv Tests less than 5m vv
     # vv Tests less than 2m vv
+    #'p2p_timeouts.py',
     # vv Tests less than 60s vv
     #'p2p_feefilter.py',
     'feature_abortnode.py',
@@ -239,7 +237,6 @@ LEGACY_SKIP_TESTS = [
     'wallet_importmulti.py',
     'wallet_import_rescan.py',
     'wallet_multiwallet.py',
-    'sapling_wallet_encryption.py'
 ]
 
 # Place the lists with the longest tests (on average) first
