@@ -5,8 +5,8 @@
 
 #include "libzerocoin/CoinSpend.h"
 #include "wallet/wallet.h"
-#include "zpivchain.h"
-#include "zpiv/zpivmodule.h"
+#include "zdogecchain.h"
+#include "zdogec/zdogecmodule.h"
 
 bool DisconnectZerocoinTx(const CTransaction& tx)
 {
@@ -25,7 +25,7 @@ bool DisconnectZerocoinTx(const CTransaction& tx)
                     if (isPublicSpend) {
                         PublicCoinSpend publicSpend(params);
                         CValidationState state;
-                        if (!ZPIVModule::ParseZerocoinPublicSpend(txin, tx, state, publicSpend)) {
+                        if (!ZDOGECModule::ParseZerocoinPublicSpend(txin, tx, state, publicSpend)) {
                             return error("Failed to parse public spend");
                         }
                         serial = publicSpend.getCoinSerialNumber();

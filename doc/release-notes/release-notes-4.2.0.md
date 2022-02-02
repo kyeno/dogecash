@@ -33,7 +33,7 @@ Notable Changes
 
 ### Removed zerocoin GUI
 
-Spending zPIV and getting zPIV balance information is no longer available in the graphical interface ([#1549](https://github.com/dogecash/DogeCash/pull/1549)). The feature remains accessible through the RPC interface: `getzerocoinbalance`, `listmintedzerocoins`, `listzerocoinamounts`, `spendzerocoin`, `spendzerocoinmints`.
+Spending zDOGEC and getting zDOGEC balance information is no longer available in the graphical interface ([#1549](https://github.com/dogecash/DogeCash/pull/1549)). The feature remains accessible through the RPC interface: `getzerocoinbalance`, `listmintedzerocoins`, `listzerocoinamounts`, `spendzerocoin`, `spendzerocoinmints`.
 
 
 ### Memory pool limiting
@@ -207,8 +207,8 @@ Detailed release notes follow. This overview includes changes that affect behavi
  - #1059 `39a0fa6e04` [UI] Improve staking chart workflow (Akshay)
  - #1287 `e7dd0947c0` [GUI] Load persisted transaction filter during start (Mrs-X)
  - #1516 `93df7ce6ec` [GUI] MacOS fix open files with no default app. (furszy)
- - #1548 `176d3ae558` [Cleanup][GUI] Remove zPIV faqs (random-zebra)
- - #1549 `47bf23aa14` [Cleanup][GUI] Nuke zPIV from the GUI (random-zebra)
+ - #1548 `176d3ae558` [Cleanup][GUI] Remove zDOGEC faqs (random-zebra)
+ - #1549 `47bf23aa14` [Cleanup][GUI] Nuke zDOGEC from the GUI (random-zebra)
  - #1598 `f66f72656d` [GUI] Split "Delegators" address type in the table model (furszy)
  - #1601 `78a2923184` [GUI] Tor state missing translation (furszy)
  - #1604 `8ec6bbe737` [Refactor][GUI] Set static texts in .ui files + add missing tr() (random-zebra)

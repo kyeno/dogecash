@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef DOGECASH_ZPIVCHAIN_H
-#define DOGECASH_ZPIVCHAIN_H
+#ifndef DOGECASH_ZDOGECCHAIN_H
+#define DOGECASH_ZDOGECCHAIN_H
 
 #include "chain.h"
 #include "libzerocoin/Coin.h"
@@ -25,4 +25,4 @@ bool IsSerialInBlockchain(const CBigNum& bnSerial, int& nHeightTx);
 libzerocoin::CoinSpend TxInToZerocoinSpend(const CTxIn& txin);
 bool TxOutToPublicCoin(const CTxOut& txout, libzerocoin::PublicCoin& pubCoin, CValidationState& state);
 
-#endif //DOGECASH_ZPIVCHAIN_H
+#endif //DOGECASH_ZDOGECCHAIN_H

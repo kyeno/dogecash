@@ -122,9 +122,9 @@ A new warning/confirmation dialog is displayed if a custom change address is not
 
 The Coin Control window now includes an icon next to the select checkbox when the UTXO is a Cold Stake delegation. This shares the space with the locked UTXO indicator icon, and locked UTXO's take priority in their icon display. ([#1470](https://github.com/dogecash/DogeCash/pull/1470))
 
-### Hide zPIV balance info as needed
+### Hide zDOGEC balance info as needed
 
-When the wallet contains no zPIV, the zPIV balance details will be hidden, reducing visual clutter.
+When the wallet contains no zDOGEC, the zDOGEC balance details will be hidden, reducing visual clutter.
 
 ### CSV Exporting
 
@@ -144,12 +144,12 @@ Address output format is comma separated with header row as follows:
 Functional Changes
 ----------
 
-### zPIV Backup Removed
+### zDOGEC Backup Removed
 
-Automatic zPIV backup has been disabled. Thus, the following configuration options have been removed  (either as entries in the dogecash.conf file or as startup flags):
-- `autozpivbackup`
-- `backupzpiv`
-- `zpivbackuppath`
+Automatic zDOGEC backup has been disabled. Thus, the following configuration options have been removed  (either as entries in the dogecash.conf file or as startup flags):
+- `autozdogecbackup`
+- `backupzdogec`
+- `zdogecbackuppath`
 
 ### Stake-Split threshold
 
@@ -177,7 +177,7 @@ RPC Changes
 
 - "CoinStake" JSON object in `getblock` output is removed, and replaced with the strings "stakeModifier" and "hashProofOfStake"
 - "obfcompat" JSON field in `getmasternodecount` output is removed as it is/was redundant with the `enabled` field.
-- "moneysupply" and "zpivSupply" attributes in `getblock` output are removed.
+- "moneysupply" and "zdogecSupply" attributes in `getblock` output are removed.
 - "isPublicSpend" boolean (optional) input parameter is removed from the following commands:
   - `createrawzerocoinspend`
   - `spendzerocoin`
@@ -248,9 +248,9 @@ Detailed release notes follow. For convenience in locating the code changes and 
  - #1297 `5e407c71cc` [GUI] Restore address list when switching panes in CSwidget (random-zebra)
  - #1298 `5dfad15c57` [Model][Performance] Unnecessary double cs_wallet and cs_main lock. (furszy)
  - #1301 `af90f927a0` [ClientModel] Remove polling based chain height update entirely. (furszy)
- - #1306 `65ba128634` [GUI] Hide privacy widget when the wallet has no zPIV balance (furszy)
+ - #1306 `65ba128634` [GUI] Hide privacy widget when the wallet has no zDOGEC balance (furszy)
  - #1316 `bcb04a44a1` [Trivial] fix typo "recomended" in sendcustomfee dialog (random-zebra)
- - #1323 `e2c07184f9` [Qt] Hide zPIV balances when they are zero (Fuzzbawls)
+ - #1323 `e2c07184f9` [Qt] Hide zDOGEC balances when they are zero (Fuzzbawls)
  - #1332 `a5be177025` [GUI] Do not update the GUI so often when reindex/import is being executed. (furszy)
  - #1339 `1716e6e835` [GUI] Tor topbar icon status. (furszy)
  - #1353 `ff7b460ef4` [GUI] Export csv files. (furszy)
@@ -344,7 +344,7 @@ Detailed release notes follow. For convenience in locating the code changes and 
  - #1356 `d6298c5fa0` [Wallet][GUI] Set default stake-split threshold to 500 (random-zebra)
  - #1369 `bb9b762bb1` [Wallet] Fix staking balance calculation (random-zebra)
  - #1373 `5d004d514c` [Wallet] Remove reserve balance (random-zebra)
- - #1382 `df2db0d5c6` [Wallet] Don't initialize zpivwallet on first run (Fuzzbawls)
+ - #1382 `df2db0d5c6` [Wallet] Don't initialize zdogecwallet on first run (Fuzzbawls)
  - #1401 `e1585f7609` [Wallet][Bug] Fix ScriptPubKeyMan::CanGetAddresses (random-zebra)
  - #1411 `3c34c34fd1` [Wallet][Bug] Fix ScriptPubKeyMan::CanGenerateKeys (random-zebra)
  - #1458 `8d8050fa6d` [Wallet][Bug] Fix min depth requirement for stake inputs in AvailableCoins (random-zebra)
@@ -361,7 +361,7 @@ Detailed release notes follow. For convenience in locating the code changes and 
  - #1249 `fbcc5305d6` [Script] Optimize and Cleanup CScript::FindAndDelete (Akshay)
  - #1259 `cf1bab30d5` [Core] Remove StakeV1 (random-zebra)
  - #1302 `e9ceb6daf9` [Refactor] Move CBlockFileInfo and CValidationState out of main (Fuzzbawls)
- - #1308 `ca912fc823` [zPIV] Public coin, a super for-each removed (furszy)
+ - #1308 `ca912fc823` [zDOGEC] Public coin, a super for-each removed (furszy)
  - #1319 `fc6d9514f4` [Refactor] Move CDiskTxPos/CBlockUndo to txdb.h/undo.h respectively (barrystyle)
  - #1320 `563d5c2515` [Refactor] Move transaction checks out to consensus/tx_verify.cpp (barrystyle)
  - #1325 `91566195ee` Add WITH_LOCK macro: run code while locking a mutex. (furszy)
@@ -445,12 +445,12 @@ Detailed release notes follow. For convenience in locating the code changes and 
  - #1276 `e5d6fdfd38` [Tests][Cleanup][Trivial] Remove legacy zerocoin spends tests (random-zebra)
  - #1281 `a293072cdb` [Trivial][Cleanup] Remove extra checks before GetBlocksToMaturity (random-zebra)
  - #1282 `76f29fccf3` [Trivial][Cleanup] Add IsRegTestNet() function in chainparams (random-zebra)
- - #1290 `2ceeb2cca0` [zPIV][Cleanup] Zerocoin Cleanup 1: remove Accumulators values (random-zebra)
- - #1291 `16d7dac5f7` [zPIV][Cleanup] Zerocoin Cleanup 2: remove CZPivStake class (random-zebra)
- - #1293 `28e0048b3e` [zPIV][Cleanup] Zerocoin Cleanup 3: remove old ZK proofs (random-zebra)
- - #1314 `185194bd7e` [zPIV][Cleanup] Zerocoin Cleanup 4: further wallet cleaning (random-zebra)
- - #1322 `5bd387e18d` [zPIV][Cleanup] Zerocoin Cleanup 5: further main.cpp cleaning (random-zebra)
- - #1326 `6bbd575860` [zPIV][Cleanup] Zerocoin Cleanup 6: Remove zerocoin mint checks (random-zebra)
+ - #1290 `2ceeb2cca0` [zDOGEC][Cleanup] Zerocoin Cleanup 1: remove Accumulators values (random-zebra)
+ - #1291 `16d7dac5f7` [zDOGEC][Cleanup] Zerocoin Cleanup 2: remove CZDogecStake class (random-zebra)
+ - #1293 `28e0048b3e` [zDOGEC][Cleanup] Zerocoin Cleanup 3: remove old ZK proofs (random-zebra)
+ - #1314 `185194bd7e` [zDOGEC][Cleanup] Zerocoin Cleanup 4: further wallet cleaning (random-zebra)
+ - #1322 `5bd387e18d` [zDOGEC][Cleanup] Zerocoin Cleanup 5: further main.cpp cleaning (random-zebra)
+ - #1326 `6bbd575860` [zDOGEC][Cleanup] Zerocoin Cleanup 6: Remove zerocoin mint checks (random-zebra)
  - #1330 `b766048068` [Cleanup] Remove stale UNITTEST network (Fuzzbawls)
  - #1340 `57cf8a67bd` [Cleanup] Remove MineBlocksOnDemand function in chainparams (random-zebra)
  - #1352 `fe60594c4a` [Cleanup] Remove unused blockexplorer GUI files (Fuzzbawls)

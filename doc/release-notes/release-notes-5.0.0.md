@@ -591,7 +591,7 @@ Several RPC commands have had changes to their input arguments or output fields 
   The `nlastdsq` JSON return entry has been removed. This was a remnant from pre-zerocoin "CoinJoin" mixing.
 
 * `getinfo`
-  The `zerocoinbalance` JSON return entry and the `zPIVsupply` return JSON object have been removed due to zerocoin deprecation.
+  The `zerocoinbalance` JSON return entry and the `zDOGECsupply` return JSON object have been removed due to zerocoin deprecation.
   The `balance` JSON return entry is now all inclusive (the sum of all transparent and shield PIV)
   The `moneysupply` JSON return entry is the total PIV supply (the sum of all transparent and shield PIV)
   A new JSON return entry (`transparentsupply`) has been added to return the sum of the value of all unspent outputs when the chainstate was last flushed to disk.
@@ -671,24 +671,24 @@ The table below details RPC commands that have now been fully removed. These com
 | `listreceivedbyaccount` | List received transactions by account | Account system removal |
 | `listaccounts` | List internal account names and balances | Account system removal |
 | `multisend` | Configure sending a portion of stake rewards to a DogeCash address | Pending a full rewrite |
-| `getzerocoinbalance` | Returned the wallet's total zPIV balance | Zerocoin deprecation |
-| `listmintedzerocoins` | List all zPIV mints in the wallet | Zerocoin deprecation |
+| `getzerocoinbalance` | Returned the wallet's total zDOGEC balance | Zerocoin deprecation |
+| `listmintedzerocoins` | List all zDOGEC mints in the wallet | Zerocoin deprecation |
 | `listzerocoinamounts` | List information about your zerocoin amounts | Zerocoin deprecation |
-| `listspentzerocoins` | List all the spent zPIV mints in the wallet | Zerocoin deprecation |
-| `mintzerocoin` | Mint the specified zPIV amount | Zerocoin deprecation |
-| `spendzerocoin` | Spend zPIV to a PIV address | Zerocoin deprecation |
-| `spendzerocoinmints` | Spend specific zPIV mints to a PIV address | Zerocoin deprecation |
+| `listspentzerocoins` | List all the spent zDOGEC mints in the wallet | Zerocoin deprecation |
+| `mintzerocoin` | Mint the specified zDOGEC amount | Zerocoin deprecation |
+| `spendzerocoin` | Spend zDOGEC to a PIV address | Zerocoin deprecation |
+| `spendzerocoinmints` | Spend specific zDOGEC mints to a PIV address | Zerocoin deprecation |
 | `resetmintzerocoin` | Scan the chain for zerocoin mints held in the wallet DB and refresh their status | Zerocoin deprecation |
 | `resetspentzerocoin` | Scan the chain for all zerocoin spends held in the wallet DB and refresh their status | Zerocoin deprecation |
 | `getarchivedzerocoin` | Display zerocoins that were archived because they were believed to be orphans | Zerocoin deprecation |
 | `exportzerocoins` | Export zerocoin mints that are held in the wallet DB | Zerocoin deprecation |
 | `importzerocoins` | Import zerocoin mints | Zerocoin deprecation |
-| `reconsiderzerocoins` | Check archived zPIVs to see if any mints were added to the chain | Zerocoin deprecation |
-| `setzpivseed` | Set the wallet's deterministic zPIV seed to a specific value | Zerocoin deprecation |
-| `getzpivseed` | Return the current deterministic zPIV seed | Zerocoin deprecation |
-| `generatemintlist` | Show mints that are derived from the deterministic zPIV seed | Zerocoin deprecation |
-| `dzpivstate` | Show the current state of the mintpool of the wallet | Zerocoin deprecation |
-| `searchdzpiv` | Do a search for deterministically generated zPIV that have not yet added to the wallet | Zerocoin deprecation |
+| `reconsiderzerocoins` | Check archived zDOGECs to see if any mints were added to the chain | Zerocoin deprecation |
+| `setzdogecseed` | Set the wallet's deterministic zDOGEC seed to a specific value | Zerocoin deprecation |
+| `getzdogecseed` | Return the current deterministic zDOGEC seed | Zerocoin deprecation |
+| `generatemintlist` | Show mints that are derived from the deterministic zDOGEC seed | Zerocoin deprecation |
+| `dzdogecstate` | Show the current state of the mintpool of the wallet | Zerocoin deprecation |
+| `searchdzdogec` | Do a search for deterministically generated zDOGEC that have not yet added to the wallet | Zerocoin deprecation |
 | `spendrawzerocoin` | Create and broadcast a TX spending the provided zericoin | Zerocoin deprecation |
 
 

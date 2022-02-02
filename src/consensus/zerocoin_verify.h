@@ -7,7 +7,7 @@
 
 #include "consensus/consensus.h"
 #include "script/interpreter.h"
-#include "zpivchain.h"
+#include "zdogecchain.h"
 
 // Fake Serial attack Range
 bool isBlockBetweenFakeSerialAttackRange(int nHeight);

@@ -75,7 +75,7 @@ void TxRow::setType(bool isLightTheme, int type, bool isConfirmed)
             css = "text-list-amount-send";
             break;
         case TransactionRecord::Generated:
-        case TransactionRecord::StakeZPIV:
+        case TransactionRecord::StakeZDOGEC:
         case TransactionRecord::MNReward:
         case TransactionRecord::StakeMint:
         case TransactionRecord::BudgetPayment:
@@ -92,7 +92,7 @@ void TxRow::setType(bool isLightTheme, int type, bool isConfirmed)
         case TransactionRecord::SendToAddress:
         case TransactionRecord::SendToOther:
         case TransactionRecord::ZerocoinSpend:
-        case TransactionRecord::ZerocoinSpend_Change_zPiv:
+        case TransactionRecord::ZerocoinSpend_Change_zDogec:
         case TransactionRecord::ZerocoinSpend_FromMe:
         case TransactionRecord::SendToShielded:
         case TransactionRecord::SendToNobody:

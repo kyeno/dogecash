@@ -78,11 +78,11 @@ New Consensus Rules
 
 The following consensus rule changes will be enforced on or shortly after block `2153200`. Note that **Upgrade Enforcement** (mentioned above) will occur prior to this block height.
 
-### V1 zPIV Spending (Public Spends Version 4)
+### V1 zDOGEC Spending (Public Spends Version 4)
 
-Since the discovery of a critical exploit within the libzerocoin library in early 2019, remaining legacy v1 zPIV have been un-spendable. We're happy to say that, once the new consensus rules are in effect, users will once again be able to spend their v1 zPIV with public spends version 4 ([PR #936](https://github.com/dogecash/DogeCash/pull/936)).
+Since the discovery of a critical exploit within the libzerocoin library in early 2019, remaining legacy v1 zDOGEC have been un-spendable. We're happy to say that, once the new consensus rules are in effect, users will once again be able to spend their v1 zDOGEC with public spends version 4 ([PR #936](https://github.com/dogecash/DogeCash/pull/936)).
 
-As with the previous version 3 public spends introduced in core wallet version 3.3.0 (enabling the spending of v2 zPIV), version 4 spends will also be public. A full technical writeup is available on the [DogeCash Wiki](https://github.com/dogecash/DogeCash/wiki/CoinRandomnessSchnorrSignature).
+As with the previous version 3 public spends introduced in core wallet version 3.3.0 (enabling the spending of v2 zDOGEC), version 4 spends will also be public. A full technical writeup is available on the [DogeCash Wiki](https://github.com/dogecash/DogeCash/wiki/CoinRandomnessSchnorrSignature).
 
 ### OP_CHECKCOLDSTAKEVERIFY and P2CS
 
@@ -116,7 +116,7 @@ Layer 2 network messages (MN, Budget, Spork, etc) are now signed based on the ha
 Two new SPORKS are introduced, `SPORK_17` ([#PR975](https://github.com/dogecash/DogeCash/pull/975)) and `SPORK_18` ([#PR995](https://github.com/dogecash/DogeCash/pull/995)).<br>
 `SPORK_17` (off by default) is used to activate the [Cold Staking](#cold-staking) protocol. When this spork is off, no cold-staked block is accepted by the network and new delegations are rejected, but coin-owners are still able to spend previously created pay-to-cold-stake delegations.
 
-`SPORK_18` (off by default) is used to switch between Version 3 and [Version 4 Public Spends](#v1-zpiv-spending-public-spends-version-4). When this spork is active, only version 4 spends are accepted by the network. When it's not, only version 3 spends are accepted.
+`SPORK_18` (off by default) is used to switch between Version 3 and [Version 4 Public Spends](#v1-zdogec-spending-public-spends-version-4). When this spork is active, only version 4 spends are accepted by the network. When it's not, only version 3 spends are accepted.
 
 RPC Changes
 --------------
@@ -381,7 +381,7 @@ Detailed release notes follow. For convenience in locating the code changes and 
 
 ### Core
 - #643 `469d974519` [Crypto] Use stronger rand for key generation (warrows)
-- #936 `12a6b704b6` [zPIV] PublicCoinSpend v4 - Coin Randomness Schnorr Signature (random-zebra)
+- #936 `12a6b704b6` [zDOGEC] PublicCoinSpend v4 - Coin Randomness Schnorr Signature (random-zebra)
 - #955 `008b7938db` [Core][Script][Wallet][RPC][Tests] Cold Staking (random-zebra)
 - #989 `6f645ce457` [DB] Db runtime error cleaning the variable that needs to be logged (furszy)
 - #1000 `34e11dd5fa` [Core] Spork code overhaul (random-zebra)
