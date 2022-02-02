@@ -3,7 +3,7 @@
 # Distributed under the MIT software license, see the accompanying
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-dogecash_tx() {
+_dogecash_tx() {
     local cur prev words=() cword
     local dogecash_tx
 
@@ -46,7 +46,7 @@ dogecash_tx() {
 
     return 0
 } &&
-complete -F dogecash_tx dogecash-tx
+complete -F _dogecash_tx dogecash-tx
 
 # Local variables:
 # mode: shell-script

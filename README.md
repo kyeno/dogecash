@@ -1,9 +1,9 @@
 DogeCash Core integration/staging repository
 =====================================
 
-[![master Actions Status](https://github.com/DogeCash/DogeCash/workflows/CI%20Actions%20for%20DogeCash/badge.svg)](https://github.com/DogeCash/DogeCash/actions)
-[![GitHub release (latest by date)](https://img.shields.io/github/v/release/DogeCash/dogecash?color=%235c4b7d&cacheSeconds=3600)](https://github.com/DogeCash/DogeCash/releases)
-[![GitHub Release Date](https://img.shields.io/github/release-date/DogeCash/dogecash?color=%235c4b7d&cacheSeconds=3600)](https://github.com/DogeCash/DogeCash/releases)
+[![master Actions Status](https://github.com/dogecash/DogeCash/workflows/CI%20Actions%20for%20DogeCash/badge.svg)](https://github.com/dogecash/DogeCash/actions)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/dogecash/dogecash?color=%235c4b7d&cacheSeconds=3600)](https://github.com/dogecash/DogeCash/releases)
+[![GitHub Release Date](https://img.shields.io/github/release-date/dogecash/dogecash?color=%235c4b7d&cacheSeconds=3600)](https://github.com/dogecash/DogeCash/releases)
 
 ## What is DogeCash?
 
@@ -22,13 +22,13 @@ DogeCash is an open source community-driven cryptocurrency, focused on five main
 A lot more information and specs at [DogeCash.org](https://www.dogecash.org/). Join the community at [DogeCash Discord](https://discordapp.com/invite/jzqVsJd).
 
 ## License
-DogeCash Core is released under the terms of the MIT license. See [COPYING](https://github.com/DogeCash/DogeCash/blob/master/COPYING) for more information or see https://opensource.org/licenses/MIT.
+DogeCash Core is released under the terms of the MIT license. See [COPYING](https://github.com/dogecash/DogeCash/blob/master/COPYING) for more information or see https://opensource.org/licenses/MIT.
 
 ## Development Process
 
-The master branch is regularly built (see doc/build-*.md for instructions) and tested, but it is not guaranteed to be completely stable. [Tags](https://github.com/DogeCash/DogeCash/tags) are created regularly from release branches to indicate new official, stable release versions of DogeCash Core.
+The master branch is regularly built (see doc/build-*.md for instructions) and tested, but it is not guaranteed to be completely stable. [Tags](https://github.com/dogecash/DogeCash/tags) are created regularly from release branches to indicate new official, stable release versions of DogeCash Core.
 
-The contribution workflow is described in [CONTRIBUTING.md](https://github.com/DogeCash/DogeCash/blob/master/CONTRIBUTING.md) and useful hints for developers can be found in [doc/developer-notes.md](https://github.com/DogeCash/DogeCash/blob/master/doc/developer-notes.md).
+The contribution workflow is described in [CONTRIBUTING.md](https://github.com/dogecash/DogeCash/blob/master/CONTRIBUTING.md) and useful hints for developers can be found in [doc/developer-notes.md](https://github.com/dogecash/DogeCash/blob/master/doc/developer-notes.md).
 
 ## Testing
 
@@ -36,7 +36,7 @@ Testing and code review is the bottleneck for development; we get more pull requ
 
 ## Automated Testing
 
-Developers are strongly encouraged to write [unit tests](https://github.com/DogeCash/DogeCash/blob/master/src/test/README.md) for new code, and to submit new unit tests for old code. Unit tests can be compiled and run (assuming they weren't disabled in configure) with: make check. Further details on running and extending unit tests can be found in [/src/test/README.md](https://github.com/DogeCash/DogeCash/blob/master/src/test/README.md).
+Developers are strongly encouraged to write [unit tests](https://github.com/dogecash/DogeCash/blob/master/src/test/README.md) for new code, and to submit new unit tests for old code. Unit tests can be compiled and run (assuming they weren't disabled in configure) with: make check. Further details on running and extending unit tests can be found in [/src/test/README.md](https://github.com/dogecash/DogeCash/blob/master/src/test/README.md).
 
 There are also regression and integration tests, written in Python. These tests can be run (if the test dependencies are installed) with: test/functional/test_runner.py`
 
@@ -48,8 +48,8 @@ Changes should be tested by somebody other than the developer who wrote the code
 
 ## Translations
 
-Changes to translations as well as new translations can be submitted to DogeCash Core's Transifex page.
+Changes to translations as well as new translations can be submitted to DogeCash's Transifex page.
 
-Translations are periodically pulled from Transifex and merged into the git repository. See the [translation process](https://github.com/DogeCash/DogeCash/blob/master/doc/translation_process.md) for details on how this works.
+Translations are periodically pulled from Transifex and merged into the git repository. See the [translation process](https://github.com/dogecash/DogeCash/blob/master/doc/translation_process.md) for details on how this works.
 
 Important: We do not accept translation changes as GitHub pull requests because the next pull from Transifex would automatically overwrite them again.

@@ -17,7 +17,7 @@ If you are running an older version, shut it down. Wait until it has completely 
 Sapling Parameters
 ==================
 
-In order to run, DogeCash Core now requires two files, `sapling-output.params` and `sapling-spend.params` (with total size ~50 MB), to be saved in a specific location.
+In order to run, DogeCash now requires two files, `sapling-output.params` and `sapling-spend.params` (with total size ~50 MB), to be saved in a specific location.
 
 For the following packages, no action is required by the user:
 - macOS release `dmg` binaries will use the params that are bundled into the .app bundle.

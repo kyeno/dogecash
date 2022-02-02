@@ -41,7 +41,7 @@ Performance Improvements
 
 Version 4.3.0 contains a number of significant performance improvements, which make Initial Block Download, startup, transaction and block validation much faster:
 
-- The chainstate database (which is used for tracking UTXOs) has been changed from a per-transaction model to a per-output model ([See PR 1801](https://github.com/DogeCash/DogeCash/pull/1801)). Advantages of this model are that it:
+- The chainstate database (which is used for tracking UTXOs) has been changed from a per-transaction model to a per-output model ([See PR 1801](https://github.com/dogecash/DogeCash/pull/1801)). Advantages of this model are that it:
   - avoids the CPU overhead of deserializing and serializing the unused outputs;
   - has more predictable memory usage;
   - uses simpler code;
@@ -49,7 +49,7 @@ Version 4.3.0 contains a number of significant performance improvements, which m
   
   As a result, validating the blockchain during Initial Block Download (IBD) and reindex is ~30-40% faster, uses 10-20% less memory, and flushes to disk far less frequently. The only downside is that the on-disk database is 15% larger. During the conversion from the previous format a few extra gigabytes may be used.
 
-- LevelDB has been upgraded to version 1.22 ([See PR 1738](https://github.com/DogeCash/DogeCash/pull/1738)). This version contains hardware acceleration for CRC on architectures supporting SSE 4.2. As a result, synchronization and block validation are now faster.
+- LevelDB has been upgraded to version 1.22 ([See PR 1738](https://github.com/dogecash/DogeCash/pull/1738)). This version contains hardware acceleration for CRC on architectures supporting SSE 4.2. As a result, synchronization and block validation are now faster.
 
 Removal of Priority Estimation
 ------------------------------
@@ -170,7 +170,7 @@ Detailed release notes follow. This overview includes changes that affect behavi
 
 ### Miner/Block Generation
  - #1700 `40742084de` [Miner] Move coinbase & coinstake to P2PKH (furszy)
- - #1809 `959d707bc9` [Miner] decouple zDOGEC duplicated serials checks from CreateNewBlock (furszy)
+ - #1809 `959d707bc9` [Miner] decouple zPIV duplicated serials checks from CreateNewBlock (furszy)
  - #1816 `0fa40d7695` [Miner] Unifying the disperse coinbase tx flow + further clean up. (furszy)
  - #1818 `242356d012` [Miner] PoS process (furszy)
 

@@ -1,4 +1,4 @@
-DogeCash Core
+DogeCash
 =============
 
 Setup
@@ -7,7 +7,7 @@ Setup
 
 Running
 ---------------------
-The following are some helpful notes on how to run DogeCash Core on your native platform.
+The following are some helpful notes on how to run DogeCash on your native platform.
 
 ### Unix
 
@@ -16,7 +16,7 @@ Unpack the files into a directory and run:
 - `bin/dogecash-qt` (GUI) or
 - `bin/dogecashd` (headless)
 
-If this is the first time running DogeCash Core (since v5.0.0), you'll need to install the sapling params by running the included `install-params.sh` script, which copies the two params files to `$HOME/.dogecash-params`
+If this is the first time running DogeCash (since v5.0.0), you'll need to install the sapling params by running the included `install-params.sh` script, which copies the two params files to `$HOME/.dogecash-params`
 
 ### Windows
 
@@ -28,9 +28,9 @@ Drag DogeCash-Qt to your applications folder, and then run DogeCash-Qt.
 
 ### Need Help?
 
-* See the documentation at the [DogeCash Wiki](https://github.com/DogeCash/DogeCash/wiki)
+* See the documentation at the [DogeCash Wiki](https://github.com/dogecash/DogeCash/wiki)
 for help and more information.
-* Ask for help on the [DogeCash Forum](http://forum.dogecash.org/).
+* Ask for help on [BitcoinTalk](https://bitcointalk.org/index.php?topic=1262920.0) or on the [DogeCash Forum](http://forum.dogecash.org/).
 * Join our Discord server [Discord Server](https://discord.dogecash.org)
 
 Building
@@ -58,10 +58,11 @@ The DogeCash repo's [root README](/README.md) contains relevant information on t
 - [Dnsseed Policy](dnsseed-policy.md)
 
 ### Resources
-* Discuss on the [DogeCash](http://forum.dogecash.org/) forum.
+* Discuss on the [BitcoinTalk](https://bitcointalk.org/index.php?topic=1262920.0) or the [DogeCash](http://forum.dogecash.org/) forum.
 * Join the [DogeCash Discord](https://discord.dogecash.org).
 
 ### Miscellaneous
+- [Assets Attribution](assets-attribution.md)
 - [Files](files.md)
 - [Fuzz-testing](fuzzing.md)
 - [Reduce Memory](reduce-memory.md)

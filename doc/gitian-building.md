@@ -63,7 +63,7 @@ Initial Gitian Setup
 
 The `gitian-build.py` script is designed to checkout different release tags, commits, branches, or pull requests. The linked guides above cover the process of obtaining the script and doing the basic initial setup.
 
-Building DogeCash Core
+Building DogeCash
 --------------------
 
 The script allows you to build tags, commits, branches, and even pull requests. Below are some examples:

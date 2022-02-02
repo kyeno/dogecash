@@ -5,7 +5,7 @@ Release Process
 
 ### Before every release candidate
 
-* Update translations (ping Fuzzbawls on Discord) see [translation_process.md](https://github.com/DogeCash/DogeCash/blob/master/doc/translation_process.md#synchronising-translations).
+* Update translations (ping Fuzzbawls on Discord) see [translation_process.md](https://github.com/dogecash/DogeCash/blob/master/doc/translation_process.md#synchronising-translations).
 * Update manpages, see [gen-manpages.sh](https://github.com/dogecash/dogecash/blob/master/contrib/devtools/README.md#gen-manpagessh).
 * Update release candidate version in `configure.ac` (`CLIENT_VERSION_RC`)
 
@@ -124,7 +124,7 @@ NOTE: Offline builds must use the --url flag to ensure Gitian fetches only from 
 
 The gbuild invocations below <b>DO NOT DO THIS</b> by default.
 
-### Build and sign DogeCash Core for Linux, Windows, and macOS:
+### Build and sign DogeCash for Linux, Windows, and macOS:
 
     pushd ./gitian-builder
     ./bin/gbuild --num-make 2 --memory 3000 --commit dogecash=v${VERSION} ../dogecash/contrib/gitian-descriptors/gitian-linux.yml
@@ -211,7 +211,7 @@ Codesigner only: Commit the detached codesign payloads:
 Non-codesigners: wait for Windows/macOS detached signatures:
 
 - Once the Windows/macOS builds each have 3 matching signatures, they will be signed with their respective release keys.
-- Detached signatures will then be committed to the [dogecash-detached-sigs](https://github.com/dogecash-Project/dogecash-detached-sigs) repository, which can be combined with the unsigned apps to create signed binaries.
+- Detached signatures will then be committed to the [dogecash-detached-sigs](https://github.com/dogecash/dogecash-detached-sigs) repository, which can be combined with the unsigned apps to create signed binaries.
 
 Create (and optionally verify) the signed macOS binary:
 
@@ -285,6 +285,6 @@ Note: check that SHA256SUMS itself doesn't end up in SHA256SUMS, which is a spur
 
   - Archive release notes for the new version to `doc/release-notes/` (branch `master` and branch of the release)
 
-  - Create a [new GitHub release](https://github.com/DogeCash/DogeCash/releases/new) with a link to the archived release notes.
+  - Create a [new GitHub release](https://github.com/dogecash/DogeCash/releases/new) with a link to the archived release notes.
 
   - Celebrate

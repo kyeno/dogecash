@@ -4,7 +4,7 @@
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 # call $dogecash-cli for RPC
-dogecash_rpc() {
+_dogecash_rpc() {
     # determine already specified args necessary for RPC
     local rpcargs=()
     for i in ${COMP_LINE}; do
@@ -18,13 +18,13 @@ dogecash_rpc() {
 }
 
 # Add wallet accounts to COMPREPLY
-dogecash_accounts() {
+_dogecash_accounts() {
     local accounts
-    accounts=$(dogecash_rpc listaccounts | awk -F '"' '{ print $2 }')
+    accounts=$(_dogecash_rpc listaccounts | awk -F '"' '{ print $2 }')
     COMPREPLY=( "${COMPREPLY[@]}" $( compgen -W "$accounts" -- "$cur" ) )
 }
 
-dogecash_cli() {
+_dogecash_cli() {
     local cur prev words=() cword
     local dogecash_cli
 
@@ -60,7 +60,7 @@ dogecash_cli() {
     if ((cword > 3)); then
         case ${words[cword-3]} in
             addmultisigaddress)
-                dogecash_accounts
+                _dogecash_accounts
                 return 0
                 ;;
             getbalance|gettxout|importaddress|importpubkey|importprivkey|listreceivedbyaccount|listreceivedbyaddress|listsinceblock)
@@ -85,7 +85,7 @@ dogecash_cli() {
                 return 0
                 ;;
             move|setaccount)
-                dogecash_accounts
+                _dogecash_accounts
                 return 0
                 ;;
         esac
@@ -101,7 +101,7 @@ dogecash_cli() {
             return 0
             ;;
         getaccountaddress|getaddressesbyaccount|getbalance|getnewaddress|getreceivedbyaccount|listtransactions|move|sendfrom|sendmany)
-            dogecash_accounts
+            _dogecash_accounts
             return 0
             ;;
     esac
@@ -130,7 +130,7 @@ dogecash_cli() {
 
             # only parse help if senseful
             if [[ -z "$cur" || "$cur" =~ ^[a-z] ]]; then
-                commands=$(dogecash_rpc help 2>/dev/null | awk '$1 ~ /^[a-z]/ { print $1; }')
+                commands=$(_dogecash_rpc help 2>/dev/null | awk '$1 ~ /^[a-z]/ { print $1; }')
             fi
 
             COMPREPLY=( $( compgen -W "$helpopts $commands" -- "$cur" ) )
@@ -143,7 +143,7 @@ dogecash_cli() {
             ;;
     esac
 } &&
-complete -F dogecash_cli dogecash-cli
+complete -F _dogecash_cli dogecash-cli
 
 # Local variables:
 # mode: shell-script

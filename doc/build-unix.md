@@ -244,7 +244,7 @@ Disable-wallet mode
 --------------------
 **Note:** This functionality is not yet completely implemented, and compilation using the below option will currently fail.
 
-When the intention is to run only a P2P node without a wallet, DogeCash Core may be compiled in
+When the intention is to run only a P2P node without a wallet, DogeCash may be compiled in
 disable-wallet mode with:
 
     ./configure --disable-wallet

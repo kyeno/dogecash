@@ -28,8 +28,8 @@ Deterministic Masternode lists are lists of masternodes, built at every block, r
 All nodes derive (and verify) their masternode lists independently, from the same on-chain transactions, thus they immediately reach consensus on the tier-two state (number of masternodes, properties and status of each one).
 
 Masternodes are "registered" by special transactions called ProTx, and removed only by spending the collateral.
-A ProTx either creates a 10000-DOGEC collateral as tx output, or includes a reference to an unspent 10000-DOGEC utxo on chain (and a proof of ownership).
-See PR [#2267](https://github.com/DogeCash/DogeCash/pull/2267) for more information.
+A ProTx either creates a 10000-PIV collateral as tx output, or includes a reference to an unspent 10000-PIV utxo on chain (and a proof of ownership).
+See PR [#2267](https://github.com/dogecash/DogeCash/pull/2267) for more information.
 
 Upgrade instructions: !TODO
 
@@ -89,7 +89,7 @@ Upgrade instructions: !TODO
     ```
     protx_register_fund "collateralAddress" "ipAndPort" "ownerAddress" "operatorPubKey" "votingAddress" "payoutAddress" (operatorReward "operatorPayoutAddress")
 
-    Creates, funds and sends a ProTx to the network. The resulting transaction will move 10000 DOGEC
+    Creates, funds and sends a ProTx to the network. The resulting transaction will move 10000 PIV
     to the address specified by collateralAddress and will then function as masternode collateral.
 
     Arguments:
@@ -245,7 +245,7 @@ Upgrade instructions: !TODO
 #### Protocol changes
 
 Starting with the enforcement block, masternode rewards and budget payments are paid as outputs of the coinbase transaction, instead of the coinstake transaction.
-With this rule, a new opcode (`0xd2`) is introduced (see PR [#2275](https://github.com/DogeCash/DogeCash/pull/2275)).
+With this rule, a new opcode (`0xd2`) is introduced (see PR [#2275](https://github.com/dogecash/DogeCash/pull/2275)).
 It enforces the same rules as the legacy cold-staking opcode, but without allowing a "free" script for the last output of the transaction.
 The new opcode takes the name of `OP_CHECKCOLDSTAKEVERIFY`, and the legacy opcode (`0xd1`) is renamed to `OP_CHECKCOLDSTAKEVERIFY_LOF` (last-output-free).
 Scripts with the old opcode are still accepted on the network (the restriction on the last-output is enforced after the script validation in this case), but the client creates new delegations with the new opcode, by default, after the upgrade enforcement.

@@ -33,7 +33,7 @@ Source22:	https://raw.githubusercontent.com/dogecash/dogecash/v%{version}/doc/ma
 
 #selinux
 Source30:	https://raw.githubusercontent.com/dogecash/dogecash/v%{version}/contrib/rpm/dogecash.te
-# Source31 - what about dogecash-tx and benchdogecash ???
+# Source31 - what about dogecash-tx and bench_dogecash ???
 Source31:	https://raw.githubusercontent.com/dogecash/dogecash/v%{version}/contrib/rpm/dogecash.fc
 Source32:	https://raw.githubusercontent.com/dogecash/dogecash/v%{version}/contrib/rpm/dogecash.if
 
@@ -143,7 +143,7 @@ dogecash-core daemon.
 
 The dogecash-cli utility allows you to communicate and control a dogecash daemon
 over RPC, the dogecash-tx utility allows you to create a custom transaction, and
-the benchdogecash utility can be used to perform some benchmarks.
+the bench_dogecash utility can be used to perform some benchmarks.
 
 This package contains utilities needed by the dogecash-server package.
 
@@ -422,7 +422,7 @@ rm -rf %{buildroot}
 %doc COPYING dogecash.conf.example doc/README.md
 %attr(0755,root,root) %{_bindir}/dogecash-cli
 %attr(0755,root,root) %{_bindir}/dogecash-tx
-%attr(0755,root,root) %{_bindir}/benchdogecash
+%attr(0755,root,root) %{_bindir}/bench_dogecash
 %attr(0644,root,root) %{_mandir}/man1/dogecash-cli.1*
 
 

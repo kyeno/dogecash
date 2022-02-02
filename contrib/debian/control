@@ -29,8 +29,8 @@ Build-Depends: debhelper,
  dh-systemd
 Standards-Version: 3.9.2
 Homepage: http://www.dogecash.org
-Vcs-Git: git://github.com/DogeCash/DogeCash.git
-Vcs-Browser: http://github.com/DogeCash/DogeCash
+Vcs-Git: git://github.com/dogecash/DogeCash.git
+Vcs-Browser: http://github.com/dogecash/DogeCash
 
 Package: dogecashd
 Architecture: any

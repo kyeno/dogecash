@@ -43,15 +43,15 @@ from the root of the repository.
 
 **Note**: You only need Berkeley DB if the wallet is enabled (see [*Disable-wallet mode*](/doc/build-osx.md#disable-wallet-mode)).
 
-Build DogeCash Core
+Build DogeCash
 ------------------------
 
 1. Clone the DogeCash Core source code:
 
-        git clone https://github.com/dogecash-project/dogecash
+        git clone https://github.com/dogecash/dogecash
         cd dogecash
 
-2.  Build DogeCash Core:
+2.  Build DogeCash:
 
         ./autogen.sh
         ./configure
@@ -70,7 +70,7 @@ Disable-wallet mode
 --------------------
 **Note:** This functionality is not yet completely implemented, and compilation using the below option will currently fail.
 
-When the intention is to run only a P2P node without a wallet, DogeCash Core may be compiled in
+When the intention is to run only a P2P node without a wallet, DogeCash may be compiled in
 disable-wallet mode with:
 
     ./configure --disable-wallet

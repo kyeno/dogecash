@@ -33,25 +33,25 @@ Notable Changes
 
 ### Removed zerocoin GUI
 
-Spending zDOGEC and getting zDOGEC balance information is no longer available in the graphical interface ([#1549](https://github.com/DogeCash/DogeCash/pull/1549)). The feature remains accessible through the RPC interface: `getzerocoinbalance`, `listmintedzerocoins`, `listzerocoinamounts`, `spendzerocoin`, `spendzerocoinmints`.
+Spending zPIV and getting zPIV balance information is no longer available in the graphical interface ([#1549](https://github.com/dogecash/DogeCash/pull/1549)). The feature remains accessible through the RPC interface: `getzerocoinbalance`, `listmintedzerocoins`, `listzerocoinamounts`, `spendzerocoin`, `spendzerocoinmints`.
 
 
 ### Memory pool limiting
 
-Previous versions of DogeCash Core had their mempool limited by checking a transaction's fees against the node's minimum relay fee. There was no upper bound on the size of the mempool and attackers could send a large number of transactions paying just slighly more than the default minimum relay fee to crash nodes with relatively low RAM.
+Previous versions of DogeCash had their mempool limited by checking a transaction's fees against the node's minimum relay fee. There was no upper bound on the size of the mempool and attackers could send a large number of transactions paying just slighly more than the default minimum relay fee to crash nodes with relatively low RAM.
 
-DogeCash Core 4.2.0 will have a strict maximum size on the mempool. The default value is 300 MB and can be configured with the `-maxmempool` parameter. Whenever a transaction would cause the mempool to exceed its maximum size, the transaction that (along with in-mempool descendants) has the lowest total feerate (as a package) will be evicted and the node's effective minimum relay feerate will be increased to match this feerate plus the initial minimum relay feerate. The initial minimum relay feerate is set to 1000 satoshis per kB.
+DogeCash 4.2.0 will have a strict maximum size on the mempool. The default value is 300 MB and can be configured with the `-maxmempool` parameter. Whenever a transaction would cause the mempool to exceed its maximum size, the transaction that (along with in-mempool descendants) has the lowest total feerate (as a package) will be evicted and the node's effective minimum relay feerate will be increased to match this feerate plus the initial minimum relay feerate. The initial minimum relay feerate is set to 1000 satoshis per kB.
 
-DogeCash Core 4.2.0 also introduces new default policy limits on the length and size of unconfirmed transaction chains that are allowed in the mempool (generally limiting the length of unconfirmed chains to 25 transactions, with a total size of 101 KB). These limits can be overridden using command line arguments ([#1645](https://github.com/DogeCash/DogeCash/pull/1645), [#1647](https://github.com/DogeCash/DogeCash/pull/1647)).
+DogeCash 4.2.0 also introduces new default policy limits on the length and size of unconfirmed transaction chains that are allowed in the mempool (generally limiting the length of unconfirmed chains to 25 transactions, with a total size of 101 KB). These limits can be overridden using command line arguments ([#1645](https://github.com/dogecash/DogeCash/pull/1645), [#1647](https://github.com/dogecash/DogeCash/pull/1647)).
 
 ### Benchmarking Framework
 
-DogeCash Core 4.2.0 backports  the internal benchmarking framework from Bitcoin Core, which can be used to benchmark cryptographic algorithms (e.g. SHA1, SHA256, SHA512, RIPEMD160, Poly1305, ChaCha20), Base58 encoding and decoding and thread queue. More tests are needed for script validation, coin selection and coins database, cuckoo cache, p2p throughtput ([#1650](https://github.com/DogeCash/DogeCash/pull/1650)).
+DogeCash 4.2.0 backports  the internal benchmarking framework from Bitcoin Core, which can be used to benchmark cryptographic algorithms (e.g. SHA1, SHA256, SHA512, RIPEMD160, Poly1305, ChaCha20), Base58 encoding and decoding and thread queue. More tests are needed for script validation, coin selection and coins database, cuckoo cache, p2p throughtput ([#1650](https://github.com/dogecash/DogeCash/pull/1650)).
 
 The binary file is compiled with dogecash-core, unless configured with `--disable-bench`.<br>
 After compiling dogecash-core, the benchmarks can be run with:
 ```
-src/bench/benchdogecash
+src/bench/bench_dogecash
 ```
 The output will be similar to:
 ```
@@ -104,24 +104,24 @@ GUI Changes
 
 - The "sync" button in the GUI topbar can be clicked to go directly to the Settings --> Information panel (where the current block number and hash is shown).
 
-- The "connections" button in the GUI topbar can be clicked to open the network monitor dialog ([#1688](https://github.com/DogeCash/DogeCash/pull/1688)).
+- The "connections" button in the GUI topbar can be clicked to open the network monitor dialog ([#1688](https://github.com/dogecash/DogeCash/pull/1688)).
 
 Functional Changes
 ----------
 
 ### Stake-Split threshold
 
-If the stake split is active (threshold > 0), then stake split threshold value must be greater than a minimum, set by default at 100 DOGEC. The minimum value can be changed using the `-minstakesplit` startup flag ([#1586](https://github.com/DogeCash/DogeCash/pull/1586)). A value `0` is still allowed, regardless of the minimum set, and, as before, can be used to disable the stake splitting functionality.
+If the stake split is active (threshold > 0), then stake split threshold value must be greater than a minimum, set by default at 100 PIV. The minimum value can be changed using the `-minstakesplit` startup flag ([#1586](https://github.com/dogecash/DogeCash/pull/1586)). A value `0` is still allowed, regardless of the minimum set, and, as before, can be used to disable the stake splitting functionality.
 
 ### Changed command-line options
 
-- new command `-minstakesplit` to modify the minimum allowed for  the stake split threshold ([#1586](https://github.com/DogeCash/DogeCash/pull/1586)).
+- new command `-minstakesplit` to modify the minimum allowed for  the stake split threshold ([#1586](https://github.com/dogecash/DogeCash/pull/1586)).
 
-- new commands `-maxmempool`, to customize  the memory pool size limit, and `-checkmempool=N`, to customize the frequency of the mempool check ([#1647](https://github.com/DogeCash/DogeCash/pull/1647)).
+- new commands `-maxmempool`, to customize  the memory pool size limit, and `-checkmempool=N`, to customize the frequency of the mempool check ([#1647](https://github.com/dogecash/DogeCash/pull/1647)).
 
-- new commands `-limitancestorcount=N` and `limitancestorsize=N`, to limit the number and total size of all in-mempool ancestors for a transaction ([#1647](https://github.com/DogeCash/DogeCash/pull/1647)).
+- new commands `-limitancestorcount=N` and `limitancestorsize=N`, to limit the number and total size of all in-mempool ancestors for a transaction ([#1647](https://github.com/dogecash/DogeCash/pull/1647)).
 
-- new commands `-limitdescendantcount=N` and `limitdescendantsize=N`, to limit the number and total size of all in-mempool descendants for a transaction ([#1647](https://github.com/DogeCash/DogeCash/pull/1647)).
+- new commands `-limitdescendantcount=N` and `limitdescendantsize=N`, to limit the number and total size of all in-mempool descendants for a transaction ([#1647](https://github.com/dogecash/DogeCash/pull/1647)).
 
 RPC Changes
 ------------
@@ -130,21 +130,21 @@ In addition to the afore mentioned 'label' and 'account' API changes, other RPC 
 
 ### Low-level API changes
 
-- The `asm` property of each scriptSig now contains the decoded signature hash type for each signature that provides a valid defined hash type ([#1633](https://github.com/DogeCash/DogeCash/pull/1633)).<br>
+- The `asm` property of each scriptSig now contains the decoded signature hash type for each signature that provides a valid defined hash type ([#1633](https://github.com/dogecash/DogeCash/pull/1633)).<br>
 The following items contain assembly representations of scriptSig signatures
 and are affected by this change: RPC `getrawtransaction`, RPC `decoderawtransaction`, REST `/rest/tx/` (JSON format), REST `/rest/block/` (JSON format when including extended tx details), `dogecash-tx -json`
 
 ### Modified input/output for existing commands
 
-- new "usage" field in the output of `getmempoolinfo`, displaying the total memory usage for the mempool ([#1645](https://github.com/DogeCash/DogeCash/pull/1645)).
+- new "usage" field in the output of `getmempoolinfo`, displaying the total memory usage for the mempool ([#1645](https://github.com/dogecash/DogeCash/pull/1645)).
 
-- new "upgrades" field in the output of `getblockchaininfo`, showing upcoming and active network upgrades ([#1665](https://github.com/DogeCash/DogeCash/pull/1665), [#1687](https://github.com/DogeCash/DogeCash/pull/1687)).
+- new "upgrades" field in the output of `getblockchaininfo`, showing upcoming and active network upgrades ([#1665](https://github.com/dogecash/DogeCash/pull/1665), [#1687](https://github.com/dogecash/DogeCash/pull/1687)).
 
 - `listreceivedbyaddress` has a new optional "addressFilter" argument that will filter the results to only the specified address
 
 ### Removed commands
 
-- `masternodedebug`. Use `getmasternodestatus` instead. ([#1698](https://github.com/DogeCash/DogeCash/pull/1698)).
+- `masternodedebug`. Use `getmasternodestatus` instead. ([#1698](https://github.com/dogecash/DogeCash/pull/1698)).
 
 *4.2.0* Change log
 ==============
@@ -189,7 +189,7 @@ Detailed release notes follow. This overview includes changes that affect behavi
  - #1747 `6f90e8be13` NU custom activation height startup arg. (furszy)
 
 ### Build System
- - #1681 `131ec069fd` [Build] Set complete cpp/cxx flags for benchdogecash binary (Fuzzbawls)
+ - #1681 `131ec069fd` [Build] Set complete cpp/cxx flags for bench_dogecash binary (Fuzzbawls)
  - #1684 `69fa8dce5e` [Travis] Bump macOS CMake target image (Fuzzbawls)
  - #1710 `ed63a331a3` [Depends] Update dependency fallback URL (Fuzzbawls)
 
@@ -207,8 +207,8 @@ Detailed release notes follow. This overview includes changes that affect behavi
  - #1059 `39a0fa6e04` [UI] Improve staking chart workflow (Akshay)
  - #1287 `e7dd0947c0` [GUI] Load persisted transaction filter during start (Mrs-X)
  - #1516 `93df7ce6ec` [GUI] MacOS fix open files with no default app. (furszy)
- - #1548 `176d3ae558` [Cleanup][GUI] Remove zDOGEC faqs (random-zebra)
- - #1549 `47bf23aa14` [Cleanup][GUI] Nuke zDOGEC from the GUI (random-zebra)
+ - #1548 `176d3ae558` [Cleanup][GUI] Remove zPIV faqs (random-zebra)
+ - #1549 `47bf23aa14` [Cleanup][GUI] Nuke zPIV from the GUI (random-zebra)
  - #1598 `f66f72656d` [GUI] Split "Delegators" address type in the table model (furszy)
  - #1601 `78a2923184` [GUI] Tor state missing translation (furszy)
  - #1604 `8ec6bbe737` [Refactor][GUI] Set static texts in .ui files + add missing tr() (random-zebra)
@@ -242,7 +242,7 @@ Detailed release notes follow. This overview includes changes that affect behavi
 
 ### RPC/REST
  - #1640 `0b84a5025d` [P2P][RPC] Rework addnode behaviour (Pieter Wuille)
- - #1660 `10876c6c80` [RPC] Change btc to DOGEC in help text (PeterL73)
+ - #1660 `10876c6c80` [RPC] Change btc to PIV in help text (PeterL73)
  - #1663 `0724bbbad2` [Wallet][RPC] FundTransaction - fundrawtransaction (random-zebra)
  - #1702 `7a849ca06a` [RPC] Table registration update and wallet table decoupled. (furszy)
  - #1731 `fe845a83d2` [RPC][Wallet] Deprecate internal account system (Fuzzbawls)

@@ -355,7 +355,7 @@ Ignoring IDE/editor files
 In closed-source environments in which everyone uses the same IDE it is common
 to add temporary files it produces to the project-wide `.gitignore` file.
 
-However, in open source software such as DogeCash Core, where everyone uses
+However, in open source software such as DogeCash, where everyone uses
 their own editors/IDE/tools, it is less common. Only you know what files your
 editor produces and this may change from version to version. The canonical way
 to do this is thus to create your local gitignore. Add this to `~/.gitconfig`:
@@ -385,9 +385,9 @@ Development guidelines
 ============================
 
 A few non-style-related recommendations for developers, as well as points to
-pay attention to for reviewers of DogeCash Core code.
+pay attention to for reviewers of DogeCash code.
 
-General DogeCash Core
+General DogeCash
 ----------------------
 
 - New features should be exposed on RPC first, then can be made available in the GUI
@@ -729,9 +729,6 @@ Current subtrees include:
 - src/univalue
   - Upstream at https://github.com/bitcoin-core/univalue ; actively maintained by Core contributors, deviates from upstream https://github.com/jgarzik/univalue
 
-- src/chiabls
-  - Upstream at https://github.com/DogeCash/bls-signatures/ ; actively maintained by Core contributors, deviates from upstream https://github.com/Chia-Network/bls-signatures/
-
 Upgrading LevelDB
 ---------------------
 
@@ -850,7 +847,7 @@ Git and GitHub tips
 
         [remote "upstream-pull"]
                 fetch = +refs/pull/*:refs/remotes/upstream-pull/*
-                url = git@github.com:DogeCash/DogeCash.git
+                url = git@github.com:DogeCash-Project/DogeCash.git
 
   This will add an `upstream-pull` remote to your git repository, which can be fetched using `git fetch --all`
   or `git fetch upstream-pull`. Afterwards, you can use `upstream-pull/NUMBER/head` in arguments to `git show`,

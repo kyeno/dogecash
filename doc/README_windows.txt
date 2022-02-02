@@ -1,4 +1,4 @@
-DogeCash Core
+DogeCash
 =====================
 
 Intro

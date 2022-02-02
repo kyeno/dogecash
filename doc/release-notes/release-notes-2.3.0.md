@@ -132,7 +132,7 @@ Note that the GUI list of masternodes associated with a controller wallet remain
 SPV Client Support
 --------------
 
-DogeCash Core now enables bloom filters by default to support SPV clients like mobile wallets. This feature can be disabled by using the `-peerbloomfilters` option on startup.
+DogeCash now enables bloom filters by default to support SPV clients like mobile wallets. This feature can be disabled by using the `-peerbloomfilters` option on startup.
 
 2.3.0 Change log
 =================
@@ -189,7 +189,7 @@ Thanks to everyone who directly contributed to this release:
 - Aaron Miller
 - Fuzzbawls
 - Mrs-X
-- PIVX
+- DogeCash
 - Satoshi Ninja
 - Jon Spock
 - furszy

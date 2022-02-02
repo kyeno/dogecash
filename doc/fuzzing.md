@@ -1,4 +1,4 @@
-Fuzz-testing DogeCash Core
+Fuzz-testing DogeCash
 ==========================
 
 A special test harness in `src/test/fuzz/` is provided for each fuzz target to
@@ -125,7 +125,7 @@ example using `brew install llvm`.
 
 Should you run into problems with the address sanitizer, it is possible you
 may need to run `./configure` with `--disable-asm` to avoid errors
-with certain assembly code from DogeCash Core's code. See [developer notes on sanitizers](https://github.com/DogeCash/DogeCash/blob/master/doc/developer-notes.md#sanitizers)
+with certain assembly code from DogeCash's code. See [developer notes on sanitizers](https://github.com/dogecash/DogeCash/blob/master/doc/developer-notes.md#sanitizers)
 for more information.
 
 You may also need to take care of giving the correct path for clang and

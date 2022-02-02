@@ -1,5 +1,5 @@
 ---
-name: "dogecash-linux-6.0"
+name: "dogecash-linux-5.4"
 enable_cache: true
 distro: "ubuntu"
 suites:

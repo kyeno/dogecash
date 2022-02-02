@@ -37,7 +37,7 @@ Notable Changes
 
 ### Deprecated 'autocombinerewards' Command
 
-The `autocombinerewards` RPC command was soft-deprecated in v5.3.0 and replaced with explicit setter/getter commands `setautocombinethreshold`/`getautocombinethreshold`. DogeCash Core, by default, will no longer accept the `autocombinerewards` command, returning a deprecation error, unless the `dogecashd`/`dogecash-qt` is started with the `-deprecatedrpc=autocombinerewards` option.
+The `autocombinerewards` RPC command was soft-deprecated in v5.3.0 and replaced with explicit setter/getter commands `setautocombinethreshold`/`getautocombinethreshold`. DogeCash, by default, will no longer accept the `autocombinerewards` command, returning a deprecation error, unless the `dogecashd`/`dogecash-qt` is started with the `-deprecatedrpc=autocombinerewards` option.
 
 This command will be fully removed in v6.0.0.
 

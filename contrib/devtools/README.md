@@ -99,7 +99,7 @@ For example:
   ./github-merge.py 3077
 
 (in any git repository) will help you merge pull request #3077 for the
-DogeCash/DogeCash repository.
+DogeCash-Project/DogeCash repository.
 
 What it does:
 * Fetch master and the pull request.
@@ -119,7 +119,7 @@ Setup
 ---------
 Configuring the github-merge tool for the DogeCash repository is done in the following way:
 
-    git config githubmerge.repository DogeCash/DogeCash
+    git config githubmerge.repository DogeCash-Project/DogeCash
     git config githubmerge.testcmd "make -j4 check" (adapt to whatever you want to use for testing)
     git config --global user.signingkey mykeyid
 
@@ -152,7 +152,7 @@ for further details.
 optimize-pngs.py
 ================
 
-A script to optimize png files in the PIVX
+A script to optimize png files in the DogeCash
 repository (requires pngcrush).
 
 security-check.py and test-security-check.py
