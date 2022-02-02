@@ -2,12 +2,11 @@
 // Copyright (c) 2009-2021 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2017-2021 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef DogeCash_UINT256_H
-#define DogeCash_UINT256_H
+#ifndef DOGECASH_UINT256_H
+#define DOGECASH_UINT256_H
 
 #include "crypto/common.h"
 
@@ -221,4 +220,4 @@ namespace std {
     };
 }
 
-#endif // DogeCash_UINT256_H
+#endif // DOGECASH_UINT256_H

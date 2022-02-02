@@ -1,7 +1,5 @@
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2020 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
-// Copyright (c) 2018-2020 The DogeCash developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -16,7 +14,6 @@
 #include "masternodeconfig.h"
 #include "masternodeman.h"
 #include "messagesigner.h"
-#include "tiertwo/tiertwo_sync_state.h"
 #include "rpc/server.h"
 #include "utilmoneystr.h"
 #ifdef ENABLE_WALLET
@@ -155,7 +152,7 @@ UniValue preparebudget(const JSONRPCRequest& request)
     CTransactionRef wtx;
     // make our change address
     CReserveKey keyChange(pwallet);
-    if (!pwallet->CreateBudgetFeeTX(wtx, nHash, keyChange, BUDGET_FEE_TX_OLD)) { // 50 DOGEC collateral for proposal
+    if (!pwallet->CreateBudgetFeeTX(wtx, nHash, keyChange, false)) { // 50 PIV collateral for proposal
         throw std::runtime_error("Error making collateral transaction for proposal. Please check your wallet balance.");
     }
 
@@ -165,9 +162,8 @@ UniValue preparebudget(const JSONRPCRequest& request)
         throw JSONRPCError(RPC_WALLET_ERROR, res.ToString());
 
     // Store proposal name as a comment
-    auto it = pwallet->mapWallet.find(wtx->GetHash());
-    assert(it != pwallet->mapWallet.end());
-    it->second.SetComment("Proposal: " + strProposalName);
+    assert(pwallet->mapWallet.count(wtx->GetHash()));
+    pwallet->mapWallet.at(wtx->GetHash()).SetComment("Proposal: " + strProposalName);
 
     return wtx->GetHash().ToString();
 }
@@ -208,7 +204,7 @@ UniValue submitbudget(const JSONRPCRequest& request)
     CScript scriptPubKey = GetScriptForDestination(address);
     const uint256& hash = ParseHashV(request.params[6], "parameter 1");
 
-    if (!g_tiertwo_sync_state.IsBlockchainSynced()) {
+    if (!masternodeSync.IsBlockchainSynced()) {
         throw std::runtime_error("Must wait for client to sync with masternode network. Try again in a minute or so.");
     }
 
@@ -383,13 +379,13 @@ UniValue getbudgetprojection(const JSONRPCRequest& request)
             "    \"Yeas\": n,                    (numeric) Number of yea votes\n"
             "    \"Nays\": n,                    (numeric) Number of nay votes\n"
             "    \"Abstains\": n,                (numeric) Number of abstains\n"
-            "    \"TotalPayment\": xxx.xxx,      (numeric) Total payment amount in DOGEC\n"
-            "    \"MonthlyPayment\": xxx.xxx,    (numeric) Monthly payment amount in DOGEC\n"
+            "    \"TotalPayment\": xxx.xxx,      (numeric) Total payment amount in PIV\n"
+            "    \"MonthlyPayment\": xxx.xxx,    (numeric) Monthly payment amount in PIV\n"
             "    \"IsEstablished\": true|false,  (boolean) Proposal is considered established, 24 hrs after being submitted to network. (Testnet is 5 mins)\n"
             "    \"IsValid\": true|false,        (boolean) Valid (true) or Invalid (false)\n"
             "    \"IsInvalidReason\": \"xxxx\",  (string) Error message, if any\n"
-            "    \"Allotted\": xxx.xxx,           (numeric) Amount of DOGEC allotted in current period\n"
-            "    \"TotalBudgetAllotted\": xxx.xxx (numeric) Total DOGEC allotted\n"
+            "    \"Allotted\": xxx.xxx,           (numeric) Amount of PIV allotted in current period\n"
+            "    \"TotalBudgetAllotted\": xxx.xxx (numeric) Total PIV allotted\n"
             "  }\n"
             "  ,...\n"
             "]\n"
@@ -439,8 +435,8 @@ UniValue getbudgetinfo(const JSONRPCRequest& request)
             "    \"Yeas\": n,                    (numeric) Number of yea votes\n"
             "    \"Nays\": n,                    (numeric) Number of nay votes\n"
             "    \"Abstains\": n,                (numeric) Number of abstains\n"
-            "    \"TotalPayment\": xxx.xxx,      (numeric) Total payment amount in DOGEC\n"
-            "    \"MonthlyPayment\": xxx.xxx,    (numeric) Monthly payment amount in DOGEC\n"
+            "    \"TotalPayment\": xxx.xxx,      (numeric) Total payment amount in PIV\n"
+            "    \"MonthlyPayment\": xxx.xxx,    (numeric) Monthly payment amount in PIV\n"
             "    \"IsEstablished\": true|false,  (boolean) Proposal is considered established, 24 hrs after being submitted to network. (5 mins for Testnet)\n"
             "    \"IsValid\": true|false,        (boolean) Valid (true) or Invalid (false)\n"
             "    \"IsInvalidReason\": \"xxxx\",      (string) Error message, if any\n"
@@ -607,7 +603,7 @@ UniValue createrawmnfinalbudget(const JSONRPCRequest& request)
         // create fee tx
         CTransactionRef wtx;
         CReserveKey keyChange(vpwallets[0]);
-        if (!vpwallets[0]->CreateBudgetFeeTX(wtx, budgetHash, keyChange, BUDGET_FEE_TX)) {
+        if (!vpwallets[0]->CreateBudgetFeeTX(wtx, budgetHash, keyChange, true)) {
             throw std::runtime_error("Can't make collateral transaction");
         }
         // Send the tx to the network
@@ -723,7 +719,7 @@ UniValue checkbudgets(const JSONRPCRequest& request)
             "\nExamples:\n" +
             HelpExampleCli("checkbudgets", "") + HelpExampleRpc("checkbudgets", ""));
 
-    if (!g_tiertwo_sync_state.IsSynced())
+    if (!masternodeSync.IsSynced())
         throw JSONRPCError(RPC_CLIENT_IN_INITIAL_DOWNLOAD, "Masternode/Budget sync not finished yet");
 
     g_budgetman.CheckAndRemove();

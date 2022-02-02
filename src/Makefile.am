@@ -180,21 +180,13 @@ BITCOIN_CORE_H = \
   core_io.h \
   cuckoocache.h \
   crypter.h \
-  ctpl_stl.h \
+  ctpl.h \
   cyclingvector.h \
   evo/deterministicmns.h \
   evo/evodb.h \
-  evo/mnauth.h \
   evo/evonotificationinterface.h \
   evo/providertx.h \
-  evo/specialtx_validation.h \
-  flatdb.h \
-  llmq/quorums_blockprocessor.h \
-  llmq/quorums_commitment.h \
-  llmq/quorums_init.h \
-  llmq/quorums_utils.h \
-  tiertwo/masternode_meta_manager.h \
-  tiertwo/net_masternodes.h \
+  evo/specialtx.h \
   addressbook.h \
   wallet/db.h \
   flatfile.h \
@@ -204,7 +196,6 @@ BITCOIN_CORE_H = \
   httpserver.h \
   indirectmap.h \
   init.h \
-  tiertwo/init.h \
   interfaces/handler.h \
   interfaces/wallet.h \
   invalid.h \
@@ -290,7 +281,6 @@ BITCOIN_CORE_H = \
   threadinterrupt.h \
   timedata.h \
   tinyformat.h \
-  tiertwo/tiertwo_sync_state.h \
   torcontrol.h \
   txdb.h \
   txmempool.h \
@@ -322,7 +312,8 @@ BITCOIN_CORE_H = \
   wallet/walletdb.h \
   wallet/walletutil.h \
   warnings.h \
-  zdogec/zpos.h \
+  zpivchain.h \
+  zpiv/zpos.h \
   zmq/zmqabstractnotifier.h \
   zmq/zmqconfig.h \
   zmq/zmqnotificationinterface.h \
@@ -354,19 +345,11 @@ libbitcoin_server_a_SOURCES = \
   evo/deterministicmns.cpp \
   evo/evodb.cpp \
   evo/evonotificationinterface.cpp \
-  evo/mnauth.cpp \
   evo/providertx.cpp \
-  evo/specialtx_validation.cpp \
-  llmq/quorums_blockprocessor.cpp \
-  llmq/quorums_commitment.cpp \
-  llmq/quorums_init.cpp \
-  llmq/quorums_utils.cpp \
-  tiertwo/masternode_meta_manager.cpp \
-  tiertwo/net_masternodes.cpp \
+  evo/specialtx.cpp \
   httprpc.cpp \
   httpserver.cpp \
   init.cpp \
-  tiertwo/init.cpp \
   dbwrapper.cpp \
   legacy/validation_zerocoin_legacy.cpp \
   sapling/sapling_validation.cpp \
@@ -401,6 +384,7 @@ libbitcoin_server_a_SOURCES = \
   txmempool.cpp \
   validation.cpp \
   validationinterface.cpp \
+  zpivchain.cpp \
   $(BITCOIN_CORE_H) \
   $(LIBSAPLING_H)
 
@@ -436,7 +420,7 @@ libbitcoin_wallet_a_SOURCES = \
   wallet/walletdb.cpp \
   wallet/walletutil.cpp \
   stakeinput.cpp \
-  zdogec/zpos.cpp \
+  zpiv/zpos.cpp \
   $(BITCOIN_CORE_H) \
   $(LIBSAPLING_H)
 
@@ -498,7 +482,7 @@ libzerocoin_libbitcoin_zerocoin_a_SOURCES = \
   libzerocoin/Params.h \
   libzerocoin/SpendType.h \
   libzerocoin/ZerocoinDefines.h \
-  zdogec/zdogecmodule.h \
+  zpiv/zpivmodule.h \
   libzerocoin/bignum.cpp \
   libzerocoin/Coin.cpp \
   libzerocoin/CoinRandomnessSchnorrSignature.cpp \
@@ -506,7 +490,7 @@ libzerocoin_libbitcoin_zerocoin_a_SOURCES = \
   libzerocoin/Denominations.cpp \
   libzerocoin/ParamGeneration.cpp \
   libzerocoin/Params.cpp \
-  zdogec/zdogecmodule.cpp
+  zpiv/zpivmodule.cpp
 
 # common: shared between dogecashd, and dogecash-qt and non-server tools
 libbitcoin_common_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
@@ -554,7 +538,6 @@ libbitcoin_common_a_SOURCES = \
   script/sign.cpp \
   script/standard.cpp \
   tiertwo_networksync.cpp \
-  tiertwo/tiertwo_sync_state.cpp \
   warnings.cpp \
   script/script_error.cpp \
   spork.cpp \
@@ -746,7 +729,6 @@ CLEANFILES = $(EXTRA_LIBRARIES)
 
 CLEANFILES += *.gcda *.gcno
 CLEANFILES += budget/*.gcda budget/*.gcno
-CLEANFILES += bls/*.gcda bls/*.gcno
 CLEANFILES += compat/*.gcda compat/*.gcno
 CLEANFILES += consensus/*.gcda consensus/*.gcno
 CLEANFILES += crc32c/src/*.gcda crc32c/src/*.gcno
@@ -755,20 +737,19 @@ CLEANFILES += evo/*.gcda evo/*.gcno
 CLEANFILES += interfaces/*.gcda interfaces/*.gcno
 CLEANFILES += legacy/*.gcda legacy/*.gcno
 CLEANFILES += libzerocoin/*.gcda libzerocoin/*.gcno
-CLEANFILES += llmq/*.gcda llmq/*.gcno
 CLEANFILES += policy/*.gcda policy/*.gcno
 CLEANFILES += primitives/*.gcda primitives/*.gcno
 CLEANFILES += rpc/*.gcda rpc/*.gcno
 CLEANFILES += sapling/*.gcda sapling/*.gcno
 CLEANFILES += script/*.gcda script/*.gcno
 CLEANFILES += support/*.gcda support/*.gcno
-CLEANFILES += tiertwo/*.gcda tiertwo/*.gcno
+CLEANFILES += test/librust/*.gcda test/librust/*.gcno
 CLEANFILES += univalue/*.gcda univalue/*.gcno
 CLEANFILES += util/*.gcda util/*.gcno
 CLEANFILES += wallet/*.gcda wallet/*.gcno
 CLEANFILES += wallet/test/*.gcda wallet/test/*.gcno
 CLEANFILES += zmq/*.gcda zmq/*.gcno
-CLEANFILES += zdogec/*.gcda zdogec/*.gcno
+CLEANFILES += zpiv/*.gcda zpiv/*.gcno
 CLEANFILES += obj/build.h
 
 CTAES_DIST =  crypto/ctaes/bench.c

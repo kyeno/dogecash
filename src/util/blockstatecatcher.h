@@ -1,10 +1,9 @@
 // Copyright (c) 2021 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or https://www.opensource.org/licenses/mit-license.php.
 
-#ifndef DogeCash_BLOCKSTATECATCHER_H
-#define DogeCash_BLOCKSTATECATCHER_H
+#ifndef DOGECASH_BLOCKSTATECATCHER_H
+#define DOGECASH_BLOCKSTATECATCHER_H
 
 #include "consensus/validation.h"
 #include "validationinterface.h"
@@ -35,4 +34,4 @@ protected:
     };
 };
 
-#endif //DogeCash_BLOCKSTATECATCHER_H
+#endif //DOGECASH_BLOCKSTATECATCHER_H

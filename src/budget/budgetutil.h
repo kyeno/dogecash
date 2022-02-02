@@ -1,10 +1,9 @@
 // Copyright (c) 2021 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or https://www.opensource.org/licenses/mit-license.php.
 
-#ifndef DogeCash_BUDGETUTIL_H
-#define DogeCash_BUDGETUTIL_H
+#ifndef DOGECASH_BUDGETUTIL_H
+#define DOGECASH_BUDGETUTIL_H
 
 #include "uint256.h"
 #include "budget/budgetvote.h"
@@ -25,4 +24,4 @@ UniValue mnLocalBudgetVoteInner(bool fLegacyMN, const uint256& budgetHash, bool 
 UniValue mnBudgetVoteInner(CWallet* const pwallet, bool fLegacyMN, const uint256& budgetHash, bool fFinal,
                                   const CBudgetVote::VoteDirection& nVote, const Optional<std::string>& mnAliasFilter);
 
-#endif //DogeCash_BUDGETUTIL_H
+#endif //DOGECASH_BUDGETUTIL_H

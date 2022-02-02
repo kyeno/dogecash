@@ -1,11 +1,10 @@
 // Copyright (c) 2016-2020 The ZCash developers
 // Copyright (c) 2020 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef DogeCash_SAPLING_VALIDATION_H
-#define DogeCash_SAPLING_VALIDATION_H
+#ifndef DOGECASH_SAPLING_VALIDATION_H
+#define DOGECASH_SAPLING_VALIDATION_H
 
 #include "chainparams.h"
 
@@ -28,4 +27,4 @@ bool ContextualCheckTransaction(const CTransaction &tx, CValidationState &state,
 
 }; // End SaplingValidation namespace
 
-#endif //DogeCash_SAPLING_VALIDATION_H
+#endif //DOGECASH_SAPLING_VALIDATION_H

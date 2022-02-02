@@ -1,6 +1,5 @@
 // Copyright (c) 2016-2020 The ZCash developers
 // Copyright (c) 2021 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or https://www.opensource.org/licenses/mit-license.php.
 
@@ -38,9 +37,10 @@ void SaplingScriptPubKeyMan::UpdateSaplingNullifierNoteMapForBlock(const CBlock 
     LOCK(wallet->cs_wallet);
 
     for (const auto& tx : pblock->vtx) {
-        auto it = wallet->mapWallet.find(tx->GetHash());
-        if (it != wallet->mapWallet.end()) {
-            UpdateSaplingNullifierNoteMapWithTx(it->second);
+        const uint256& hash = tx->GetHash();
+        bool txIsOurs = wallet->mapWallet.count(hash);
+        if (txIsOurs) {
+            UpdateSaplingNullifierNoteMapWithTx(wallet->mapWallet.at(hash));
         }
     }
 }
@@ -581,8 +581,8 @@ Optional<libzcash::SaplingPaymentAddress>
 bool SaplingScriptPubKeyMan::IsSaplingNullifierFromMe(const uint256& nullifier) const
 {
     LOCK(wallet->cs_wallet);
-    auto it = mapSaplingNullifiersToNotes.find(nullifier);
-    return it != mapSaplingNullifiersToNotes.end() && wallet->mapWallet.count(it->second.hash);
+    return mapSaplingNullifiersToNotes.count(nullifier) &&
+        wallet->mapWallet.count(mapSaplingNullifiersToNotes.at(nullifier).hash);
 }
 
 std::set<std::pair<libzcash::PaymentAddress, uint256>> SaplingScriptPubKeyMan::GetNullifiersForAddresses(
@@ -622,20 +622,18 @@ std::set<std::pair<libzcash::PaymentAddress, uint256>> SaplingScriptPubKeyMan::G
 
 Optional<libzcash::SaplingPaymentAddress> SaplingScriptPubKeyMan::GetOutPointAddress(const CWalletTx& tx, const SaplingOutPoint& op) const
 {
-    auto it = tx.mapSaplingNoteData.find(op);
-    if (it == tx.mapSaplingNoteData.end()) {
+    if (!tx.mapSaplingNoteData.count(op)) {
         return nullopt;
     }
-    return it->second.address;
+    return tx.mapSaplingNoteData.at(op).address;
 }
 
 CAmount SaplingScriptPubKeyMan::GetOutPointValue(const CWalletTx& tx, const SaplingOutPoint& op) const
 {
-    auto it = tx.mapSaplingNoteData.find(op);
-    if (it == tx.mapSaplingNoteData.end()) {
+    if (!tx.mapSaplingNoteData.count(op)) {
         return 0;
     }
-    return it->second.amount ? *(it->second.amount) : 0;
+    return tx.mapSaplingNoteData.at(op).amount ? *(tx.mapSaplingNoteData.at(op).amount) : 0;
 }
 
 Optional<std::string> SaplingScriptPubKeyMan::GetOutPointMemo(const CWalletTx& tx, const SaplingOutPoint& op) const
@@ -748,12 +746,10 @@ CAmount SaplingScriptPubKeyMan::GetDebit(const CTransaction& tx, const isminefil
             // If we have the spend nullifier, it means that this input is ours.
             // The transaction (and decrypted note data) has been added to the wallet.
             const SaplingOutPoint& op = it->second;
-            auto wit = wallet->mapWallet.find(op.hash);
-            assert(wit != wallet->mapWallet.end());
-            const auto& wtx = wit->second;
-            auto nit = wtx.mapSaplingNoteData.find(op);
-            assert(nit != wtx.mapSaplingNoteData.end());
-            const auto& nd = nit->second;
+            assert(wallet->mapWallet.count(op.hash));
+            const auto& wtx = wallet->mapWallet.at(op.hash);
+            assert(wtx.mapSaplingNoteData.count(op));
+            const auto& nd = wtx.mapSaplingNoteData.at(op);
             assert(nd.IsMyNote());        // todo: Add watch only check.
             assert(static_cast<bool>(nd.amount));
             nDebit += *(nd.amount);
@@ -774,9 +770,8 @@ CAmount SaplingScriptPubKeyMan::GetShieldedChange(const CWalletTx& wtx) const
     SaplingOutPoint op{txHash, 0};
     for (uint32_t pos = 0; pos < (uint32_t) wtx.tx->sapData->vShieldedOutput.size(); ++pos) {
         op.n = pos;
-        auto it = wtx.mapSaplingNoteData.find(op);
-        if (it == wtx.mapSaplingNoteData.end()) continue;
-        const auto& nd = it->second;
+        if (!wtx.mapSaplingNoteData.count(op)) continue;
+        const auto& nd = wtx.mapSaplingNoteData.at(op);
         if (!nd.IsMyNote() || !static_cast<bool>(nd.address) || !static_cast<bool>(nd.amount)) continue;
         if (IsNoteSaplingChange(op, *(nd.address))) {
             nChange += *(nd.amount);
@@ -825,17 +820,14 @@ void SaplingScriptPubKeyMan::GetSaplingNoteWitnesses(const std::vector<SaplingOu
     Optional<uint256> rt;
     int i = 0;
     for (SaplingOutPoint note : notes) {
-        auto it = wallet->mapWallet.find(note.hash);
-        if (it != wallet->mapWallet.end()) {
-            auto nit = it->second.mapSaplingNoteData.find(note);
-            if (nit != it->second.mapSaplingNoteData.end() &&
-                    nit->second.witnesses.size() > 0) {
-                witnesses[i] = nit->second.witnesses.front();
-                if (!rt) {
-                    rt = witnesses[i]->root();
-                } else {
-                    assert(*rt == witnesses[i]->root());
-                }
+        if (wallet->mapWallet.count(note.hash) &&
+            wallet->mapWallet.at(note.hash).mapSaplingNoteData.count(note) &&
+            wallet->mapWallet.at(note.hash).mapSaplingNoteData[note].witnesses.size() > 0) {
+            witnesses[i] = wallet->mapWallet.at(note.hash).mapSaplingNoteData[note].witnesses.front();
+            if (!rt) {
+                rt = witnesses[i]->root();
+            } else {
+                assert(*rt == witnesses[i]->root());
             }
         }
         i++;

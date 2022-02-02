@@ -2,8 +2,6 @@
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2020 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
-// Copyright (c) 2018-2020 The DogeCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -15,15 +13,14 @@
 #include "messagesigner.h"
 #include "net.h"
 #include "netbase.h"
-#include "tiertwo/net_masternodes.h"
 #include "rpc/server.h"
 #include "spork.h"
 #include "timedata.h"
-#include "tiertwo/tiertwo_sync_state.h"
 #include "util/system.h"
 #ifdef ENABLE_WALLET
 #include "wallet/rpcwallet.h"
 #include "wallet/wallet.h"
+#include "wallet/walletdb.h"
 #endif
 #include "warnings.h"
 
@@ -128,9 +125,8 @@ UniValue getinfo(const JSONRPCRequest& request)
 #endif
     obj.pushKV("blocks", (int)chainActive.Height());
     obj.pushKV("timeoffset", GetTimeOffset());
-    if(g_connman) {
+    if(g_connman)
         obj.pushKV("connections", (int)g_connman->GetNodeCount(CConnman::CONNECTIONS_ALL));
-    }
     obj.pushKV("proxy", (proxy.IsValid() ? proxy.proxy.ToStringIPPort() : std::string()));
     obj.pushKV("difficulty", (double)GetDifficulty());
     obj.pushKV("testnet", Params().IsTestnet());
@@ -200,10 +196,10 @@ UniValue mnsync(const JSONRPCRequest& request)
     if (strMode == "status") {
         UniValue obj(UniValue::VOBJ);
 
-        obj.pushKV("IsBlockchainSynced", g_tiertwo_sync_state.IsBlockchainSynced());
-        obj.pushKV("lastMasternodeList", g_tiertwo_sync_state.GetlastMasternodeList());
-        obj.pushKV("lastMasternodeWinner", g_tiertwo_sync_state.GetlastMasternodeWinner());
-        obj.pushKV("lastBudgetItem", g_tiertwo_sync_state.GetlastBudgetItem());
+        obj.pushKV("IsBlockchainSynced", masternodeSync.IsBlockchainSynced());
+        obj.pushKV("lastMasternodeList", masternodeSync.lastMasternodeList);
+        obj.pushKV("lastMasternodeWinner", masternodeSync.lastMasternodeWinner);
+        obj.pushKV("lastBudgetItem", masternodeSync.lastBudgetItem);
         obj.pushKV("lastFailure", masternodeSync.lastFailure);
         obj.pushKV("nCountFailures", masternodeSync.nCountFailures);
         obj.pushKV("sumMasternodeList", masternodeSync.sumMasternodeList);
@@ -214,7 +210,7 @@ UniValue mnsync(const JSONRPCRequest& request)
         obj.pushKV("countMasternodeWinner", masternodeSync.countMasternodeWinner);
         obj.pushKV("countBudgetItemProp", masternodeSync.countBudgetItemProp);
         obj.pushKV("countBudgetItemFin", masternodeSync.countBudgetItemFin);
-        obj.pushKV("RequestedMasternodeAssets", g_tiertwo_sync_state.GetSyncPhase());
+        obj.pushKV("RequestedMasternodeAssets", masternodeSync.RequestedMasternodeAssets);
         obj.pushKV("RequestedMasternodeAttempt", masternodeSync.RequestedMasternodeAttempt);
 
         return obj;
@@ -757,76 +753,6 @@ UniValue echo(const JSONRPCRequest& request)
     return request.params;
 }
 
-// mnconnect command operation types
-const char* SINGLE_CONN = "single_conn";
-const char* QUORUM_MEMBERS_CONN = "quorum_members_conn";
-const char* IQR_MEMBERS_CONN = "iqr_members_conn";
-const char* PROBE_CONN = "probe_conn";
-
-/* What essentially does is add a pending MN connection
- * Can be in the following forms:
- * 1) Direct single DMN connection.
- * 2) Quorum members connection (set of DMNs to connect).
- * 3) Quorum relay members connections (set of DMNs to connect and relay intra-quorum messages).
- * 4) Probe DMN connection.
-**/
-UniValue mnconnect(const JSONRPCRequest& request)
-{
-    if (request.fHelp || request.params.size() < 2 || request.params.size() > 4) {
-        throw std::runtime_error(
-                "mnconnect \"op_type\" \"[pro_tx_hash, pro_tx_hash,..]\" (llmq_type \"quorum_hash\")\n"
-                "\nAdd manual quorum members connections for internal testing purposes of the tier two p2p network layer\n"
-        );
-    }
-
-    const auto& chainparams = Params();
-    if (!chainparams.IsRegTestNet())
-        throw std::runtime_error("mnconnect for regression testing (-regtest mode) only");
-
-    RPCTypeCheck(request.params, {UniValue::VSTR, UniValue::VARR});
-
-    Consensus::LLMQType llmq_type = Consensus::LLMQ_NONE;
-    if (request.params.size() > 2) {
-        RPCTypeCheckArgument(request.params[2], UniValue::VNUM);
-        llmq_type = (Consensus::LLMQType)request.params[2].get_int();
-    }
-
-    uint256 quorum_hash;
-    if (request.params.size() > 3) {
-        RPCTypeCheckArgument(request.params[3], UniValue::VSTR);
-        quorum_hash = uint256S(request.params[3].get_str());
-    }
-
-    // First obtain the connection type
-    const std::string& op_type = request.params[0].get_str();
-    // Check provided mn_list
-    const auto& array{request.params[1].get_array()};
-    std::set<uint256> set_dmn_protxhash;
-    for (unsigned int i = 0; i < array.size(); i++) {
-        set_dmn_protxhash.emplace(uint256S(array[i].get_str()));
-    }
-
-    const auto& mn_connan =  g_connman->GetTierTwoConnMan();
-    if (op_type == SINGLE_CONN) {
-        for (const auto& protxhash : set_dmn_protxhash) {
-            // if the connection exist or if the dmn doesn't exist,
-            // it will simply not even try to connect to it.
-            mn_connan->addPendingMasternode(protxhash);
-        }
-        return true;
-    } else if (op_type == QUORUM_MEMBERS_CONN) {
-        mn_connan->setQuorumNodes(llmq_type, quorum_hash, set_dmn_protxhash);
-        return true;
-    } else if (op_type == IQR_MEMBERS_CONN) {
-        mn_connan->setMasternodeQuorumRelayMembers(llmq_type, quorum_hash, set_dmn_protxhash);
-        return true;
-    } else if (op_type == PROBE_CONN) {
-        mn_connan->addPendingProbeConnections(set_dmn_protxhash);
-        return true;
-    }
-    return false;
-}
-
 static const CRPCCommand commands[] =
 { //  category              name                      actor (function)         okSafe argNames
   //  --------------------- ------------------------  -----------------------  ------ --------
@@ -844,7 +770,6 @@ static const CRPCCommand commands[] =
     { "hidden",             "echo",                   &echo,                   true,  {"arg0","arg1","arg2","arg3","arg4","arg5","arg6","arg7","arg8","arg9"}},
     { "hidden",             "echojson",               &echo,                   true,  {"arg0","arg1","arg2","arg3","arg4","arg5","arg6","arg7","arg8","arg9"}},
     { "hidden",             "setmocktime",            &setmocktime,            true,  {"timestamp"} },
-    { "hidden",             "mnconnect",              &mnconnect,              true,  {"op_type", "mn_list", "llmq_type", "quorum_hash"} },
 };
 
 void RegisterMiscRPCCommands(CRPCTable &tableRPC)

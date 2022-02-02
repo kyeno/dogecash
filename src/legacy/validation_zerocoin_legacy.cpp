@@ -1,12 +1,12 @@
 // Copyright (c) 2020 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or https://www.opensource.org/licenses/mit-license.php.
 #include "legacy/validation_zerocoin_legacy.h"
 
 #include "libzerocoin/CoinSpend.h"
 #include "wallet/wallet.h"
-#include "zdogec/zdogecmodule.h"
+#include "zpivchain.h"
+#include "zpiv/zpivmodule.h"
 
 bool DisconnectZerocoinTx(const CTransaction& tx)
 {
@@ -25,12 +25,12 @@ bool DisconnectZerocoinTx(const CTransaction& tx)
                     if (isPublicSpend) {
                         PublicCoinSpend publicSpend(params);
                         CValidationState state;
-                        if (!ZDOGECModule::ParseZerocoinPublicSpend(txin, tx, state, publicSpend)) {
+                        if (!ZPIVModule::ParseZerocoinPublicSpend(txin, tx, state, publicSpend)) {
                             return error("Failed to parse public spend");
                         }
                         serial = publicSpend.getCoinSerialNumber();
                     } else {
-                        libzerocoin::CoinSpend spend = ZDOGECModule::TxInToZerocoinSpend(txin);
+                        libzerocoin::CoinSpend spend = TxInToZerocoinSpend(txin);
                         serial = spend.getCoinSerialNumber();
                     }
 

@@ -1,10 +1,9 @@
 // Copyright (c) 2017-2020 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef DogeCash_STAKEINPUT_H
-#define DogeCash_STAKEINPUT_H
+#ifndef DOGECASH_STAKEINPUT_H
+#define DOGECASH_STAKEINPUT_H
 
 #include "chain.h"
 #include "streams.h"
@@ -25,7 +24,7 @@ public:
     virtual const CBlockIndex* GetIndexFrom() const = 0;
     virtual bool GetTxOutFrom(CTxOut& out) const = 0;
     virtual CAmount GetValue() const = 0;
-    virtual bool IsZDOGEC() const = 0;
+    virtual bool IsZPIV() const = 0;
     virtual CDataStream GetUniqueness() const = 0;
 };
 
@@ -48,8 +47,8 @@ public:
     CDataStream GetUniqueness() const override;
     CTxIn GetTxIn() const;
     bool CreateTxOuts(const CWallet* pwallet, std::vector<CTxOut>& vout, CAmount nTotal) const;
-    bool IsZDOGEC() const override { return false; }
+    bool IsZPIV() const override { return false; }
 };
 
 
-#endif //DogeCash_STAKEINPUT_H
+#endif //DOGECASH_STAKEINPUT_H

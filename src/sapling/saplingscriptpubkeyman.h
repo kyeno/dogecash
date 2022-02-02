@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef DogeCash_SAPLINGSCRIPTPUBKEYMAN_H
-#define DogeCash_SAPLINGSCRIPTPUBKEYMAN_H
+#ifndef DOGECASH_SAPLINGSCRIPTPUBKEYMAN_H
+#define DOGECASH_SAPLINGSCRIPTPUBKEYMAN_H
 
 #include "consensus/consensus.h"
 #include "sapling/note.h"
@@ -422,4 +422,4 @@ private:
     TxNullifiers mapTxSaplingNullifiers;
 };
 
-#endif //DogeCash_SAPLINGSCRIPTPUBKEYMAN_H
+#endif //DOGECASH_SAPLINGSCRIPTPUBKEYMAN_H

@@ -1,12 +1,12 @@
 // Copyright (c) 2014-2016 The Dash developers
 // Copyright (c) 2016-2020 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "spork.h"
 
 #include "netmessagemaker.h"
+#include "net_processing.h"
 #include "sporkdb.h"
 #include "validation.h"
 
@@ -85,16 +85,20 @@ void CSporkManager::LoadSporksFromDB()
     }
 }
 
-bool CSporkManager::ProcessSpork(CNode* pfrom, std::string& strCommand, CDataStream& vRecv, int& dosScore)
+void CSporkManager::ProcessSpork(CNode* pfrom, std::string& strCommand, CDataStream& vRecv)
 {
+    if (fLiteMode) return; // disable all masternode related functionality
+
     if (strCommand == NetMsgType::SPORK) {
-        dosScore = ProcessSporkMsg(vRecv);
-        return dosScore == 0;
+        int banScore = ProcessSporkMsg(vRecv);
+        if (banScore > 0) {
+            LOCK(cs_main);
+            Misbehaving(pfrom->GetId(), banScore);
+        }
     }
     if (strCommand == NetMsgType::GETSPORKS) {
         ProcessGetSporks(pfrom, strCommand, vRecv);
     }
-    return true;
 }
 
 int CSporkManager::ProcessSporkMsg(CDataStream& vRecv)

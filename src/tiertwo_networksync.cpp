@@ -1,17 +1,14 @@
 // Copyright (c) 2020 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or https://www.opensource.org/licenses/mit-license.php.
 
 #include "masternode-sync.h"
 
-#include "llmq/quorums_blockprocessor.h"
 #include "masternodeman.h"          // for mnodeman
 #include "netmessagemaker.h"
 #include "net_processing.h"         // for Misbehaving
 #include "spork.h"                  // for sporkManager
 #include "streams.h"                // for CDataStream
-#include "tiertwo/tiertwo_sync_state.h"
 
 
 // Update in-flight message status if needed
@@ -29,11 +26,11 @@ bool CMasternodeSync::UpdatePeerSyncState(const NodeId& id, const char* msg, con
             LogPrintf("%s: %s message updated peer sync state\n", __func__, msgMapIt->first);
 
             // Only update sync status if we really need it. Otherwise, it's just good redundancy to verify data several times.
-            if (g_tiertwo_sync_state.GetSyncPhase() < nextSyncStatus) {
+            if (RequestedMasternodeAssets < nextSyncStatus) {
                 // todo: this should only happen if more than N peers have sent the data.
                 // move overall tier two sync state to the next one if needed.
                 LogPrintf("%s: moving to next assset %s\n", __func__, nextSyncStatus);
-                g_tiertwo_sync_state.SetCurrentSyncPhase(nextSyncStatus);
+                RequestedMasternodeAssets = nextSyncStatus;
             }
             return true;
         }
@@ -46,17 +43,6 @@ bool CMasternodeSync::MessageDispatcher(CNode* pfrom, std::string& strCommand, C
     if (strCommand == NetMsgType::GETSPORKS) {
         // send sporks
         sporkManager.ProcessGetSporks(pfrom, strCommand, vRecv);
-        return true;
-    }
-
-    if (strCommand == NetMsgType::QFCOMMITMENT) {
-        // Only process qfc if v6.0.0 is enforced.
-        if (!deterministicMNManager->IsDIP3Enforced()) return true; // nothing to do.
-        int retMisbehavingScore{0};
-        llmq::quorumBlockProcessor->ProcessMessage(pfrom, vRecv, retMisbehavingScore);
-        if (retMisbehavingScore > 0) {
-            WITH_LOCK(cs_main, Misbehaving(pfrom->GetId(), retMisbehavingScore));
-        }
         return true;
     }
 
@@ -89,9 +75,9 @@ bool CMasternodeSync::MessageDispatcher(CNode* pfrom, std::string& strCommand, C
             // This could happen because of the message thread is requesting the sporks alone..
             // So.. for now, can just update the peer status and move it to the next state if the end message arrives
             if (spork.nSporkID == SPORK_INVALID) {
-                if (g_tiertwo_sync_state.GetSyncPhase() < MASTERNODE_SYNC_LIST) {
+                if (RequestedMasternodeAssets < MASTERNODE_SYNC_LIST) {
                     // future note: use internal cs for RequestedMasternodeAssets.
-                    g_tiertwo_sync_state.SetCurrentSyncPhase(MASTERNODE_SYNC_LIST);
+                    RequestedMasternodeAssets = MASTERNODE_SYNC_LIST;
                 }
             }
         }
@@ -100,7 +86,7 @@ bool CMasternodeSync::MessageDispatcher(CNode* pfrom, std::string& strCommand, C
 
     if (strCommand == NetMsgType::SYNCSTATUSCOUNT) {
         // Nothing to do.
-        if (g_tiertwo_sync_state.GetSyncPhase() >= MASTERNODE_SYNC_FINISHED) return true;
+        if (RequestedMasternodeAssets >= MASTERNODE_SYNC_FINISHED) return true;
 
         // Sync status count
         int nItemID;
@@ -188,24 +174,22 @@ void CMasternodeSync::RequestDataTo(CNode* pnode, const char* msg, bool forceReq
 void CMasternodeSync::SyncRegtest(CNode* pnode)
 {
     // skip mn list and winners sync if legacy mn are obsolete
-    int syncPhase = g_tiertwo_sync_state.GetSyncPhase();
     if (deterministicMNManager->LegacyMNObsolete() &&
-            (syncPhase == MASTERNODE_SYNC_LIST || syncPhase == MASTERNODE_SYNC_MNW)) {
-        g_tiertwo_sync_state.SetCurrentSyncPhase(MASTERNODE_SYNC_BUDGET);
-        syncPhase = g_tiertwo_sync_state.GetSyncPhase();
+            (RequestedMasternodeAssets == MASTERNODE_SYNC_LIST || RequestedMasternodeAssets == MASTERNODE_SYNC_MNW)) {
+        RequestedMasternodeAssets = MASTERNODE_SYNC_BUDGET;
     }
 
     // Initial sync, verify that the other peer answered to all of the messages successfully
-    if (syncPhase == MASTERNODE_SYNC_SPORKS) {
+    if (RequestedMasternodeAssets == MASTERNODE_SYNC_SPORKS) {
         RequestDataTo(pnode, NetMsgType::GETSPORKS, false);
-    } else if (syncPhase == MASTERNODE_SYNC_LIST) {
+    } else if (RequestedMasternodeAssets == MASTERNODE_SYNC_LIST) {
         RequestDataTo(pnode, NetMsgType::GETMNLIST, false, CTxIn());
-    } else if (syncPhase == MASTERNODE_SYNC_MNW) {
+    } else if (RequestedMasternodeAssets == MASTERNODE_SYNC_MNW) {
         RequestDataTo(pnode, NetMsgType::GETMNWINNERS, false, mnodeman.CountEnabled());
-    } else if (syncPhase == MASTERNODE_SYNC_BUDGET) {
+    } else if (RequestedMasternodeAssets == MASTERNODE_SYNC_BUDGET) {
         // sync masternode votes
         RequestDataTo(pnode, NetMsgType::BUDGETVOTESYNC, false, uint256());
-    } else if (syncPhase == MASTERNODE_SYNC_FINISHED) {
+    } else if (RequestedMasternodeAssets == MASTERNODE_SYNC_FINISHED) {
         LogPrintf("REGTEST SYNC FINISHED!\n");
     }
 }

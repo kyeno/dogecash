@@ -3,8 +3,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef DogeCash_CRYPTO_BLS_H
-#define DogeCash_CRYPTO_BLS_H
+#ifndef DOGECASH_CRYPTO_BLS_H
+#define DOGECASH_CRYPTO_BLS_H
 
 #include "hash.h"
 #include "serialize.h"
@@ -432,4 +432,4 @@ typedef std::shared_ptr<BLSSignatureVector> BLSSignatureVectorPtr;
 
 bool BLSInit();
 
-#endif // DogeCash_CRYPTO_BLS_H
+#endif // DOGECASH_CRYPTO_BLS_H

@@ -1,7 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2016-2020 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -326,7 +325,7 @@ bool CBlockTreeDB::LoadBlockIndexGuts(std::function<CBlockIndex*(const uint256&)
 
                 if (!Params().GetConsensus().NetworkUpgradeActive(pindexNew->nHeight, Consensus::UPGRADE_POS)) {
                     if (!CheckProofOfWork(pindexNew->GetBlockHash(), pindexNew->nBits))
-                        return error("%s : CheckProofOfWork failed: %s", __func__, pindexNew->ToString());
+                        return error("LoadBlockIndex() : CheckProofOfWork failed: %s", pindexNew->ToString());
                 }
 
                 pcursor->Next();
@@ -448,7 +447,7 @@ void CZerocoinDB::WipeAccChecksums()
         }
     }
 
-    LogPrintf("%s: %d entries to delete. %d entries deleted\n", __func__, setDelete.size(), deleted);
+    LogPrintf("%s: % entries to delete. % entries deleted\n", __func__, setDelete.size(), deleted);
 }
 
 namespace {

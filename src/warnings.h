@@ -3,8 +3,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or https://www.opensource.org/licenses/mit-license.php.
 
-#ifndef DogeCash_WARNINGS_H
-#define DogeCash_WARNINGS_H
+#ifndef DOGECASH_WARNINGS_H
+#define DOGECASH_WARNINGS_H
 
 #include <stdlib.h>
 #include <string>
@@ -18,4 +18,4 @@ std::string GetWarnings(const std::string& strFor);
 
 static const bool DEFAULT_TESTSAFEMODE = false;
 
-#endif //DogeCash_WARNINGS_H
+#endif //DOGECASH_WARNINGS_H

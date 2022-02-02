@@ -1,11 +1,10 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2018 The Bitcoin developers
 // Copyright (c) 2015-2020 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
-// Copyright (c) 2018-2020 The DogeCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
+#include "chainparamsbase.h"
 #include "logging.h"
 #include "utiltime.h"
 
@@ -128,8 +127,6 @@ const CLogCategoryDesc LogCategories[] = {
         {BCLog::SAPLING,        "sapling"},
         {BCLog::SPORKS,         "sporks"},
         {BCLog::VALIDATION,     "validation"},
-        {BCLog::LLMQ,           "llmq"},
-        {BCLog::NET_MN,         "net_mn"},
         {BCLog::ALL,            "1"},
         {BCLog::ALL,            "all"},
 };

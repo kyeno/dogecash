@@ -2,8 +2,6 @@
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2020 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
-// Copyright (c) 2018-2020 The DogeCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -81,12 +79,14 @@
 #endif
 
 const char * const DOGECASH_CONF_FILENAME = "dogecash.conf";
-const char * const DogeCash_MASTERNODE_CONF_FILENAME = "masternode.conf";
+const char * const DOGECASH_PID_FILENAME = "dogecash.pid";
+const char * const DOGECASH_MASTERNODE_CONF_FILENAME = "masternode.conf";
 
 
 // DogeCash only features
 // Masternode
 std::atomic<bool> fMasterNode{false};
+bool fLiteMode = false;
 
 ArgsManager gArgs;
 
@@ -731,11 +731,11 @@ const fs::path& GetDataDir(bool fNetSpecific)
 
     // This can be called during exceptions by LogPrintf(), so we cache the
     // value so we don't have to do memory allocations after that.
-    if (!path.empty()) return path;
+    if (!path.empty())
+        return path;
 
-    std::string datadir = gArgs.GetArg("-datadir", "");
-    if (!datadir.empty()) {
-        path = fs::system_complete(datadir);
+    if (gArgs.IsArgSet("-datadir")) {
+        path = fs::system_complete(gArgs.GetArg("-datadir", ""));
         if (!fs::is_directory(path)) {
             path = "";
             return path;
@@ -752,12 +752,6 @@ const fs::path& GetDataDir(bool fNetSpecific)
     }
 
     return path;
-}
-
-bool CheckDataDirOption()
-{
-    std::string datadir = gArgs.GetArg("-datadir", "");
-    return datadir.empty() || fs::is_directory(fs::system_complete(datadir));
 }
 
 void ClearDatadirCache()
@@ -777,7 +771,7 @@ fs::path GetConfigFile(const std::string& confPath)
 
 fs::path GetMasternodeConfigFile()
 {
-    fs::path pathConfigFile(gArgs.GetArg("-mnconf", DogeCash_MASTERNODE_CONF_FILENAME));
+    fs::path pathConfigFile(gArgs.GetArg("-mnconf", DOGECASH_MASTERNODE_CONF_FILENAME));
     return AbsPathForConfigVal(pathConfigFile);
 }
 
@@ -847,7 +841,7 @@ void ArgsManager::ReadConfigFile(const std::string& confPath)
 
     // If datadir is changed in .conf file:
     ClearDatadirCache();
-    if (!CheckDataDirOption()) {
+    if (!fs::is_directory(GetDataDir(false))) {
         throw std::runtime_error(strprintf("specified data directory \"%s\" does not exist.", gArgs.GetArg("-datadir", "").c_str()));
     }
 }
@@ -873,6 +867,23 @@ std::string ArgsManager::GetChainName() const
         return CBaseChainParams::TESTNET;
     return CBaseChainParams::MAIN;
 }
+
+#ifndef WIN32
+fs::path GetPidFile()
+{
+    fs::path pathPidFile(gArgs.GetArg("-pid", DOGECASH_PID_FILENAME));
+    return AbsPathForConfigVal(pathPidFile);
+}
+
+void CreatePidFile(const fs::path& path, pid_t pid)
+{
+    FILE* file = fsbridge::fopen(path, "w");
+    if (file) {
+        fprintf(file, "%d\n", pid);
+        fclose(file);
+    }
+}
+#endif
 
 bool RenameOver(fs::path src, fs::path dest)
 {

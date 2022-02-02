@@ -1,23 +1,13 @@
 // Copyright (c) 2020 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef DogeCash_CONSENSUS_ZEROCOIN_VERIFY_H
-#define DogeCash_CONSENSUS_ZEROCOIN_VERIFY_H
+#ifndef DOGECASH_CONSENSUS_ZEROCOIN_VERIFY_H
+#define DOGECASH_CONSENSUS_ZEROCOIN_VERIFY_H
 
 #include "consensus/consensus.h"
 #include "script/interpreter.h"
-
-class CValidationState;
-class CBigNum;
-
-namespace Consensus {
-    struct Params;
-}
-namespace libzerocoin {
-    class CoinSpend;
-}
+#include "zpivchain.h"
 
 // Fake Serial attack Range
 bool isBlockBetweenFakeSerialAttackRange(int nHeight);
@@ -27,12 +17,10 @@ bool ContextualCheckZerocoinTx(const CTransactionRef& tx, CValidationState& stat
 bool ContextualCheckZerocoinSpend(const CTransaction& tx, const libzerocoin::CoinSpend* spend, int nHeight);
 bool ContextualCheckZerocoinSpendNoSerialCheck(const CTransaction& tx, const libzerocoin::CoinSpend* spend, int nHeight);
 
-bool IsSerialInBlockchain(const CBigNum& bnSerial, int& nHeightTx);
-
 // Returns false if coin spend is invalid. Invalidity/DoS causes are treated inside the function.
 bool ParseAndValidateZerocoinSpends(const Consensus::Params& consensus,
                                     const CTransaction& tx, int chainHeight,
                                     CValidationState& state,
                                     std::vector<std::pair<CBigNum, uint256>>& vSpendsRet);
 
-#endif //DogeCash_CONSENSUS_ZEROCOIN_VERIFY_H
+#endif //DOGECASH_CONSENSUS_ZEROCOIN_VERIFY_H

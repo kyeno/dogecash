@@ -1,6 +1,5 @@
 // Copyright (c) 2019 The Zcash developers
 // Copyright (c) 2020 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or https://www.opensource.org/licenses/mit-license.php .
 
@@ -21,15 +20,6 @@ bool Params::NetworkUpgradeActive(int nHeight, Consensus::UpgradeIndex idx) cons
                 __func__, NetworkUpgradeInfo[idx].strName, nHeight);
 
     return NetworkUpgradeState(nHeight, *this, idx) == UPGRADE_ACTIVE;
-}
-
-Optional<LLMQParams> Params::GetLLMQParams(uint8_t llmqtype) const
-{
-    const auto it = llmqs.find((LLMQType)llmqtype);
-    if (it == llmqs.end()) {
-        return nullopt;
-    }
-    return Optional<LLMQParams>(it->second);
 }
 
 } // End consensus namespace

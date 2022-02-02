@@ -1,11 +1,10 @@
 // Copyright (c) 2018 The Zcash developers
 // Copyright (c) 2020 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef DogeCash_CONSENSUS_UPGRADES_H
-#define DogeCash_CONSENSUS_UPGRADES_H
+#ifndef DOGECASH_CONSENSUS_UPGRADES_H
+#define DOGECASH_CONSENSUS_UPGRADES_H
 
 #include "consensus/params.h"
 #include "optional.h"
@@ -82,4 +81,4 @@ Optional<int> NextActivationHeight(
         int nHeight,
         const Consensus::Params& params);
 
-#endif // DogeCash_CONSENSUS_UPGRADES_H
+#endif // DOGECASH_CONSENSUS_UPGRADES_H

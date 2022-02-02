@@ -1,7 +1,5 @@
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2020 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
-// Copyright (c) 2018-2020 The DogeCash developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -48,13 +46,8 @@ protected:
     // who's asked for the complete budget sync and the last time
     std::map<CNetAddr, int64_t> mAskedUsForBudgetSync; // guarded by cs_budgets and cs_proposals.
 
-    struct HighestFinBudget {
-        const CFinalizedBudget* m_budget_fin{nullptr};
-        int m_vote_count{0};
-    };
-
     // Returns a const pointer to the budget with highest vote count
-    HighestFinBudget GetBudgetWithHighestVoteCount(int chainHeight) const;
+    const CFinalizedBudget* GetBudgetWithHighestVoteCount(int chainHeight) const;
     int GetHighestVoteCount(int chainHeight) const;
     // Get the payee and amount for the budget with the highest vote count
     bool GetPayeeAndAmount(int chainHeight, CScript& payeeRet, CAmount& nAmountRet) const;
@@ -113,7 +106,7 @@ public:
     void SetBestHeight(int height) { nBestHeight.store(height, std::memory_order_release); };
     int GetBestHeight() const { return nBestHeight.load(std::memory_order_acquire); }
 
-    bool ProcessMessage(CNode* pfrom, std::string& strCommand, CDataStream& vRecv, int& banScore);
+    void ProcessMessage(CNode* pfrom, std::string& strCommand, CDataStream& vRecv);
     /// Process the message and returns the ban score (0 if no banning is needed)
     int ProcessMessageInner(CNode* pfrom, std::string& strCommand, CDataStream& vRecv);
     void NewBlock();

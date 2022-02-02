@@ -1,11 +1,10 @@
 // Copyright (c) 2018-2021 The Dash Core developers
 // Copyright (c) 2021 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef DogeCash_SUPPORT_ALLOCATORS_MT_POOLED_SECURE_H
-#define DogeCash_SUPPORT_ALLOCATORS_MT_POOLED_SECURE_H
+#ifndef DOGECASH_SUPPORT_ALLOCATORS_MT_POOLED_SECURE_H
+#define DOGECASH_SUPPORT_ALLOCATORS_MT_POOLED_SECURE_H
 
 #include "pooled_secure.h"
 
@@ -83,4 +82,4 @@ private:
     std::vector<std::unique_ptr<internal_pool>> pools;
 };
 
-#endif // DogeCash_SUPPORT_ALLOCATORS_MT_POOLED_SECURE_H
+#endif // DOGECASH_SUPPORT_ALLOCATORS_MT_POOLED_SECURE_H

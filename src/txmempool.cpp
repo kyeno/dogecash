@@ -1,7 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2016-2020 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -10,7 +9,7 @@
 #include "clientversion.h"
 #include "bls/bls_wrapper.h"
 #include "evo/deterministicmns.h"
-#include "evo/specialtx_validation.h"
+#include "evo/specialtx.h"
 #include "evo/providertx.h"
 #include "policy/fees.h"
 #include "reverse_iterate.h"

@@ -1,31 +1,35 @@
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2020 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
-// Copyright (c) 2018-2020 The DogeCash developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "masternode.h"
 
 #include "addrman.h"
+#include "masternode-sync.h"
 #include "masternodeman.h"
 #include "netbase.h"
 #include "sync.h"
-#include "tiertwo/tiertwo_sync_state.h"
 #include "wallet/wallet.h"
 
+#define MASTERNODE_MIN_CONFIRMATIONS_REGTEST 1
 #define MASTERNODE_MIN_MNP_SECONDS_REGTEST 90
 #define MASTERNODE_MIN_MNB_SECONDS_REGTEST 25
 #define MASTERNODE_PING_SECONDS_REGTEST 25
 #define MASTERNODE_EXPIRATION_SECONDS_REGTEST 12 * 60
 #define MASTERNODE_REMOVAL_SECONDS_REGTEST 13 * 60
 
+#define MASTERNODE_MIN_CONFIRMATIONS 15
 #define MASTERNODE_MIN_MNP_SECONDS (10 * 60)
 #define MASTERNODE_MIN_MNB_SECONDS (5 * 60)
 #define MASTERNODE_PING_SECONDS (5 * 60)
 #define MASTERNODE_EXPIRATION_SECONDS (120 * 60)
 #define MASTERNODE_REMOVAL_SECONDS (130 * 60)
 #define MASTERNODE_CHECK_SECONDS 5
+
+// keep track of the scanning errors I've seen
+std::map<uint256, int> mapSeenMasternodeScanningErrors;
+
 
 int MasternodeMinPingSeconds()
 {
@@ -35,6 +39,11 @@ int MasternodeMinPingSeconds()
 int MasternodeBroadcastSeconds()
 {
     return Params().IsRegTestNet() ? MASTERNODE_MIN_MNB_SECONDS_REGTEST : MASTERNODE_MIN_MNB_SECONDS;
+}
+
+int MasternodeCollateralMinConf()
+{
+    return Params().IsRegTestNet() ? MASTERNODE_MIN_CONFIRMATIONS_REGTEST : MASTERNODE_MIN_CONFIRMATIONS;
 }
 
 int MasternodePingSeconds()
@@ -236,7 +245,7 @@ bool CMasternodeBroadcast::Create(const std::string& strService,
     CKey keyMasternodeNew;
 
     //need correct blocks to send ping
-    if (!fOffline && !g_tiertwo_sync_state.IsBlockchainSynced()) {
+    if (!fOffline && !masternodeSync.IsBlockchainSynced()) {
         strErrorRet = "Sync in progress. Must wait until sync is complete to start Masternode";
         LogPrint(BCLog::MASTERNODE,"CMasternodeBroadcast::Create -- %s\n", strErrorRet);
         return false;
@@ -410,7 +419,7 @@ bool CMasternodeBroadcast::CheckAndUpdate(int& nDos)
     if (!CheckSignature()) {
         // For now (till v6.0), let's be "naive" and not fully ban nodes when the node is syncing
         // This could be a bad parsed BIP155 address that got stored on db on an old software version.
-        nDos = g_tiertwo_sync_state.IsSynced() ? 100 : 5;
+        nDos = masternodeSync.IsSynced() ? 100 : 5;
         return error("%s : Got bad Masternode address signature", __func__);
     }
 
@@ -449,7 +458,7 @@ bool CMasternodeBroadcast::CheckAndUpdate(int& nDos)
         if (pmn->UpdateFromNewBroadcast((*this))) {
             if (pmn->IsEnabled()) Relay();
         }
-        g_tiertwo_sync_state.AddedMasternodeList(GetHash());
+        masternodeSync.AddedMasternodeList(GetHash());
     }
 
     return true;

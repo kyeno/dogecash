@@ -1,8 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2018 The Bitcoin developers
 // Copyright (c) 2015-2020 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
-// Copyright (c) 2018-2020 The DogeCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -68,8 +66,6 @@ namespace BCLog {
         SAPLING     = (1 << 26),
         SPORKS      = (1 << 27),
         VALIDATION  = (1 << 28),
-        LLMQ        = (1 << 29),
-        NET_MN      = (1 << 30),
         ALL         = ~(uint32_t)0,
     };
 

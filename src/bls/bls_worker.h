@@ -3,14 +3,16 @@
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef DogeCash_CRYPTO_BLS_WORKER_H
-#define DogeCash_CRYPTO_BLS_WORKER_H
+#ifndef DOGECASH_CRYPTO_BLS_WORKER_H
+#define DOGECASH_CRYPTO_BLS_WORKER_H
 
 #include "bls/bls_wrapper.h"
-#include "ctpl_stl.h"
+#include "ctpl.h"
 
 #include <future>
 #include <mutex>
+
+#include <boost/lockfree/queue.hpp>
 
 // Low level BLS/DKG stuff. All very compute intensive and optimized for parallelization
 // The worker tries to parallelize as much as possible and utilizes a few properties of BLS aggregation to speed up things
@@ -200,4 +202,4 @@ private:
     }
 };
 
-#endif // DogeCash_CRYPTO_BLS_WORKER_H
+#endif // DOGECASH_CRYPTO_BLS_WORKER_H

@@ -2,12 +2,13 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "zdogec/zdogecmodule.h"
+#include "zpiv/zpivmodule.h"
 
 #include "hash.h"
 #include "libzerocoin/Commitment.h"
 #include "libzerocoin/Coin.h"
 #include "validation.h"
+#include "zpivchain.h"
 
 template <typename Stream>
 PublicCoinSpend::PublicCoinSpend(libzerocoin::ZerocoinParams* params, Stream& strm): pubCoin(params) {
@@ -92,57 +93,7 @@ const uint256 PublicCoinSpend::signatureHash() const
     return h.GetHash();
 }
 
-// 6 comes from OPCODE (1) + vch.size() (1) + BIGNUM size (4)
-#define SCRIPT_OFFSET 6
-
-static bool TxOutToPublicCoin(const CTxOut& txout, libzerocoin::PublicCoin& pubCoin, CValidationState& state)
-{
-    CBigNum publicZerocoin;
-    std::vector<unsigned char> vchZeroMint;
-    vchZeroMint.insert(vchZeroMint.end(), txout.scriptPubKey.begin() + SCRIPT_OFFSET,
-                       txout.scriptPubKey.begin() + txout.scriptPubKey.size());
-    publicZerocoin.setvch(vchZeroMint);
-
-    libzerocoin::CoinDenomination denomination = libzerocoin::AmountToZerocoinDenomination(txout.nValue);
-    LogPrint(BCLog::LEGACYZC, "%s : denomination %d for pubcoin %s\n", __func__, denomination, publicZerocoin.GetHex());
-    if (denomination == libzerocoin::ZQ_ERROR)
-        return state.DoS(100, error("%s: txout.nValue is not correct", __func__));
-
-    libzerocoin::PublicCoin checkPubCoin(Params().GetConsensus().Zerocoin_Params(false), publicZerocoin, denomination);
-    pubCoin = checkPubCoin;
-
-    return true;
-}
-
-// TODO: do not create g_coinspends_cache if the node passed the last zc checkpoint.
-class CoinSpendCache {
-private:
-    mutable Mutex cs;
-    std::map<CScript, libzerocoin::CoinSpend> cache_coinspend;
-    std::map<CScript, PublicCoinSpend> cache_public_coinspend;
-
-    template<typename T>
-    Optional<T> Get(const CScript& in, const std::map<CScript, T>& map) const {
-        LOCK(cs);
-        auto it = map.find(in);
-        return it != map.end() ? Optional<T>{it->second} : nullopt;
-    }
-
-public:
-    void Add(const CScript& in, libzerocoin::CoinSpend& spend) { WITH_LOCK(cs, cache_coinspend.emplace(in, spend)); }
-    void AddPub(const CScript& in, PublicCoinSpend& spend) { WITH_LOCK(cs, cache_public_coinspend.emplace(in, spend)); }
-
-    Optional<libzerocoin::CoinSpend> Get(const CScript& in) const { return Get<libzerocoin::CoinSpend>(in, cache_coinspend); }
-    Optional<PublicCoinSpend> GetPub(const CScript& in) const { return Get<PublicCoinSpend>(in, cache_public_coinspend); }
-    void Clear() {
-        LOCK(cs);
-        cache_coinspend.clear();
-        cache_public_coinspend.clear();
-    }
-};
-std::unique_ptr<CoinSpendCache> g_coinspends_cache = std::make_unique<CoinSpendCache>();
-
-namespace ZDOGECModule {
+namespace ZPIVModule {
 
     // Return stream of CoinSpend from tx input scriptsig
     CDataStream ScriptSigToSerializedSpend(const CScript& scriptSig)
@@ -162,11 +113,6 @@ namespace ZDOGECModule {
     }
 
     bool parseCoinSpend(const CTxIn &in, const CTransaction &tx, const CTxOut &prevOut, PublicCoinSpend &publicCoinSpend) {
-        if (auto op = g_coinspends_cache->GetPub(in.scriptSig)) {
-            publicCoinSpend = *op;
-            return true;
-        }
-
         if (!in.IsZerocoinPublicSpend() || !prevOut.IsZerocoinMint())
             return error("%s: invalid argument/s", __func__);
 
@@ -184,17 +130,7 @@ namespace ZDOGECModule {
 
         spend.setDenom(spend.pubCoin.getDenomination());
         publicCoinSpend = spend;
-        g_coinspends_cache->AddPub(in.scriptSig, publicCoinSpend);
         return true;
-    }
-
-    libzerocoin::CoinSpend TxInToZerocoinSpend(const CTxIn& txin)
-    {
-        if (auto op = g_coinspends_cache->Get(txin.scriptSig)) return *op;
-        CDataStream serializedCoinSpend = ScriptSigToSerializedSpend(txin.scriptSig);
-        libzerocoin::CoinSpend spend(serializedCoinSpend);
-        g_coinspends_cache->Add(txin.scriptSig, spend);
-        return spend;
     }
 
     bool validateInput(const CTxIn &in, const CTxOut &prevOut, const CTransaction &tx, PublicCoinSpend &publicSpend) {
@@ -216,15 +152,10 @@ namespace ZDOGECModule {
             return state.DoS(100, error("%s: public zerocoin spend prev output not found, prevTx %s, index %d",
                                         __func__, txIn.prevout.hash.GetHex(), txIn.prevout.n));
         }
-        if (!ZDOGECModule::parseCoinSpend(txIn, tx, prevOut, publicSpend)) {
+        if (!ZPIVModule::parseCoinSpend(txIn, tx, prevOut, publicSpend)) {
             return state.Invalid(error("%s: invalid public coin spend parse %s\n", __func__,
-                                       tx.GetHash().GetHex()), REJECT_INVALID, "bad-txns-invalid-zdogec");
+                                       tx.GetHash().GetHex()), REJECT_INVALID, "bad-txns-invalid-zpiv");
         }
         return true;
-    }
-
-    void CleanCoinSpendsCache()
-    {
-        g_coinspends_cache->Clear();
     }
 }

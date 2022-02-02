@@ -3,8 +3,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef DogeCash_KEY_IO_H
-#define DogeCash_KEY_IO_H
+#ifndef DOGECASH_KEY_IO_H
+#define DOGECASH_KEY_IO_H
 
 #include "chainparams.h"
 #include "key.h"
@@ -38,4 +38,4 @@ namespace KeyIO {
 
 }
 
-#endif //DogeCash_KEY_IO_H
+#endif //DOGECASH_KEY_IO_H

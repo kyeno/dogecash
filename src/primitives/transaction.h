@@ -1,7 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2015-2021 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or https://www.opensource.org/licenses/mit-license.php.
 
@@ -257,7 +256,6 @@ public:
         PROUPSERV = 2,
         PROUPREG = 3,
         PROUPREV = 4,
-        LLMQCOMM = 5,
     };
 
     static const int16_t CURRENT_VERSION = TxVersion::LEGACY;
@@ -336,11 +334,6 @@ public:
     bool IsProRegTx() const
     {
         return IsSpecialTx() && nType == TxType::PROREG;
-    }
-
-    bool IsQuorumCommitmentTx() const
-    {
-        return IsSpecialTx() && nType == TxType::LLMQCOMM;
     }
 
     // Ensure that special and sapling fields are signed
@@ -457,36 +450,5 @@ static inline CTransactionRef MakeTransactionRef() { return std::make_shared<con
 template <typename Tx> static inline CTransactionRef MakeTransactionRef(Tx&& txIn) { return std::make_shared<const CTransaction>(std::forward<Tx>(txIn)); }
 static inline CTransactionRef MakeTransactionRef(const CTransactionRef& txIn) { return txIn; }
 static inline CTransactionRef MakeTransactionRef(CTransactionRef&& txIn) { return std::move(txIn); }
-
-/* Special tx payload handling */
-template <typename T>
-inline bool GetTxPayload(const std::vector<unsigned char>& payload, T& obj)
-{
-    CDataStream ds(payload, SER_NETWORK, PROTOCOL_VERSION);
-    try {
-        ds >> obj;
-    } catch (std::exception& e) {
-        return false;
-    }
-    return ds.empty();
-}
-template <typename T>
-inline bool GetTxPayload(const CMutableTransaction& tx, T& obj)
-{
-    return tx.hasExtraPayload() && GetTxPayload(*tx.extraPayload, obj);
-}
-template <typename T>
-inline bool GetTxPayload(const CTransaction& tx, T& obj)
-{
-    return tx.hasExtraPayload() && GetTxPayload(*tx.extraPayload, obj);
-}
-
-template <typename T>
-void SetTxPayload(CMutableTransaction& tx, const T& payload)
-{
-    CDataStream ds(SER_NETWORK, PROTOCOL_VERSION);
-    ds << payload;
-    tx.extraPayload.emplace(ds.begin(), ds.end());
-}
 
 #endif // BITCOIN_PRIMITIVES_TRANSACTION_H

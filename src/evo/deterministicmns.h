@@ -1,18 +1,16 @@
 // Copyright (c) 2018-2021 The Dash Core developers
 // Copyright (c) 2021 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef DogeCash_DETERMINISTICMNS_H
-#define DogeCash_DETERMINISTICMNS_H
+#ifndef DOGECASH_DETERMINISTICMNS_H
+#define DOGECASH_DETERMINISTICMNS_H
 
 #include "arith_uint256.h"
 #include "bls/bls_wrapper.h"
 #include "dbwrapper.h"
 #include "evo/evodb.h"
 #include "evo/providertx.h"
-#include "llmq/quorums_commitment.h"
 #include "saltedhasher.h"
 #include "sync.h"
 
@@ -571,11 +569,10 @@ public:
     bool ProcessBlock(const CBlock& block, const CBlockIndex* pindex, CValidationState& state, bool fJustCheck);
     bool UndoBlock(const CBlock& block, const CBlockIndex* pindex);
 
-    void SetTipIndex(const CBlockIndex* pindex);
+    void UpdatedBlockTip(const CBlockIndex* pindex);
 
     // the returned list will not contain the correct block hash (we can't know it yet as the coinbase TX is not updated yet)
     bool BuildNewListFromBlock(const CBlock& block, const CBlockIndex* pindexPrev, CValidationState& state, CDeterministicMNList& mnListRet, bool debugLogs);
-    void HandleQuorumCommitment(llmq::CFinalCommitment& qc, const CBlockIndex* pindexQuorum, CDeterministicMNList& mnList, bool debugLogs);
     void DecreasePoSePenalties(CDeterministicMNList& mnList);
 
     // to return a valid list, it must have been built first, so never call it with a block not-yet connected (e.g. from CheckBlock).
@@ -590,13 +587,10 @@ public:
     bool LegacyMNObsolete(int nHeight) const;
     bool LegacyMNObsolete() const;
 
-    // Get the list of members for a given quorum type and index
-    std::vector<CDeterministicMNCPtr> GetAllQuorumMembers(Consensus::LLMQType llmqType, const CBlockIndex* pindexQuorum);
-
 private:
     void CleanupCache(int nHeight);
 };
 
 extern std::unique_ptr<CDeterministicMNManager> deterministicMNManager;
 
-#endif //DogeCash_DETERMINISTICMNS_H
+#endif //DOGECASH_DETERMINISTICMNS_H

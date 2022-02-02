@@ -8,7 +8,7 @@
 #include "core_io.h"
 #include "destination_io.h"
 #include "evo/deterministicmns.h"
-#include "evo/specialtx_validation.h"
+#include "evo/specialtx.h"
 #include "evo/providertx.h"
 #include "key_io.h"
 #include "masternode.h"
@@ -19,7 +19,6 @@
 #include "pubkey.h" // COMPACT_SIGNATURE_SIZE
 #include "rpc/server.h"
 #include "script/sign.h"
-#include "tiertwo/masternode_meta_manager.h"
 #include "util/validation.h"
 #include "utilmoneystr.h"
 
@@ -243,22 +242,6 @@ static CBLSSecretKey GetBLSSecretKey(const std::string& hexKey)
     return sk;
 }
 
-static UniValue DmnToJson(const CDeterministicMNCPtr dmn)
-{
-    UniValue ret(UniValue::VOBJ);
-    dmn->ToJson(ret);
-    Coin coin;
-    if (!WITH_LOCK(cs_main, return pcoinsTip->GetUTXOCoin(dmn->collateralOutpoint, coin); )) {
-        return ret;
-    }
-    CTxDestination dest;
-    if (!ExtractDestination(coin.out.scriptPubKey, dest)) {
-        return ret;
-    }
-    ret.pushKV("collateralAddress", EncodeDestination(dest));
-    return ret;
-}
-
 #ifdef ENABLE_WALLET
 
 template<typename SpecialTxPayload>
@@ -369,8 +352,7 @@ static std::string SignAndSendSpecialTx(CWallet* const pwallet, CMutableTransact
     SetTxPayload(tx, pl);
 
     CValidationState state;
-    CCoinsViewCache view(pcoinsTip.get());
-    if (!WITH_LOCK(cs_main, return CheckSpecialTx(tx, GetChainTip(), &view, state); )) {
+    if (!CheckSpecialTx(tx, GetChainTip(), state)) {
         throw JSONRPCError(RPC_MISC_ERROR, FormatStateMessage(state));
     }
 
@@ -510,8 +492,11 @@ static UniValue ProTxRegister(const JSONRPCRequest& request, bool fSignAndSend)
 
     // referencing unspent collateral outpoint
     Coin coin;
-    if (!WITH_LOCK(cs_main, return pcoinsTip->GetUTXOCoin(pl.collateralOutpoint, coin); )) {
-        throw JSONRPCError(RPC_INVALID_PARAMETER, strprintf("collateral not found: %s-%d", collateralHash.ToString(), collateralIndex));
+    {
+        LOCK(cs_main);
+        if (!GetUTXOCoin(pl.collateralOutpoint, coin)) {
+            throw JSONRPCError(RPC_INVALID_PARAMETER, strprintf("collateral not found: %s-%d", collateralHash.ToString(), collateralIndex));
+        }
     }
     if (coin.out.nValue != Params().GetConsensus().nMNCollateralAmt) {
         throw JSONRPCError(RPC_INVALID_PARAMETER, strprintf("collateral %s-%d with invalid value %d", collateralHash.ToString(), collateralIndex, coin.out.nValue));
@@ -617,7 +602,7 @@ UniValue protx_register_fund(const JSONRPCRequest& request)
     if (request.fHelp || request.params.size() < 6 || request.params.size() > 8) {
         throw std::runtime_error(
                 "protx_register_fund \"collateralAddress\" \"ipAndPort\" \"ownerAddress\" \"operatorPubKey\" \"votingAddress\" \"payoutAddress\" (operatorReward \"operatorPayoutAddress\")\n"
-                "\nCreates, funds and sends a ProTx to the network. The resulting transaction will move 10000 DOGEC\n"
+                "\nCreates, funds and sends a ProTx to the network. The resulting transaction will move 10000 PIV\n"
                 "to the address specified by collateralAddress and will then function as masternode collateral.\n"
                 + HelpRequiringPassphrase(pwallet) + "\n"
                 "\nArguments:\n"
@@ -692,17 +677,16 @@ static bool CheckWalletOwnsScript(CWallet* pwallet, const CScript& script)
 #endif
 }
 
-static UniValue ToJson(const CMasternodeMetaInfoPtr& info)
+static Optional<int> GetUTXOConfirmations(const COutPoint& outpoint)
 {
-    UniValue ret(UniValue::VOBJ);
-    auto now = GetAdjustedTime();
-    auto lastAttempt = info->GetLastOutboundAttempt();
-    auto lastSuccess = info->GetLastOutboundSuccess();
-    ret.pushKV("last_outbound_attempt", lastAttempt);
-    ret.pushKV("last_outbound_attempt_elapsed", now - lastAttempt);
-    ret.pushKV("last_outbound_success", lastSuccess);
-    ret.pushKV("last_outbound_success_elapsed", now - lastSuccess);
-    return ret;
+    // nullopt means UTXO is yet unknown or already spent
+    Optional<int> coinHeight = GetUTXOHeight(outpoint);
+    if (coinHeight == nullopt || *coinHeight < 0)
+        return nullopt;
+    int nChainHeight(WITH_LOCK(cs_main, return chainActive.Height(); ));
+    if (nChainHeight < 0 || *coinHeight > nChainHeight)
+        return nullopt;
+    return Optional<int>(nChainHeight - *coinHeight + 1);
 }
 
 static void AddDMNEntryToList(UniValue& ret, CWallet* pwallet, const CDeterministicMNCPtr& dmn, bool fVerbose, bool fFromWallet)
@@ -736,16 +720,14 @@ static void AddDMNEntryToList(UniValue& ret, CWallet* pwallet, const CDeterminis
     }
 
     if (fVerbose) {
-        UniValue o = DmnToJson(dmn);
-        int confs = WITH_LOCK(cs_main, return pcoinsTip->GetCoinDepthAtHeight(dmn->collateralOutpoint, chainActive.Height()); );
-        o.pushKV("confirmations", confs);
-        o.pushKV("has_owner_key", hasOwnerKey);
-        o.pushKV("has_voting_key", hasVotingKey);
-        o.pushKV("owns_collateral", ownsCollateral);
-        o.pushKV("owns_payee_script", ownsPayeeScript);
-        // net info
-        auto metaInfo = g_mmetaman.GetMetaInfo(dmn->proTxHash);
-        if (metaInfo) o.pushKV("metaInfo", ToJson(metaInfo));
+        UniValue o(UniValue::VOBJ);
+        dmn->ToJson(o);
+        Optional<int> confirmations = GetUTXOConfirmations(dmn->collateralOutpoint);
+        o.pushKV("confirmations", confirmations ? *confirmations : -1);
+        o.pushKV("hasOwnerKey", hasOwnerKey);
+        o.pushKV("hasVotingKey", hasVotingKey);
+        o.pushKV("ownsCollateral", ownsCollateral);
+        o.pushKV("ownsPayeeScript", ownsPayeeScript);
         ret.push_back(o);
     } else {
         ret.push_back(dmn->proTxHash.ToString());

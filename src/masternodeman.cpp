@@ -1,7 +1,5 @@
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2020 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
-// Copyright (c) 2018-2020 The DogeCash developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -16,9 +14,9 @@
 #include "messagesigner.h"
 #include "netbase.h"
 #include "netmessagemaker.h"
+#include "net_processing.h"
 #include "shutdown.h"
 #include "spork.h"
-#include "tiertwo/tiertwo_sync_state.h"
 #include "validation.h"
 
 #include <boost/thread/thread.hpp>
@@ -264,7 +262,7 @@ int CMasternodeMan::CheckAndRemove(bool forceExpiredRemoval)
             std::map<uint256, CMasternodeBroadcast>::iterator it3 = mapSeenMasternodeBroadcast.begin();
             while (it3 != mapSeenMasternodeBroadcast.end()) {
                 if (it3->second.vin.prevout == it->first) {
-                    g_tiertwo_sync_state.EraseSeenMNB((*it3).first);
+                    masternodeSync.mapSeenSyncMNB.erase((*it3).first);
                     it3 = mapSeenMasternodeBroadcast.erase(it3);
                 } else {
                     ++it3;
@@ -333,7 +331,7 @@ int CMasternodeMan::CheckAndRemove(bool forceExpiredRemoval)
     std::map<uint256, CMasternodeBroadcast>::iterator it3 = mapSeenMasternodeBroadcast.begin();
     while (it3 != mapSeenMasternodeBroadcast.end()) {
         if ((*it3).second.lastPing.sigTime < GetTime() - (MasternodeRemovalSeconds() * 2)) {
-            g_tiertwo_sync_state.EraseSeenMNB((*it3).second.GetHash());
+            masternodeSync.mapSeenSyncMNB.erase((*it3).second.GetHash());
             it3 = mapSeenMasternodeBroadcast.erase(it3);
         } else {
             ++it3;
@@ -543,7 +541,7 @@ static bool canScheduleMN(bool fFilterSigTime, const MasternodeRef& mn, int minP
 MasternodeRef CMasternodeMan::GetNextMasternodeInQueueForPayment(int nBlockHeight, bool fFilterSigTime, int& nCount, const CBlockIndex* pChainTip) const
 {
     // Skip after legacy obsolete. !TODO: remove when transition to DMN is complete
-    if (deterministicMNManager->LegacyMNObsolete(nBlockHeight)) {
+    if (deterministicMNManager->LegacyMNObsolete()) {
         LogPrintf("%s: ERROR - called after legacy system disabled\n", __func__);
         return nullptr;
     }
@@ -746,7 +744,6 @@ std::vector<std::pair<int64_t, MasternodeRef>> CMasternodeMan::GetMasternodeRank
 
 bool CMasternodeMan::CheckInputs(CMasternodeBroadcast& mnb, int nChainHeight, int& nDoS)
 {
-    const auto& consensus = Params().GetConsensus();
     // incorrect ping or its sigTime
     if(mnb.lastPing.IsNull() || !mnb.lastPing.CheckAndUpdate(nDoS, false, true)) {
         return false;
@@ -769,7 +766,7 @@ bool CMasternodeMan::CheckInputs(CMasternodeBroadcast& mnb, int nChainHeight, in
     }
 
     // Check collateral value
-    if (collateralUtxo.out.nValue != consensus.nMNCollateralAmt) {
+    if (collateralUtxo.out.nValue != Params().GetConsensus().nMNCollateralAmt) {
         LogPrint(BCLog::MASTERNODE,"mnb - invalid amount for mnb collateral %s\n", mnb.vin.prevout.ToString());
         nDoS = 33;
         return false;
@@ -786,20 +783,20 @@ bool CMasternodeMan::CheckInputs(CMasternodeBroadcast& mnb, int nChainHeight, in
     LogPrint(BCLog::MASTERNODE, "mnb - Accepted Masternode entry\n");
     const int utxoHeight = (int) collateralUtxo.nHeight;
     int collateralUtxoDepth = nChainHeight - utxoHeight + 1;
-    if (collateralUtxoDepth < consensus.MasternodeCollateralMinConf()) {
-        LogPrint(BCLog::MASTERNODE,"mnb - Input must have at least %d confirmations\n", consensus.MasternodeCollateralMinConf());
+    if (collateralUtxoDepth < MasternodeCollateralMinConf()) {
+        LogPrint(BCLog::MASTERNODE,"mnb - Input must have at least %d confirmations\n", MasternodeCollateralMinConf());
         // maybe we miss few blocks, let this mnb to be checked again later
         mapSeenMasternodeBroadcast.erase(mnb.GetHash());
-        g_tiertwo_sync_state.EraseSeenMNB(mnb.GetHash());
+        masternodeSync.mapSeenSyncMNB.erase(mnb.GetHash());
         return false;
     }
 
     // verify that sig time is legit in past
-    // should be at least not earlier than block when 1000 DOGEC tx got MASTERNODE_MIN_CONFIRMATIONS
-    CBlockIndex* pConfIndex = WITH_LOCK(cs_main, return chainActive[utxoHeight + consensus.MasternodeCollateralMinConf() - 1]); // block where tx got MASTERNODE_MIN_CONFIRMATIONS
+    // should be at least not earlier than block when 1000 PIV tx got MASTERNODE_MIN_CONFIRMATIONS
+    CBlockIndex* pConfIndex = WITH_LOCK(cs_main, return chainActive[utxoHeight + MasternodeCollateralMinConf() - 1]); // block where tx got MASTERNODE_MIN_CONFIRMATIONS
     if (pConfIndex->GetBlockTime() > mnb.sigTime) {
         LogPrint(BCLog::MASTERNODE,"mnb - Bad sigTime %d for Masternode %s (%i conf block is at %d)\n",
-                 mnb.sigTime, mnb.vin.prevout.hash.ToString(), consensus.MasternodeCollateralMinConf(), pConfIndex->GetBlockTime());
+                 mnb.sigTime, mnb.vin.prevout.hash.ToString(), MasternodeCollateralMinConf(), pConfIndex->GetBlockTime());
         return false;
     }
 
@@ -811,7 +808,7 @@ int CMasternodeMan::ProcessMNBroadcast(CNode* pfrom, CMasternodeBroadcast& mnb)
 {
     const uint256& mnbHash = mnb.GetHash();
     if (mapSeenMasternodeBroadcast.count(mnbHash)) { //seen
-        g_tiertwo_sync_state.AddedMasternodeList(mnbHash);
+        masternodeSync.AddedMasternodeList(mnbHash);
         return 0;
     }
 
@@ -847,13 +844,13 @@ int CMasternodeMan::ProcessMNBroadcast(CNode* pfrom, CMasternodeBroadcast& mnb)
     // Relay only if we are synchronized and if the mnb address is not local.
     // Makes no sense to relay MNBs to the peers from where we are syncing them.
     bool isLocal = (mnb.addr.IsRFC1918() || mnb.addr.IsLocal()) && !Params().IsRegTestNet();
-    if (!isLocal && g_tiertwo_sync_state.IsSynced()) mnb.Relay();
+    if (!isLocal && masternodeSync.IsSynced()) mnb.Relay();
 
     // Add it as a peer
     g_connman->AddNewAddress(CAddress(mnb.addr, NODE_NETWORK), pfrom->addr, 2 * 60 * 60);
 
     // Update sync status
-    g_tiertwo_sync_state.AddedMasternodeList(mnbHash);
+    masternodeSync.AddedMasternodeList(mnbHash);
 
     // All good
     return 0;
@@ -879,7 +876,7 @@ int CMasternodeMan::ProcessMNPing(CNode* pfrom, CMasternodePing& mnp)
 
     // something significant is broken or mn is unknown,
     // we might have to ask for the mn entry (while we aren't syncing).
-    if (g_tiertwo_sync_state.IsSynced()) {
+    if (masternodeSync.IsSynced()) {
         AskForMN(pfrom, mnp.vin);
     }
 
@@ -946,15 +943,19 @@ int CMasternodeMan::ProcessGetMNList(CNode* pfrom, CTxIn& vin)
     return 0;
 }
 
-bool CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CDataStream& vRecv, int& dosScore)
+void CMasternodeMan::ProcessMessage(CNode* pfrom, std::string& strCommand, CDataStream& vRecv)
 {
-    dosScore = ProcessMessageInner(pfrom, strCommand, vRecv);
-    return dosScore == 0;
+    int banScore = ProcessMessageInner(pfrom, strCommand, vRecv);
+    if (banScore > 0) {
+        LOCK(cs_main);
+        Misbehaving(pfrom->GetId(), banScore);
+    }
 }
 
 int CMasternodeMan::ProcessMessageInner(CNode* pfrom, std::string& strCommand, CDataStream& vRecv)
 {
-    if (!g_tiertwo_sync_state.IsBlockchainSynced()) return 0;
+    if (fLiteMode) return 0; //disable all Masternode related functionality
+    if (!masternodeSync.IsBlockchainSynced()) return 0;
 
     // Skip after legacy obsolete. !TODO: remove when transition to DMN is complete
     if (deterministicMNManager->LegacyMNObsolete()) {
@@ -1027,12 +1028,13 @@ void CMasternodeMan::UpdateMasternodeList(CMasternodeBroadcast& mnb)
 {
     // Skip after legacy obsolete. !TODO: remove when transition to DMN is complete
     if (deterministicMNManager->LegacyMNObsolete()) {
+        LogPrint(BCLog::MASTERNODE, "Removing all legacy mn due to SPORK 21\n");
         return;
     }
 
     mapSeenMasternodePing.emplace(mnb.lastPing.GetHash(), mnb.lastPing);
     mapSeenMasternodeBroadcast.emplace(mnb.GetHash(), mnb);
-    g_tiertwo_sync_state.AddedMasternodeList(mnb.GetHash());
+    masternodeSync.AddedMasternodeList(mnb.GetHash());
 
     LogPrint(BCLog::MASTERNODE,"%s -- masternode=%s\n", __func__, mnb.vin.prevout.ToString());
 
@@ -1158,6 +1160,8 @@ bool CMasternodeMan::IsWithinDepth(const uint256& nHash, int depth) const
 
 void ThreadCheckMasternodes()
 {
+    if (fLiteMode) return; //disable all Masternode related functionality
+
     // Make this thread recognisable as the wallet flushing thread
     util::ThreadRename("dogecash-masternodeman");
     LogPrintf("Masternodes thread started\n");
@@ -1191,7 +1195,7 @@ void ThreadCheckMasternodes()
             // try to sync from all available nodes, one step at a time
             masternodeSync.Process();
 
-            if (g_tiertwo_sync_state.IsBlockchainSynced()) {
+            if (masternodeSync.IsBlockchainSynced()) {
                 c++;
 
                 // check if we should activate or ping every few minutes,

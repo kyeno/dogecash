@@ -3,8 +3,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef DogeCash_EVODB_H
-#define DogeCash_EVODB_H
+#ifndef DOGECASH_EVODB_H
+#define DOGECASH_EVODB_H
 
 #include "dbwrapper.h"
 #include "sync.h"
@@ -110,4 +110,4 @@ private:
 
 extern std::unique_ptr<CEvoDB> evoDb;
 
-#endif//DogeCash_EVODB_H
+#endif//DOGECASH_EVODB_H

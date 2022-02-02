@@ -3,8 +3,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef DogeCash_NETADDRESS_H
-#define DogeCash_NETADDRESS_H
+#ifndef DOGECASH_NETADDRESS_H
+#define DOGECASH_NETADDRESS_H
 
 #if defined(HAVE_CONFIG_H)
 #include "config/dogecash-config.h"
@@ -511,4 +511,4 @@ public:
     }
 };
 
-#endif // DogeCash_NETADDRESS_H
+#endif // DOGECASH_NETADDRESS_H

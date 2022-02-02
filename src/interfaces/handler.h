@@ -3,8 +3,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or https://www.opensource.org/licenses/mit-license.php.
 
-#ifndef DogeCash_INTERFACES_HANDLER_H
-#define DogeCash_INTERFACES_HANDLER_H
+#ifndef DOGECASH_INTERFACES_HANDLER_H
+#define DOGECASH_INTERFACES_HANDLER_H
 
 #include <memory>
 
@@ -33,4 +33,4 @@ std::unique_ptr<Handler> MakeHandler(boost::signals2::connection connection);
 
 } // namespace interfaces
 
-#endif // DogeCash_INTERFACES_HANDLER_H
+#endif // DOGECASH_INTERFACES_HANDLER_H

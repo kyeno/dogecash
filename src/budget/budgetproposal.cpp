@@ -1,13 +1,11 @@
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2020 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
-// Copyright (c) 2018-2020 The DogeCash developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "budget/budgetproposal.h"
-#include "chainparams.h"
-#include "script/standard.h"
+
+#include "masternodeman.h"
 
 CBudgetProposal::CBudgetProposal():
         nAllotted(0),
@@ -41,8 +39,12 @@ CBudgetProposal::CBudgetProposal(const std::string& name,
         nFeeTXHash(nfeetxhash),
         nTime(0)
 {
+    const int nBlocksPerCycle = Params().GetConsensus().nBudgetCycleBlocks;
+    // !todo: remove this when v5 rules are enforced (nBlockStart is always = to nCycleStart)
+    int nCycleStart = nBlockStart - nBlockStart % nBlocksPerCycle;
+
     // calculate the expiration block
-    nBlockEnd = nBlockStart + (Params().GetConsensus().nBudgetCycleBlocks + 1)  * paycount;
+    nBlockEnd = nCycleStart + (nBlocksPerCycle + 1)  * paycount;
 }
 
 // initialize from network broadcast message
@@ -75,9 +77,9 @@ void CBudgetProposal::SyncVotes(CNode* pfrom, bool fPartial, int& nInvCount) con
     }
 }
 
-bool CBudgetProposal::IsHeavilyDownvoted(int mnCount)
+bool CBudgetProposal::IsHeavilyDownvoted(bool fNewRules)
 {
-    if (GetNays() - GetYeas() > 3 * mnCount / 10) {
+    if (GetNays() - GetYeas() > (fNewRules ? 3 : 1) * mnodeman.CountEnabled() / 10) {
         strInvalid = "Heavily Downvoted";
         return true;
     }
@@ -86,9 +88,12 @@ bool CBudgetProposal::IsHeavilyDownvoted(int mnCount)
 
 bool CBudgetProposal::CheckStartEnd()
 {
-    // block start must be a superblock
+    // !TODO: remove (and always use new rules) when all proposals submitted before v5 enforcement are expired.
+    bool fNewRules = Params().GetConsensus().NetworkUpgradeActive(nBlockStart, Consensus::UPGRADE_V5_0);
+
     if (nBlockStart < 0 ||
-            nBlockStart % Params().GetConsensus().nBudgetCycleBlocks != 0) {
+            // block start must be a superblock
+            (fNewRules && (nBlockStart % Params().GetConsensus().nBudgetCycleBlocks) != 0)) {
         strInvalid = "Invalid nBlockStart";
         return false;
     }
@@ -98,7 +103,7 @@ bool CBudgetProposal::CheckStartEnd()
         return false;
     }
 
-    if (GetTotalPaymentCount() > Params().GetConsensus().nMaxProposalPayments) {
+    if (fNewRules && GetTotalPaymentCount() > Params().GetConsensus().nMaxProposalPayments) {
         strInvalid = "Invalid payment count";
         return false;
     }
@@ -161,13 +166,16 @@ bool CBudgetProposal::updateExpired(int nCurrentHeight)
     return false;
 }
 
-bool CBudgetProposal::UpdateValid(int nCurrentHeight, int mnCount)
+bool CBudgetProposal::UpdateValid(int nCurrentHeight)
 {
     fValid = false;
 
+    // !TODO: remove after v5 enforcement and use fixed multiplier (3)
+    bool fNewRules = Params().GetConsensus().NetworkUpgradeActive(nCurrentHeight, Consensus::UPGRADE_V5_0);
+
     // Never kill a proposal before the first superblock
-    if (nCurrentHeight > nBlockStart && IsHeavilyDownvoted(mnCount)) {
-        return false;
+    if (!fNewRules || nCurrentHeight > nBlockStart) {
+        if (IsHeavilyDownvoted(fNewRules)) return false;
     }
 
     if (updateExpired(nCurrentHeight)) {

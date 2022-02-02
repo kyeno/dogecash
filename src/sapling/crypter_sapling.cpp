@@ -1,8 +1,7 @@
 // Copyright (c) 2016-2020 The ZCash developers
 // Copyright (c) 2020 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
 // Distributed under the MIT software license, see the accompanying
-// file COPYING or https://www.opensource.org/licenses/mit-license.php.
+// file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "crypter.h"
 
@@ -10,6 +9,8 @@
 #include "script/standard.h"
 #include "util/system.h"
 #include "uint256.h"
+
+#include "wallet/wallet.h"
 
 bool CCryptoKeyStore::AddCryptedSaplingSpendingKey(
         const libzcash::SaplingExtendedFullViewingKey &extfvk,
@@ -35,7 +36,7 @@ static bool DecryptSaplingSpendingKey(const CKeyingMaterial& vMasterKey,
                                       libzcash::SaplingExtendedSpendingKey& sk)
 {
     CKeyingMaterial vchSecret;
-    if (!DecryptSecret(vMasterKey, vchCryptedSecret, extfvk.fvk.GetFingerprint(), vchSecret))
+    if(!DecryptSecret(vMasterKey, vchCryptedSecret, extfvk.fvk.GetFingerprint(), vchSecret))
         return false;
 
     if (vchSecret.size() != ZIP32_XSK_SIZE)
@@ -47,27 +48,35 @@ static bool DecryptSaplingSpendingKey(const CKeyingMaterial& vMasterKey,
 }
 
 bool CCryptoKeyStore::GetSaplingSpendingKey(
-        const libzcash::SaplingExtendedFullViewingKey& extfvk,
-        libzcash::SaplingExtendedSpendingKey& skOut) const
+        const libzcash::SaplingExtendedFullViewingKey &extfvk,
+        libzcash::SaplingExtendedSpendingKey &skOut) const
 {
-    LOCK(cs_KeyStore);
-    if (!IsCrypted()) {
-        return CBasicKeyStore::GetSaplingSpendingKey(extfvk, skOut);
-    }
+    {
+        LOCK(cs_KeyStore);
+        if (!IsCrypted())
+            return CBasicKeyStore::GetSaplingSpendingKey(extfvk, skOut);
 
-    auto it = mapCryptedSaplingSpendingKeys.find(extfvk);
-    if (it == mapCryptedSaplingSpendingKeys.end()) return false;
-    const std::vector<unsigned char>& vchCryptedSecret = it->second;
-    return DecryptSaplingSpendingKey(vMasterKey, vchCryptedSecret, it->first, skOut);
+        for (auto entry : mapCryptedSaplingSpendingKeys) { // Work more on this flow..
+            if (entry.first == extfvk) {
+                const std::vector<unsigned char> &vchCryptedSecret = entry.second;
+                return DecryptSaplingSpendingKey(vMasterKey, vchCryptedSecret, entry.first, skOut);
+            }
+        }
+    }
+    return false;
 }
 
-bool CCryptoKeyStore::HaveSaplingSpendingKey(const libzcash::SaplingExtendedFullViewingKey& extfvk) const
+bool CCryptoKeyStore::HaveSaplingSpendingKey(const libzcash::SaplingExtendedFullViewingKey &extfvk) const
 {
     LOCK(cs_KeyStore);
-    if (!IsCrypted()) {
+    if (!IsCrypted())
         return CBasicKeyStore::HaveSaplingSpendingKey(extfvk);
+    for (auto entry : mapCryptedSaplingSpendingKeys) { // work more on this flow..
+        if (entry.first == extfvk) {
+            return true;
+        }
     }
-    return mapCryptedSaplingSpendingKeys.count(extfvk) > 0;
+    return false;
 }
 
 bool CCryptoKeyStore::UnlockSaplingKeys(const CKeyingMaterial& vMasterKeyIn, bool fDecryptionThoroughlyChecked)

@@ -6,7 +6,6 @@
 #include <config/dogecash-config.h>
 #endif
 
-#include <atomic>
 #include <thread>
 
 #if (defined(__FreeBSD__) || defined(__OpenBSD__) || defined(__DragonFly__))
@@ -16,7 +15,7 @@
 
 #include <util/threadnames.h>
 
-#include "ctpl_stl.h"
+#include "ctpl.h"
 #include "utiltime.h"
 #include "tinyformat.h"
 

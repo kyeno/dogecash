@@ -2,7 +2,6 @@
 // Copyright (c) 2009-2015 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2016-2020 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -22,6 +21,8 @@
 #include <stdint.h>
 #include <string>
 
+#define MESSAGE_START_SIZE 4
+
 /** Message header.
  * (4) message start.
  * (12) command.
@@ -31,7 +32,6 @@
 class CMessageHeader
 {
 public:
-    static constexpr size_t MESSAGE_START_SIZE = 4;
     static constexpr size_t COMMAND_SIZE = 12;
     static constexpr size_t MESSAGE_SIZE_SIZE = 4;
     static constexpr size_t CHECKSUM_SIZE = 4;
@@ -52,6 +52,8 @@ public:
 
     SERIALIZE_METHODS(CMessageHeader, obj) { READWRITE(obj.pchMessageStart, obj.pchCommand, obj.nMessageSize, obj.pchChecksum); }
 
+    // TODO: make private (improves encapsulation)
+public:
     char pchMessageStart[MESSAGE_START_SIZE];
     char pchCommand[COMMAND_SIZE];
     uint32_t nMessageSize;
@@ -275,18 +277,6 @@ extern const char* FINALBUDGETVOTE;
  * The syncstatuscount message is used to track the layer 2 syncing process
  */
 extern const char* SYNCSTATUSCOUNT;
-/**
- * The qfcommit message is used to propagate LLMQ final commitments
- */
-extern const char* QFCOMMITMENT;
-/**
- * The qsendrecsigs message is used to propagate LLMQ intra-quorum partial recovered signatures
- */
-extern const char* QSENDRECSIGS;
-/**
- * The mnauth message is used authenticate MN connections
- */
-extern const char* MNAUTH;
 }; // namespace NetMsgType
 
 /* Get a vector of all valid message types (see above) */
@@ -438,9 +428,8 @@ enum GetDataMsg
     MSG_MASTERNODE_QUORUM,
     MSG_MASTERNODE_ANNOUNCE,
     MSG_MASTERNODE_PING,
-    MSG_DSTX,               // Deprecated
-    MSG_QUORUM_FINAL_COMMITMENT,
-    MSG_TYPE_MAX = MSG_QUORUM_FINAL_COMMITMENT
+    MSG_DSTX,
+    MSG_TYPE_MAX = MSG_DSTX
 };
 
 /** inv message data */

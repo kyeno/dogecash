@@ -1,10 +1,9 @@
 // Copyright (c) 2020 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or https://www.opensource.org/licenses/mit-license.php.
 
-#ifndef DogeCash_SAPLING_OPERATION_H
-#define DogeCash_SAPLING_OPERATION_H
+#ifndef DOGECASH_SAPLING_OPERATION_H
+#define DOGECASH_SAPLING_OPERATION_H
 
 #include "amount.h"
 #include "sapling/transaction_builder.h"
@@ -143,4 +142,4 @@ OperationResult GetMemoFromString(const std::string& s, std::array<unsigned char
 
 OperationResult CheckTransactionSize(std::vector<SendManyRecipient>& recipients, bool fromTaddr);
 
-#endif //DogeCash_SAPLING_OPERATION_H
+#endif //DOGECASH_SAPLING_OPERATION_H

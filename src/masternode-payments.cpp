@@ -1,7 +1,5 @@
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2020 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
-// Copyright (c) 2018-2020 The DogeCash developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -11,11 +9,12 @@
 #include "evo/deterministicmns.h"
 #include "fs.h"
 #include "budget/budgetmanager.h"
+#include "masternode-sync.h"
 #include "masternodeman.h"
 #include "netmessagemaker.h"
+#include "net_processing.h"
 #include "spork.h"
 #include "sync.h"
-#include "tiertwo/tiertwo_sync_state.h"
 #include "util/system.h"
 #include "utilmoneystr.h"
 #include "validation.h"
@@ -198,7 +197,7 @@ void DumpMasternodePayments()
 bool IsBlockValueValid(int nHeight, CAmount& nExpectedValue, CAmount nMinted, CAmount& nBudgetAmt)
 {
     const Consensus::Params& consensus = Params().GetConsensus();
-    if (!g_tiertwo_sync_state.IsSynced()) {
+    if (!masternodeSync.IsSynced()) {
         //there is no budget data to use to check anything
         //super blocks will always be on these blocks, max 100 per budgeting
         if (nHeight % consensus.nBudgetCycleBlocks < 100) {
@@ -230,7 +229,7 @@ bool IsBlockPayeeValid(const CBlock& block, const CBlockIndex* pindexPrev)
     int nBlockHeight = pindexPrev->nHeight + 1;
     TrxValidationStatus transactionStatus = TrxValidationStatus::InValid;
 
-    if (!g_tiertwo_sync_state.IsSynced()) { //there is no budget data to use to check anything -- find the longest chain
+    if (!masternodeSync.IsSynced()) { //there is no budget data to use to check anything -- find the longest chain
         LogPrint(BCLog::MASTERNODE, "Client not synced, skipping block payee checks\n");
         return true;
     }
@@ -345,7 +344,7 @@ static void SubtractMnPaymentFromCoinstake(CMutableTransaction& txCoinstake, CAm
     //subtract mn payment from the stake reward
     if (stakerOuts == 2) {
         // Majority of cases; do it quick and move on
-        txCoinstake.vout[1].nValue -= masternodePayment + Params().GetConsensus().nDevReward;
+        txCoinstake.vout[1].nValue -= masternodePayment;
     } else {
         // special case, stake is split between (stakerOuts-1) outputs
         unsigned int outputs = stakerOuts-1;
@@ -356,23 +355,7 @@ static void SubtractMnPaymentFromCoinstake(CMutableTransaction& txCoinstake, CAm
         }
         // in case it's not an even division, take the last bit of dust from the last one
         txCoinstake.vout[outputs].nValue -= mnPaymentRemainder;
-        CAmount devFeeSplit = Params().GetConsensus().nDevReward / outputs;
-        CAmount devFeeRemainder = Params().GetConsensus().nDevReward - (devFeeSplit * outputs);        
-                        
-        for (unsigned int j=1; j<=outputs; j++) {
-            txNew.vout[j].nValue -= devFeeSplit;
-        }
-        txNew.vout[outputs].nValue -= devFeeRemainder;
     }
-    PushDevFee(txNew, nHeight);
-}
-
-void CMasternodePayments::PushDevFee(CMutableTransaction& txNew, const int nHeight) 
-{
-    CTxDestination destination = DecodeDestination(Params().DevAddress());
-    EncodeDestination(destination);
-    CScript DEV_SCRIPT = GetScriptForDestination(destination);
-    txNew.vout.push_back(CTxOut(Params().GetConsensus().nDevReward, CScript(DEV_SCRIPT.begin(), DEV_SCRIPT.end())));
 }
 
 void CMasternodePayments::FillBlockPayee(CMutableTransaction& txCoinbase, CMutableTransaction& txCoinstake, const CBlockIndex* pindexPrev, bool fProofOfStake) const
@@ -413,36 +396,43 @@ void CMasternodePayments::FillBlockPayee(CMutableTransaction& txCoinbase, CMutab
     }
 }
 
-bool CMasternodePayments::ProcessMessageMasternodePayments(CNode* pfrom, std::string& strCommand, CDataStream& vRecv, CValidationState& state)
+void CMasternodePayments::ProcessMessageMasternodePayments(CNode* pfrom, std::string& strCommand, CDataStream& vRecv)
 {
-    if (!g_tiertwo_sync_state.IsBlockchainSynced()) return true;
+    if (!masternodeSync.IsBlockchainSynced()) return;
+
+    if (fLiteMode) return; //disable all Masternode related functionality
 
     // Skip after legacy obsolete. !TODO: remove when transition to DMN is complete
     if (deterministicMNManager->LegacyMNObsolete()) {
         LogPrint(BCLog::MASTERNODE, "mnw - skip obsolete message %s\n", strCommand);
-        return true;
+        return;
     }
 
-    if (strCommand == NetMsgType::GETMNWINNERS) {
-        //Masternode Payments Request Sync
+
+    if (strCommand == NetMsgType::GETMNWINNERS) { //Masternode Payments Request Sync
+        if (fLiteMode) return;   //disable all Masternode related functionality
+
         int nCountNeeded;
         vRecv >> nCountNeeded;
 
         if (Params().NetworkIDString() == CBaseChainParams::MAIN) {
             if (pfrom->HasFulfilledRequest(NetMsgType::GETMNWINNERS)) {
-                LogPrint(BCLog::MASTERNODE, "%s: mnget - peer already asked me for the list\n", __func__);
-                return state.DoS(20, false, REJECT_INVALID, "getmnwinners-request-already-fulfilled");
+                LogPrintf("CMasternodePayments::ProcessMessageMasternodePayments() : mnget - peer already asked me for the list\n");
+                LOCK(cs_main);
+                Misbehaving(pfrom->GetId(), 20);
+                return;
             }
         }
 
         pfrom->FulfilledRequest(NetMsgType::GETMNWINNERS);
         Sync(pfrom, nCountNeeded);
         LogPrint(BCLog::MASTERNODE, "mnget - Sent Masternode winners to peer %i\n", pfrom->GetId());
-    } else if (strCommand == NetMsgType::MNWINNER) {
-        //Masternode Payments Declare Winner
+    } else if (strCommand == NetMsgType::MNWINNER) { //Masternode Payments Declare Winner
+        //this is required in litemodef
         CMasternodePaymentWinner winner;
         vRecv >> winner;
-        if (pfrom->nVersion < ActiveProtocol()) return false;
+
+        if (pfrom->nVersion < ActiveProtocol()) return;
 
         {
             // Clear inv request
@@ -450,11 +440,9 @@ bool CMasternodePayments::ProcessMessageMasternodePayments(CNode* pfrom, std::st
             g_connman->RemoveAskFor(winner.GetHash(), MSG_MASTERNODE_WINNER);
         }
 
+        CValidationState state;
         ProcessMNWinner(winner, pfrom, state);
-        return state.IsValid();
     }
-
-    return true;
 }
 
 bool CMasternodePayments::ProcessMNWinner(CMasternodePaymentWinner& winner, CNode* pfrom, CValidationState& state)
@@ -463,7 +451,7 @@ bool CMasternodePayments::ProcessMNWinner(CMasternodePaymentWinner& winner, CNod
 
     if (mapMasternodePayeeVotes.count(winner.GetHash())) {
         LogPrint(BCLog::MASTERNODE, "mnw - Already seen - %s bestHeight %d\n", winner.GetHash().ToString().c_str(), nHeight);
-        g_tiertwo_sync_state.AddedMasternodeWinner(winner.GetHash());
+        masternodeSync.AddedMasternodeWinner(winner.GetHash());
         return false;
     }
 
@@ -488,8 +476,9 @@ bool CMasternodePayments::ProcessMNWinner(CMasternodePaymentWinner& winner, CNod
         if (pmn == nullptr) {
             // it could be a non-synced masternode. ask for the mnb
             LogPrint(BCLog::MASTERNODE, "mnw - unknown masternode %s\n", winner.vinMasternode.prevout.hash.ToString());
-            // Only ask for missing items after the initial mnlist sync is complete
-            if (pfrom && g_tiertwo_sync_state.IsMasternodeListSynced()) mnodeman.AskForMN(pfrom, winner.vinMasternode);
+            // Only ask for missing items after the initial syncing process is complete
+            //   otherwise will think a full sync succeeded when they return a result
+            if (pfrom && masternodeSync.IsSynced()) mnodeman.AskForMN(pfrom, winner.vinMasternode);
             return state.Error("Non-existent mnwinner voter");
         }
     }
@@ -514,7 +503,11 @@ bool CMasternodePayments::ProcessMNWinner(CMasternodePaymentWinner& winner, CNod
     if (!is_valid_sig) {
         LogPrint(BCLog::MASTERNODE, "%s : mnw - invalid signature for %s masternode: %s\n",
                 __func__, (dmn ? "deterministic" : "legacy"), winner.vinMasternode.prevout.hash.ToString());
-        return state.DoS(20, false, REJECT_INVALID, "invalid voter mnwinner signature");
+        if (pfrom) {
+            LOCK(cs_main);
+            Misbehaving(pfrom->GetId(), 20);
+        }
+        return state.Error("invalid voter mnwinner signature");
     }
 
     // Record vote
@@ -525,8 +518,8 @@ bool CMasternodePayments::ProcessMNWinner(CMasternodePaymentWinner& winner, CNod
 
     // Relay only if we are synchronized.
     // Makes no sense to relay MNWinners to the peers from where we are syncing them.
-    if (g_tiertwo_sync_state.IsSynced()) winner.Relay();
-    g_tiertwo_sync_state.AddedMasternodeWinner(winner.GetHash());
+    if (masternodeSync.IsSynced()) winner.Relay();
+    masternodeSync.AddedMasternodeWinner(winner.GetHash());
 
     // valid
     return true;
@@ -706,7 +699,7 @@ void CMasternodePayments::CleanPaymentList(int mnCount, int nHeight)
 
         if (nHeight - winner.nBlockHeight > nLimit) {
             LogPrint(BCLog::MASTERNODE, "CMasternodePayments::CleanPaymentList - Removing old Masternode payment - block %d\n", winner.nBlockHeight);
-            g_tiertwo_sync_state.EraseSeenMNW((*it).first);
+            masternodeSync.mapSeenSyncMNW.erase((*it).first);
             mapMasternodePayeeVotes.erase(it++);
             mapMasternodeBlocks.erase(winner.nBlockHeight);
         } else {
@@ -717,7 +710,7 @@ void CMasternodePayments::CleanPaymentList(int mnCount, int nHeight)
 
 void CMasternodePayments::UpdatedBlockTip(const CBlockIndex *pindexNew, const CBlockIndex *pindexFork, bool fInitialDownload)
 {
-    if (g_tiertwo_sync_state.GetSyncPhase() > MASTERNODE_SYNC_LIST) {
+    if (masternodeSync.RequestedMasternodeAssets > MASTERNODE_SYNC_LIST) {
         ProcessBlock(pindexNew->nHeight + 10);
     }
 }
@@ -727,7 +720,7 @@ void CMasternodePayments::ProcessBlock(int nBlockHeight)
     LogPrintf("%s: Processing block %d\n", __func__, nBlockHeight);
 
     // No more mnw messages after transition to DMN
-    if (deterministicMNManager->LegacyMNObsolete(nBlockHeight)) {
+    if (deterministicMNManager->LegacyMNObsolete()) {
         return;
     }
     if (!fMasterNode) return;
@@ -843,7 +836,7 @@ void CMasternodePayments::RecordWinnerVote(const COutPoint& outMasternode, int n
 bool IsCoinbaseValueValid(const CTransactionRef& tx, CAmount nBudgetAmt, CValidationState& _state)
 {
     assert(tx->IsCoinBase());
-    if (g_tiertwo_sync_state.IsSynced()) {
+    if (masternodeSync.IsSynced()) {
         const CAmount nCBaseOutAmt = tx->GetValueOut();
         if (nBudgetAmt > 0) {
             // Superblock

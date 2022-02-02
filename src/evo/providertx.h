@@ -2,14 +2,19 @@
 // Copyright (c) 2021 The PIVX Core developers
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef DogeCash_PROVIDERTX_H
-#define DogeCash_PROVIDERTX_H
+#ifndef DOGECASH_PROVIDERTX_H
+#define DOGECASH_PROVIDERTX_H
 
 #include "bls/bls_wrapper.h"
 #include "primitives/transaction.h"
+#include "consensus/validation.h"
+
 #include "netaddress.h"
+#include "pubkey.h"
 
 #include <univalue.h>
+
+class CBlockIndex;
 
 // Provider-Register tx payload
 
@@ -157,8 +162,13 @@ public:
     void ToJson(UniValue& obj) const;
 };
 
+bool CheckProRegTx(const CTransaction& tx, const CBlockIndex* pindexPrev, CValidationState& state);
+bool CheckProUpServTx(const CTransaction& tx, const CBlockIndex* pindexPrev, CValidationState& state);
+bool CheckProUpRegTx(const CTransaction& tx, const CBlockIndex* pindexPrev, CValidationState& state);
+bool CheckProUpRevTx(const CTransaction& tx, const CBlockIndex* pindexPrev, CValidationState& state);
 
 // If tx is a ProRegTx, return the collateral outpoint in outRet.
 bool GetProRegCollateral(const CTransactionRef& tx, COutPoint& outRet);
 
-#endif  //DogeCash_PROVIDERTX_H
+
+#endif  //DOGECASH_PROVIDERTX_H

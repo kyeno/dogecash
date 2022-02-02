@@ -2,10 +2,10 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#include "zdogec/zpos.h"
+#include "zpiv/zpos.h"
 
 #include "validation.h"
-#include "zdogec/zdogecmodule.h"
+#include "zpivchain.h"
 
 
 /*
@@ -37,7 +37,7 @@ static const CBlockIndex* FindIndexFrom(uint32_t nChecksum, libzerocoin::CoinDen
     // Start at the current checkpoint and go backwards
     const Consensus::Params& consensus = Params().GetConsensus();
     int zc_activation = consensus.vUpgrades[Consensus::UPGRADE_ZC].nActivationHeight;
-    // Height limits are ensured by the contextual checks in NewZDogecStake
+    // Height limits are ensured by the contextual checks in NewZPivStake
     assert(cpHeight <= consensus.height_last_ZC_AccumCheckpoint && cpHeight > zc_activation);
 
     CBlockIndex* pindex = chainActive[(cpHeight/10)*10 - 10];
@@ -55,11 +55,11 @@ static const CBlockIndex* FindIndexFrom(uint32_t nChecksum, libzerocoin::CoinDen
     return nullptr;
 }
 
-CLegacyZDogecStake* CLegacyZDogecStake::NewZDogecStake(const CTxIn& txin, int nHeight)
+CLegacyZPivStake* CLegacyZPivStake::NewZPivStake(const CTxIn& txin, int nHeight)
 {
     // Construct the stakeinput object
     if (!txin.IsZerocoinSpend()) {
-        LogPrintf("%s: unable to initialize CLegacyZDogecStake from non zc-spend", __func__);
+        LogPrintf("%s: unable to initialize CLegacyZPivStake from non zc-spend", __func__);
         return nullptr;
     }
 
@@ -67,12 +67,12 @@ CLegacyZDogecStake* CLegacyZDogecStake::NewZDogecStake(const CTxIn& txin, int nH
     const Consensus::Params& consensus = Params().GetConsensus();
     if (!consensus.NetworkUpgradeActive(nHeight, Consensus::UPGRADE_ZC_V2) ||
             nHeight >= consensus.height_last_ZC_AccumCheckpoint) {
-        LogPrint(BCLog::LEGACYZC, "%s : zDOGEC stake block: height %d outside range", __func__, nHeight);
+        LogPrint(BCLog::LEGACYZC, "%s : zPIV stake block: height %d outside range", __func__, nHeight);
         return nullptr;
     }
 
     // Check spend type
-    libzerocoin::CoinSpend spend = ZDOGECModule::TxInToZerocoinSpend(txin);
+    libzerocoin::CoinSpend spend = TxInToZerocoinSpend(txin);
     if (spend.getSpendType() != libzerocoin::SpendType::STAKE) {
         LogPrintf("%s : spend is using the wrong SpendType (%d)", __func__, (int)spend.getSpendType());
         return nullptr;
@@ -92,25 +92,25 @@ CLegacyZDogecStake* CLegacyZDogecStake::NewZDogecStake(const CTxIn& txin, int nH
     // Find the pindex of the first block with the accumulator checksum
     const CBlockIndex* _pindexFrom = FindIndexFrom(_nChecksum, _denom, cpHeight);
     if (_pindexFrom == nullptr) {
-        LogPrintf("%s : Failed to find the block index for zdogec stake origin", __func__);
+        LogPrintf("%s : Failed to find the block index for zpiv stake origin", __func__);
         return nullptr;
     }
 
     // All good
-    return new CLegacyZDogecStake(_pindexFrom, _nChecksum, _denom, _hashSerial);
+    return new CLegacyZPivStake(_pindexFrom, _nChecksum, _denom, _hashSerial);
 }
 
-const CBlockIndex* CLegacyZDogecStake::GetIndexFrom() const
+const CBlockIndex* CLegacyZPivStake::GetIndexFrom() const
 {
     return pindexFrom;
 }
 
-CAmount CLegacyZDogecStake::GetValue() const
+CAmount CLegacyZPivStake::GetValue() const
 {
     return denom * COIN;
 }
 
-CDataStream CLegacyZDogecStake::GetUniqueness() const
+CDataStream CLegacyZPivStake::GetUniqueness() const
 {
     CDataStream ss(SER_GETHASH, 0);
     ss << hashSerial;

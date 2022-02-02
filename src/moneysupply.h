@@ -1,10 +1,9 @@
 // Copyright (c) 2020 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or https://www.opensource.org/licenses/mit-license.php.
 
-#ifndef DogeCash_MONEYSUPPLY_H
-#define DogeCash_MONEYSUPPLY_H
+#ifndef DOGECASH_MONEYSUPPLY_H
+#define DOGECASH_MONEYSUPPLY_H
 
 #include "amount.h"
 #include "sync.h"
@@ -33,4 +32,4 @@ public:
     int64_t GetCacheHeight() const { LOCK(cs); return nHeight; }
 };
 
-#endif // DogeCash_MONEYSUPPLY_H
+#endif // DOGECASH_MONEYSUPPLY_H

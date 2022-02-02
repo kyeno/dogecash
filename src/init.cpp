@@ -5,7 +5,6 @@
 // Copyright (c) 2013-2014 The NovaCoin Developers
 // Copyright (c) 2014-2018 The BlackCoin Developers
 // Copyright (c) 2015-2021 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -19,9 +18,12 @@
 #include "addrman.h"
 #include "amount.h"
 #include "bls/bls_wrapper.h"
+#include "budget/budgetdb.h"
+#include "budget/budgetmanager.h"
 #include "checkpoints.h"
 #include "compat/sanity.h"
 #include "consensus/upgrades.h"
+#include "evo/deterministicmns.h"
 #include "evo/evonotificationinterface.h"
 #include "fs.h"
 #include "httpserver.h"
@@ -29,7 +31,9 @@
 #include "invalid.h"
 #include "key.h"
 #include "mapport.h"
+#include "masternode-payments.h"
 #include "masternodeconfig.h"
+#include "masternodeman.h"
 #include "miner.h"
 #include "netbase.h"
 #include "net_processing.h"
@@ -43,7 +47,7 @@
 #include "shutdown.h"
 #include "spork.h"
 #include "sporkdb.h"
-#include "tiertwo/init.h"
+#include "evo/evodb.h"
 #include "txdb.h"
 #include "torcontrol.h"
 #include "guiinterface.h"
@@ -53,6 +57,7 @@
 #include "util/threadnames.h"
 #include "validation.h"
 #include "validationinterface.h"
+#include "zpivchain.h"
 #include "warnings.h"
 
 #ifdef ENABLE_WALLET
@@ -68,8 +73,6 @@
 #include <memory>
 
 #ifndef WIN32
-#include <attributes.h>
-#include <cerrno>
 #include <signal.h>
 #include <sys/stat.h>
 #endif
@@ -89,6 +92,8 @@ static const bool DEFAULT_PROXYRANDOMIZE = true;
 static const bool DEFAULT_REST_ENABLE = false;
 static const bool DEFAULT_DISABLE_SAFEMODE = false;
 static const bool DEFAULT_STOPAFTERBLOCKIMPORT = false;
+static const bool DEFAULT_MASTERNODE  = false;
+static const bool DEFAULT_MNCONFLOCK = true;
 
 std::unique_ptr<CConnman> g_connman;
 std::unique_ptr<PeerLogicValidation> peerLogic;
@@ -110,31 +115,16 @@ static EvoNotificationInterface* pEvoNotificationInterface = nullptr;
 
 static const char* DEFAULT_ASMAP_FILENAME="ip_asn.map";
 
+/** Used to pass flags to the Bind() function */
+enum BindFlags {
+    BF_NONE = 0,
+    BF_EXPLICIT = (1U << 0),
+    BF_REPORT_ERROR = (1U << 1),
+    BF_WHITELIST = (1U << 2),
+};
+
 static const char* FEE_ESTIMATES_FILENAME = "fee_estimates.dat";
 CClientUIInterface uiInterface;  // Declared but not defined in guiinterface.h
-
-/**
- * The PID file facilities.
- */
-const char * const DogeCash_PID_FILENAME = "dogecash.pid";
-
-fs::path GetPidFile()
-{
-    fs::path pathPidFile(gArgs.GetArg("-pid", DogeCash_PID_FILENAME));
-    return AbsPathForConfigVal(pathPidFile);
-}
-
-NODISCARD static bool CreatePidFile()
-{
-    FILE* file = fsbridge::fopen(GetPidFile(), "w");
-    if (file) {
-        fprintf(file, "%d\n", getpid());
-        fclose(file);
-        return true;
-    } else {
-        return UIError(strprintf(_("Unable to create the PID file '%s': %s"), GetPidFile().string(), std::strerror(errno)));
-    }
-}
 
 //////////////////////////////////////////////////////////////////////////////
 //
@@ -219,7 +209,6 @@ void Shutdown()
     StopREST();
     StopRPC();
     StopHTTPServer();
-    StopTierTwoThreads();
 #ifdef ENABLE_WALLET
     for (CWalletRef pwallet : vpwallets) {
         pwallet->Flush(false);
@@ -246,7 +235,9 @@ void Shutdown()
     g_connman.reset();
     peerLogic.reset();
 
-    DumpTierTwo();
+    DumpMasternodes();
+    DumpBudgets(g_budgetman);
+    DumpMasternodePayments();
     if (::mempool.IsLoaded() && gArgs.GetBoolArg("-persistmempool", DEFAULT_PERSIST_MEMPOOL)) {
         DumpMempool(::mempool);
     }
@@ -291,7 +282,8 @@ void Shutdown()
         zerocoinDB.reset();
         accumulatorCache.reset();
         pSporkDB.reset();
-        DeleteTierTwo();
+        deterministicMNManager.reset();
+        evoDb.reset();
     }
 #ifdef ENABLE_WALLET
     for (CWalletRef pwallet : vpwallets) {
@@ -329,7 +321,7 @@ void Shutdown()
             LogPrintf("%s: Unable to remove PID file: File does not exist\n", __func__);
         }
     } catch (const fs::filesystem_error& e) {
-        LogPrintf("%s: Unable to remove PID file: %s\n", __func__, e.what());
+        LogPrintf("%s: Unable to remove pidfile: %s\n", __func__, e.what());
     }
 #endif
 
@@ -367,6 +359,19 @@ static void registerSignalHandler(int signal, void(*handler)(int))
     sigaction(signal, &sa, nullptr);
 }
 #endif
+
+bool static Bind(CConnman& connman, const CService& addr, unsigned int flags)
+{
+    if (!(flags & BF_EXPLICIT) && !IsReachable(addr))
+        return false;
+    std::string strError;
+    if (!connman.BindListenPort(addr, strError, (flags & BF_WHITELIST) != 0)) {
+        if (flags & BF_REPORT_ERROR)
+            return UIError(strError);
+        return false;
+    }
+    return true;
+}
 
 void OnRPCStarted()
 {
@@ -430,7 +435,7 @@ std::string HelpMessage(HelpMessageMode mode)
     strUsage += HelpMessageOpt("-persistmempool", strprintf("Whether to save the mempool on shutdown and load on restart (default: %u)", DEFAULT_PERSIST_MEMPOOL));
     strUsage += HelpMessageOpt("-par=<n>", strprintf("Set the number of script verification threads (%u to %d, 0 = auto, <0 = leave that many cores free, default: %d)", -GetNumCores(), MAX_SCRIPTCHECK_THREADS, DEFAULT_SCRIPTCHECK_THREADS));
 #ifndef WIN32
-    strUsage += HelpMessageOpt("-pid=<file>", strprintf("Specify pid file (default: %s)", DogeCash_PID_FILENAME));
+    strUsage += HelpMessageOpt("-pid=<file>", strprintf("Specify pid file (default: %s)", DOGECASH_PID_FILENAME));
 #endif
     strUsage += HelpMessageOpt("-reindex-chainstate", "Rebuild chain state from the currently indexed blocks");
     strUsage += HelpMessageOpt("-reindex", "Rebuild block chain index from current blk000??.dat files on startup");
@@ -535,8 +540,16 @@ std::string HelpMessage(HelpMessageMode mode)
     }
     strUsage += HelpMessageOpt("-shrinkdebugfile", "Shrink debug.log file on client startup (default: 1 when no -debug)");
     AppendParamsHelpMessages(strUsage, showDebug);
+    strUsage += HelpMessageOpt("-litemode=<n>", strprintf("Disable all DogeCash specific functionality (Masternodes, Budgeting) (0-1, default: %u)", 0));
 
-    strUsage += GetTierTwoHelpString(showDebug);
+    strUsage += HelpMessageGroup("Masternode options:");
+    strUsage += HelpMessageOpt("-masternode=<n>", strprintf("Enable the client to act as a masternode (0-1, default: %u)", DEFAULT_MASTERNODE));
+    strUsage += HelpMessageOpt("-mnconf=<file>", strprintf("Specify masternode configuration file (default: %s)", DOGECASH_MASTERNODE_CONF_FILENAME));
+    strUsage += HelpMessageOpt("-mnconflock=<n>", strprintf("Lock masternodes from masternode configuration file (default: %u)", DEFAULT_MNCONFLOCK));
+    strUsage += HelpMessageOpt("-masternodeprivkey=<n>", "Set the masternode private key");
+    strUsage += HelpMessageOpt("-masternodeaddr=<n>", strprintf("Set external address:port to get to this masternode (example: %s)", "128.127.106.235:51472"));
+    strUsage += HelpMessageOpt("-budgetvotemode=<mode>", "Change automatic finalized budget voting behavior. mode=auto: Vote for only exact finalized budget match to my generated budget. (string, default: auto)");
+    strUsage += HelpMessageOpt("-mnoperatorprivatekey=<WIF>", "Set the masternode operator private key. Only valid with -masternode=1. When set, the masternode acts as a deterministic masternode.");
 
     strUsage += HelpMessageGroup("Node relay options:");
     if (showDebug) {
@@ -955,6 +968,19 @@ static std::string ResolveErrMsg(const char * const optname, const std::string& 
     return strprintf(_("Cannot resolve -%s address: '%s'"), optname, strBind);
 }
 
+// Sets the last CACHED_BLOCK_HASHES hashes into masternode manager cache
+static void LoadBlockHashesCache(CMasternodeMan& man)
+{
+    LOCK(cs_main);
+    const CBlockIndex* pindex = chainActive.Tip();
+    unsigned int inserted = 0;
+    while (pindex && inserted < CACHED_BLOCK_HASHES) {
+        man.CacheBlockHash(pindex);
+        pindex = pindex->pprev;
+        ++inserted;
+    }
+}
+
 void InitLogging()
 {
     g_logger->m_print_to_file = !gArgs.IsArgNegated("-debuglogfile");
@@ -991,26 +1017,18 @@ bool AppInitParameterInteraction()
     // Make sure enough file descriptors are available
 
     // -bind and -whitebind can't be set when not listening
-    size_t nUserBind =
-            (gArgs.IsArgSet("-bind") ? gArgs.GetArgs("-bind").size() : 0) +
-            (gArgs.IsArgSet("-whitebind") ? gArgs.GetArgs("-whitebind").size() : 0);
+    size_t nUserBind = gArgs.GetArgs("-bind").size() + gArgs.GetArgs("-whitebind").size();
     if (nUserBind != 0 && !gArgs.GetBoolArg("-listen", DEFAULT_LISTEN)) {
         return UIError(strprintf(_("Cannot set %s or %s together with %s"), "-bind", "-whitebind", "-listen=0"));
     }
 
-    // Make sure enough file descriptors are available
     int nBind = std::max(nUserBind, size_t(1));
     nUserMaxConnections = gArgs.GetArg("-maxconnections", DEFAULT_MAX_PEER_CONNECTIONS);
     nMaxConnections = std::max(nUserMaxConnections, 0);
 
     // Trim requested connection counts, to fit into system limitations
+    nMaxConnections = std::max(std::min(nMaxConnections, (int)(FD_SETSIZE - nBind - MIN_CORE_FILEDESCRIPTORS - MAX_ADDNODE_CONNECTIONS)), 0);
     nFD = RaiseFileDescriptorLimit(nMaxConnections + MIN_CORE_FILEDESCRIPTORS + MAX_ADDNODE_CONNECTIONS);
-#ifdef USE_POLL
-    int fd_max = nFD;
-#else
-    int fd_max = FD_SETSIZE;
-#endif
-    nMaxConnections = std::max(std::min<int>(nMaxConnections, fd_max - nBind - MIN_CORE_FILEDESCRIPTORS - MAX_ADDNODE_CONNECTIONS), 0);
     if (nFD < MIN_CORE_FILEDESCRIPTORS)
         return UIError(_("Not enough file descriptors available."));
     nMaxConnections = std::min(nFD - MIN_CORE_FILEDESCRIPTORS - MAX_ADDNODE_CONNECTIONS, nMaxConnections);
@@ -1186,10 +1204,7 @@ bool AppInitMain()
     }
 
 #ifndef WIN32
-    if (!CreatePidFile()) {
-        // Detailed error printed inside CreatePidFile().
-        return false;
-    }
+    CreatePidFile(GetPidFile(), getpid());
 #endif
     if (g_logger->m_print_to_file) {
         if (gArgs.GetBoolArg("-shrinkdebugfile", g_logger->DefaultShrinkDebugFile()))
@@ -1349,6 +1364,14 @@ bool AppInitMain()
         }
     }
 
+    for (const auto& net : gArgs.GetArgs("-whitelist")) {
+        CSubNet subnet;
+        LookupSubNet(net, subnet);
+        if (!subnet.IsValid())
+            return UIError(strprintf(_("Invalid netmask specified in %s: '%s'"), "-whitelist", net));
+        connman.AddWhitelistedRange(subnet);
+    }
+
     // Check for host lookup allowed before parsing any network related parameters
     fNameLookup = gArgs.GetBoolArg("-dns", DEFAULT_NAME_LOOKUP);
 
@@ -1398,6 +1421,32 @@ bool AppInitMain()
     fListen = gArgs.GetBoolArg("-listen", DEFAULT_LISTEN);
     fDiscover = gArgs.GetBoolArg("-discover", true);
 
+    bool fBound = false;
+    if (fListen) {
+        for (const std::string& strBind : gArgs.GetArgs("-bind")) {
+            CService addrBind;
+            if (!Lookup(strBind, addrBind, GetListenPort(), false))
+                return UIError(ResolveErrMsg("bind", strBind));
+            fBound |= Bind(connman, addrBind, (BF_EXPLICIT | BF_REPORT_ERROR));
+        }
+        for (const std::string& strBind : gArgs.GetArgs("-whitebind")) {
+            CService addrBind;
+            if (!Lookup(strBind, addrBind, 0, false))
+                return UIError(ResolveErrMsg("whitebind", strBind));
+            if (addrBind.GetPort() == 0)
+                return UIError(strprintf(_("Need to specify a port with %s: '%s'"), "-whitebind", strBind));
+            fBound |= Bind(connman, addrBind, (BF_EXPLICIT | BF_REPORT_ERROR | BF_WHITELIST));
+        }
+        if (!gArgs.IsArgSet("-bind") && !gArgs.IsArgSet("-whitebind")) {
+            struct in_addr inaddr_any;
+            inaddr_any.s_addr = INADDR_ANY;
+            fBound |= Bind(connman, CService((in6_addr)IN6ADDR_ANY_INIT, GetListenPort()), BF_NONE);
+            fBound |= Bind(connman, CService(inaddr_any, GetListenPort()), !fBound ? BF_REPORT_ERROR : BF_NONE);
+        }
+        if (!fBound)
+            return UIError(strprintf(_("Failed to listen on any port. Use %s if you want this."), "-listen=0"));
+    }
+
     for (const std::string& strAddr : gArgs.GetArgs("-externalip")) {
         CService addrLocal;
         if (Lookup(strAddr, addrLocal, GetListenPort(), fNameLookup) && addrLocal.IsValid())
@@ -1436,6 +1485,11 @@ bool AppInitMain()
     // on the command line or in this network's section of the config file.
     gArgs.WarnForSectionOnlyArgs();
 
+    if (gArgs.IsArgSet("-seednode")) {
+        for (const std::string& strDest : gArgs.GetArgs("-seednode"))
+            connman.AddOneShot(strDest);
+    }
+
 #if ENABLE_ZMQ
     pzmqNotificationInterface = CZMQNotificationInterface::Create();
 
@@ -1463,6 +1517,7 @@ bool AppInitMain()
     nCoinDBCache = std::min(nCoinDBCache, nMaxCoinsDBCache << 20); // cap total coins db cache
     nTotalCache -= nCoinDBCache;
     nCoinCacheUsage = nTotalCache; // the rest goes to in-memory cache
+    int64_t nEvoDbCache = 1024 * 1024 * 16; // TODO
     LogPrintf("Cache configuration:\n");
     LogPrintf("* Using %.1fMiB for block index database\n", nBlockTreeDBCache * (1.0 / 1024 / 1024));
     LogPrintf("* Using %.1fMiB for chain state database\n", nCoinDBCache * (1.0 / 1024 / 1024));
@@ -1475,8 +1530,6 @@ bool AppInitMain()
     while (!fLoaded && !ShutdownRequested()) {
         bool fReset = fReindex;
         std::string strLoadError;
-
-        LOCK(cs_main);
 
         do {
             const int64_t load_block_index_start_time = GetTimeMillis();
@@ -1493,7 +1546,10 @@ bool AppInitMain()
                 pSporkDB.reset(new CSporkDB(0, false, false));
                 accumulatorCache.reset(new AccumulatorCache(zerocoinDB.get()));
 
-                InitTierTwoPreChainLoad(fReindex);
+                deterministicMNManager.reset();
+                evoDb.reset();
+                evoDb.reset(new CEvoDB(nEvoDbCache, false, fReindex));
+                deterministicMNManager.reset(new CDeterministicMNManager(*evoDb));
 
                 if (fReset) {
                     pblocktree->WriteReindexing(true);
@@ -1522,9 +1578,8 @@ bool AppInitMain()
 
                 // If the loaded chain has a wrong genesis, bail out immediately
                 // (we're likely using a testnet datadir, or the other way around).
-                if (!mapBlockIndex.empty() && !LookupBlockIndex(consensus.hashGenesisBlock)) {
+                if (!mapBlockIndex.empty() && mapBlockIndex.count(consensus.hashGenesisBlock) == 0)
                     return UIError(_("Incorrect or no genesis block found. Wrong datadir for network?"));
-                }
 
                 // Check for changed -txindex state
                 if (fTxIndex != gArgs.GetBoolArg("-txindex", DEFAULT_TXINDEX)) {
@@ -1564,8 +1619,6 @@ bool AppInitMain()
                 // The on-disk coinsdb is now in a good state, create the cache
                 pcoinsTip.reset(new CCoinsViewCache(pcoinscatcher.get()));
 
-                InitTierTwoPostCoinsCacheLoad();
-
                 bool is_coinsview_empty = fReset || fReindexChainState || pcoinsTip->GetBestBlock().IsNull();
                 if (!is_coinsview_empty) {
                     // LoadChainTip sets chainActive based on pcoinsTip's best block
@@ -1578,6 +1631,7 @@ bool AppInitMain()
 
                 if (Params().NetworkIDString() == CBaseChainParams::MAIN) {
                     // Prune zerocoin invalid outs if they were improperly stored in the coins database
+                    LOCK(cs_main);
                     int chainHeight = chainActive.Height();
                     bool fZerocoinActive = chainHeight > 0 && consensus.NetworkUpgradeActive(chainHeight, Consensus::UPGRADE_ZC);
 
@@ -1601,13 +1655,16 @@ bool AppInitMain()
 
                 if (!is_coinsview_empty) {
                     uiInterface.InitMessage(_("Verifying blocks..."));
-                    CBlockIndex *tip = chainActive.Tip();
-                    RPCNotifyBlockChange(true, tip);
-                    if (tip && tip->nTime > GetAdjustedTime() + 2 * 60 * 60) {
-                        strLoadError = _("The block database contains a block which appears to be from the future. "
-                                         "This may be due to your computer's date and time being set incorrectly. "
-                                         "Only rebuild the block database if you are sure that your computer's date and time are correct");
-                        break;
+                    {
+                        LOCK(cs_main);
+                        CBlockIndex *tip = chainActive.Tip();
+                        RPCNotifyBlockChange(true, tip);
+                        if (tip && tip->nTime > GetAdjustedTime() + 2 * 60 * 60) {
+                            strLoadError = _("The block database contains a block which appears to be from the future. "
+                                             "This may be due to your computer's date and time being set incorrectly. "
+                                             "Only rebuild the block database if you are sure that your computer's date and time are correct");
+                            break;
+                        }
                     }
 
                     if (!CVerifyDB().VerifyDB(pcoinsdbview.get(), gArgs.GetArg("-checklevel", DEFAULT_CHECKLEVEL),
@@ -1695,7 +1752,7 @@ bool AppInitMain()
         if (g_best_block.IsNull() && chainActive.Tip()) {
             CBlockIndex* tip = chainActive.Tip();
             g_best_block = tip->GetBlockHash();
-            g_best_block_time = tip->GetBlockTime();
+            g_best_block_time = tip->GetBlockTime();;
             g_best_block_cv.notify_all();
         }
     }
@@ -1710,17 +1767,10 @@ bool AppInitMain()
     LogPrintf("Waiting for genesis block to be imported...\n");
     {
         std::unique_lock<std::mutex> lockG(cs_GenesisWait);
-        // We previously could hang here if StartShutdown() is called prior to
-        // ThreadImport getting started, so instead we just wait on a timer to
-        // check ShutdownRequested() regularly.
-        while (!fHaveGenesis && !ShutdownRequested()) {
-            condvar_GenesisWait.wait_for(lockG, std::chrono::milliseconds(500));
+        while (!fHaveGenesis) {
+            condvar_GenesisWait.wait(lockG);
         }
         uiInterface.NotifyBlockTip.disconnect(BlockNotifyGenesisWait);
-    }
-
-    if (ShutdownRequested()) {
-        return false;
     }
 
     int chain_active_height;
@@ -1742,15 +1792,126 @@ bool AppInitMain()
 
     // ********************************************************* Step 10: setup layer 2 data
 
-    LoadTierTwo(chain_active_height, fReindexChainState);
-    if (!InitActiveMN()) return false;
-    RegisterTierTwoValidationInterface();
+    uiInterface.InitMessage(_("Loading masternode cache..."));
 
-    // set the mode of budget voting for this node
-    SetBudgetFinMode(gArgs.GetArg("-budgetvotemode", "auto"));
+    mnodeman.SetBestHeight(chain_active_height);
+    LoadBlockHashesCache(mnodeman);
+    CMasternodeDB mndb;
+    CMasternodeDB::ReadResult readResult = mndb.Read(mnodeman);
+    if (readResult == CMasternodeDB::FileError)
+        LogPrintf("Missing masternode cache file - mncache.dat, will try to recreate\n");
+    else if (readResult != CMasternodeDB::Ok) {
+        LogPrintf("Error reading mncache.dat - cached data discarded\n");
+    }
 
-    // Start tier two threads and jobs
-    StartTierTwoThreadsAndScheduleJobs(threadGroup, scheduler);
+    uiInterface.InitMessage(_("Loading budget cache..."));
+
+    CBudgetDB budgetdb;
+    const bool fDryRun = (chain_active_height <= 0);
+    if (!fDryRun) g_budgetman.SetBestHeight(chain_active_height);
+    CBudgetDB::ReadResult readResult2 = budgetdb.Read(g_budgetman, fDryRun);
+
+    if (readResult2 == CBudgetDB::FileError)
+        LogPrintf("Missing budget cache - budget.dat, will try to recreate\n");
+    else if (readResult2 != CBudgetDB::Ok) {
+        LogPrintf("Error reading budget.dat - cached data discarded\n");
+    }
+
+    //flag our cached items so we send them to our peers
+    g_budgetman.ResetSync();
+    g_budgetman.ReloadMapSeen();
+
+    RegisterValidationInterface(&g_budgetman);
+
+    uiInterface.InitMessage(_("Loading masternode payment cache..."));
+
+    CMasternodePaymentDB mnpayments;
+    CMasternodePaymentDB::ReadResult readResult3 = mnpayments.Read(masternodePayments);
+
+    RegisterValidationInterface(&masternodePayments);
+
+    if (readResult3 == CMasternodePaymentDB::FileError)
+        LogPrintf("Missing masternode payment cache - mnpayments.dat, will try to recreate\n");
+    else if (readResult3 != CMasternodePaymentDB::Ok) {
+        LogPrintf("Error reading mnpayments.dat - cached data discarded\n");
+    }
+
+    fMasterNode = gArgs.GetBoolArg("-masternode", DEFAULT_MASTERNODE);
+
+    if ((fMasterNode || masternodeConfig.getCount() > -1) && fTxIndex == false) {
+        return UIError(strprintf(_("Enabling Masternode support requires turning on transaction indexing."
+                                   "Please add %s to your configuration and start with %s"), "txindex=1", "-reindex"));
+    }
+
+    if (fMasterNode) {
+        const std::string& mnoperatorkeyStr = gArgs.GetArg("-mnoperatorprivatekey", "");
+        const bool fDeterministic = !mnoperatorkeyStr.empty();
+        LogPrintf("IS %sMASTERNODE\n", (fDeterministic ? "DETERMINISTIC " : ""));
+
+        if (fDeterministic) {
+            // Check enforcement
+            if (!deterministicMNManager->IsDIP3Enforced()) {
+                const std::string strError = strprintf(_("Cannot start deterministic masternode before enforcement. Remove %s to start as legacy masternode"), "-mnoperatorprivatekey");
+                LogPrintf("-- ERROR: %s\n", strError);
+                return UIError(strError);
+            }
+            // Create and register activeMasternodeManager
+            activeMasternodeManager = new CActiveDeterministicMasternodeManager();
+            auto res = activeMasternodeManager->SetOperatorKey(mnoperatorkeyStr);
+            if (!res) { return UIError(res.getError()); }
+            RegisterValidationInterface(activeMasternodeManager);
+            // Init active masternode
+            activeMasternodeManager->Init();
+        } else {
+            // Check enforcement
+            if (deterministicMNManager->LegacyMNObsolete()) {
+                const std::string strError = strprintf(_("Legacy masternode system disabled. Use %s to start as deterministic masternode"), "-mnoperatorprivatekey");
+                LogPrintf("-- ERROR: %s\n", strError);
+                return UIError(strError);
+            }
+            auto res = initMasternode(gArgs.GetArg("-masternodeprivkey", ""), gArgs.GetArg("-masternodeaddr", ""), true);
+            if (!res) { return UIError(res.getError()); }
+        }
+    }
+
+    //get the mode of budget voting for this masternode
+    g_budgetman.strBudgetMode = gArgs.GetArg("-budgetvotemode", "auto");
+
+#ifdef ENABLE_WALLET
+    // !TODO: remove after complete transition to DMN
+    // use only the first wallet here. This section can be removed after transition to DMN
+    if (gArgs.GetBoolArg("-mnconflock", DEFAULT_MNCONFLOCK) && !vpwallets.empty() && vpwallets[0]) {
+        LOCK(vpwallets[0]->cs_wallet);
+        LogPrintf("Locking Masternodes collateral utxo:\n");
+        uint256 mnTxHash;
+        for (const auto& mne : masternodeConfig.getEntries()) {
+            mnTxHash.SetHex(mne.getTxHash());
+            COutPoint outpoint = COutPoint(mnTxHash, (unsigned int) std::stoul(mne.getOutputIndex()));
+            vpwallets[0]->LockCoin(outpoint);
+            LogPrintf("Locked collateral, MN: %s, tx hash: %s, output index: %s\n",
+                      mne.getAlias(), mne.getTxHash(), mne.getOutputIndex());
+        }
+    }
+
+    // automatic lock for DMN
+    if (gArgs.GetBoolArg("-mnconflock", DEFAULT_MNCONFLOCK)) {
+        const auto& mnList = deterministicMNManager->GetListAtChainTip();
+        for (CWallet* pwallet : vpwallets) {
+            pwallet->ScanMasternodeCollateralsAndLock(mnList);
+        }
+    }
+#endif
+
+    // lite mode disables all Masternode related functionality
+    fLiteMode = gArgs.GetBoolArg("-litemode", false);
+    if (fMasterNode && fLiteMode) {
+        return UIError(_("You can not start a masternode in litemode"));
+    }
+
+    LogPrintf("fLiteMode %d\n", fLiteMode);
+    LogPrintf("Budget Mode %s\n", g_budgetman.strBudgetMode.c_str());
+
+    threadGroup.create_thread(std::bind(&ThreadCheckMasternodes));
 
     if (ShutdownRequested()) {
         LogPrintf("Shutdown requested. Exiting.\n");
@@ -1783,6 +1944,7 @@ bool AppInitMain()
     // Map ports with UPnP or NAT-PMP
     StartMapPort(gArgs.GetBoolArg("-upnp", DEFAULT_UPNP), gArgs.GetBoolArg("-natpmp", DEFAULT_NATPMP));
 
+    std::string strNodeError;
     CConnman::Options connOptions;
     connOptions.nLocalServices = nLocalServices;
     connOptions.nRelevantServices = nRelevantServices;
@@ -1795,51 +1957,9 @@ bool AppInitMain()
     connOptions.m_msgproc = peerLogic.get();
     connOptions.nSendBufferMaxSize = 1000*gArgs.GetArg("-maxsendbuffer", DEFAULT_MAXSENDBUFFER);
     connOptions.nReceiveFloodSize = 1000*gArgs.GetArg("-maxreceivebuffer", DEFAULT_MAXRECEIVEBUFFER);
-    connOptions.m_added_nodes = gArgs.GetArgs("-addnode");
 
-    if (gArgs.IsArgSet("-bind")) {
-        for (const std::string& strBind : gArgs.GetArgs("-bind")) {
-            CService addrBind;
-            if (!Lookup(strBind, addrBind, GetListenPort(), false)) {
-                return UIError(ResolveErrMsg("bind", strBind));
-            }
-            connOptions.vBinds.emplace_back(addrBind);
-        }
-    }
-    if (gArgs.IsArgSet("-whitebind")) {
-        for (const std::string& strBind : gArgs.GetArgs("-whitebind")) {
-            CService addrBind;
-            if (!Lookup(strBind, addrBind, 0, false)) {
-                return UIError(ResolveErrMsg("whitebind", strBind));
-            }
-            if (addrBind.GetPort() == 0) {
-                return UIError(strprintf(_("Need to specify a port with %s: '%s'"), "-whitebind", strBind));
-            }
-            connOptions.vWhiteBinds.emplace_back(addrBind);
-        }
-    }
-
-    for (const auto& net : gArgs.GetArgs("-whitelist")) {
-        CSubNet subnet;
-        LookupSubNet(net, subnet);
-        if (!subnet.IsValid())
-            return UIError(strprintf(_("Invalid netmask specified in %s: '%s'"), "-whitelist", net));
-        connOptions.vWhitelistedRange.emplace_back(subnet);
-    }
-
-    connOptions.vSeedNodes = gArgs.GetArgs("-seednode");
-
-    // Initiate outbound connections unless connect=0
-    connOptions.m_use_addrman_outgoing = !gArgs.IsArgSet("-connect");
-    if (!connOptions.m_use_addrman_outgoing) {
-        const auto connect = gArgs.GetArgs("-connect");
-        if (connect.size() != 1 || connect[0] != "0") {
-            connOptions.m_specified_outgoing = connect;
-        }
-    }
-    if (!connman.Start(scheduler, connOptions)) {
-        return false;
-    }
+    if (!connman.Start(scheduler, strNodeError, connOptions))
+        return UIError(strNodeError);
 
 #ifdef ENABLE_WALLET
     // Generate coins in the background (disabled on mainnet. use only wallet 0)

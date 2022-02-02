@@ -8,7 +8,7 @@
 #include "stakeinput.h"
 #include "txdb.h"
 
-class CLegacyZDogecStake : public CStakeInput
+class CLegacyZPivStake : public CStakeInput
 {
 private:
     uint32_t nChecksum{0};
@@ -16,16 +16,16 @@ private:
     uint256 hashSerial{UINT256_ZERO};
 
 public:
-    CLegacyZDogecStake(const CBlockIndex* _pindexFrom, uint32_t _nChecksum, libzerocoin::CoinDenomination _denom, const uint256& _hashSerial) :
+    CLegacyZPivStake(const CBlockIndex* _pindexFrom, uint32_t _nChecksum, libzerocoin::CoinDenomination _denom, const uint256& _hashSerial) :
         CStakeInput(_pindexFrom),
         nChecksum(_nChecksum),
         denom(_denom),
         hashSerial(_hashSerial)
     {}
 
-    static CLegacyZDogecStake* NewZDogecStake(const CTxIn& txin, int nHeight);
+    static CLegacyZPivStake* NewZPivStake(const CTxIn& txin, int nHeight);
 
-    bool IsZDOGEC() const override { return true; }
+    bool IsZPIV() const override { return true; }
     uint32_t GetChecksum() const { return nChecksum; }
     const CBlockIndex* GetIndexFrom() const override;
     CAmount GetValue() const override;

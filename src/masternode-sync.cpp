@@ -1,7 +1,5 @@
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2020 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
-// Copyright (c) 2018-2020 The DogeCash developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -11,11 +9,11 @@
 #include "budget/budgetmanager.h"
 #include "evo/deterministicmns.h"
 #include "masternode-sync.h"
+#include "masternode-payments.h"
 #include "masternode.h"
 #include "masternodeman.h"
 #include "netmessagemaker.h"
 #include "spork.h"
-#include "tiertwo/tiertwo_sync_state.h"
 #include "util/system.h"
 #include "validation.h"
 // clang-format on
@@ -28,37 +26,75 @@ CMasternodeSync::CMasternodeSync()
     Reset();
 }
 
+bool CMasternodeSync::IsSynced()
+{
+    return RequestedMasternodeAssets == MASTERNODE_SYNC_FINISHED;
+}
+
+bool CMasternodeSync::IsSporkListSynced()
+{
+    return RequestedMasternodeAssets > MASTERNODE_SYNC_SPORKS;
+}
+
+bool CMasternodeSync::IsMasternodeListSynced()
+{
+    return RequestedMasternodeAssets > MASTERNODE_SYNC_LIST;
+}
+
 bool CMasternodeSync::NotCompleted()
 {
-    return (!g_tiertwo_sync_state.IsSynced() && (
-            !g_tiertwo_sync_state.IsSporkListSynced() ||
+    return (!IsSynced() && (
+            !IsSporkListSynced() ||
             sporkManager.IsSporkActive(SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT) ||
             sporkManager.IsSporkActive(SPORK_9_MASTERNODE_BUDGET_ENFORCEMENT) ||
             sporkManager.IsSporkActive(SPORK_13_ENABLE_SUPERBLOCKS)));
 }
 
-void CMasternodeSync::UpdateBlockchainSynced(bool isRegTestNet)
+bool CMasternodeSync::IsBlockchainSynced()
 {
-    if (!isRegTestNet && !g_tiertwo_sync_state.CanUpdateChainSync(lastProcess)) return;
-    if (fImporting || fReindex) return;
+    int64_t now = GetTime();
+
+    // if the last call to this function was more than 60 minutes ago (client was in sleep mode) reset the sync process
+    if (now > lastProcess + 60 * 60) {
+        Reset();
+        fBlockchainSynced = false;
+    }
+    lastProcess = now;
+
+    if (fBlockchainSynced) return true;
+
+    if (fImporting || fReindex) return false;
 
     int64_t blockTime = 0;
     {
         TRY_LOCK(g_best_block_mutex, lock);
-        if (!lock) return;
+        if (!lock) return false;
         blockTime = g_best_block_time;
     }
 
-    // Synced only if the last block happened in the last 60 minutes
-    bool is_chain_synced = blockTime + 60 * 60 > lastProcess;
-    g_tiertwo_sync_state.SetBlockchainSync(is_chain_synced, lastProcess);
+    if (blockTime + 60 * 60 < lastProcess)
+        return false;
+
+    fBlockchainSynced = true;
+
+    return true;
+}
+
+bool CMasternodeSync::IsBlockchainSyncedReadOnly() const
+{
+    return fBlockchainSynced;
 }
 
 void CMasternodeSync::Reset()
 {
-    g_tiertwo_sync_state.SetBlockchainSync(false, 0);
-    g_tiertwo_sync_state.ResetData();
+    fBlockchainSynced = false;
     lastProcess = 0;
+    lastMasternodeList = 0;
+    lastMasternodeWinner = 0;
+    lastBudgetItem = 0;
+    mapSeenSyncMNB.clear();
+    mapSeenSyncMNW.clear();
+    mapSeenSyncBudget.clear();
     lastFailure = 0;
     nCountFailures = 0;
     sumMasternodeList = 0;
@@ -69,9 +105,51 @@ void CMasternodeSync::Reset()
     countMasternodeWinner = 0;
     countBudgetItemProp = 0;
     countBudgetItemFin = 0;
-    g_tiertwo_sync_state.SetCurrentSyncPhase(MASTERNODE_SYNC_INITIAL);
+    RequestedMasternodeAssets = MASTERNODE_SYNC_INITIAL;
     RequestedMasternodeAttempt = 0;
     nAssetSyncStarted = GetTime();
+}
+
+void CMasternodeSync::AddedMasternodeList(const uint256& hash)
+{
+    if (mnodeman.mapSeenMasternodeBroadcast.count(hash)) {
+        if (mapSeenSyncMNB[hash] < MASTERNODE_SYNC_THRESHOLD) {
+            lastMasternodeList = GetTime();
+            mapSeenSyncMNB[hash]++;
+        }
+    } else {
+        lastMasternodeList = GetTime();
+        mapSeenSyncMNB.emplace(hash, 1);
+    }
+}
+
+void CMasternodeSync::AddedMasternodeWinner(const uint256& hash)
+{
+    if (masternodePayments.mapMasternodePayeeVotes.count(hash)) {
+        if (mapSeenSyncMNW[hash] < MASTERNODE_SYNC_THRESHOLD) {
+            lastMasternodeWinner = GetTime();
+            mapSeenSyncMNW[hash]++;
+        }
+    } else {
+        lastMasternodeWinner = GetTime();
+        mapSeenSyncMNW.emplace(hash, 1);
+    }
+}
+
+void CMasternodeSync::AddedBudgetItem(const uint256& hash)
+{
+    if (g_budgetman.HaveProposal(hash) ||
+            g_budgetman.HaveSeenProposalVote(hash) ||
+            g_budgetman.HaveFinalizedBudget(hash) ||
+            g_budgetman.HaveSeenFinalizedBudgetVote(hash)) {
+        if (mapSeenSyncBudget[hash] < MASTERNODE_SYNC_THRESHOLD) {
+            lastBudgetItem = GetTime();
+            mapSeenSyncBudget[hash]++;
+        }
+    } else {
+        lastBudgetItem = GetTime();
+        mapSeenSyncBudget.emplace(hash, 1);
+    }
 }
 
 bool CMasternodeSync::IsBudgetPropEmpty()
@@ -108,7 +186,6 @@ int CMasternodeSync::GetNextAsset(int currentAsset)
 
 void CMasternodeSync::SwitchToNextAsset()
 {
-    int RequestedMasternodeAssets = g_tiertwo_sync_state.GetSyncPhase();
     if (RequestedMasternodeAssets == MASTERNODE_SYNC_INITIAL ||
             RequestedMasternodeAssets == MASTERNODE_SYNC_FAILED) {
         ClearFulfilledRequest();
@@ -117,14 +194,14 @@ void CMasternodeSync::SwitchToNextAsset()
     if (nextAsset == MASTERNODE_SYNC_FINISHED) {
         LogPrintf("%s - Sync has finished\n", __func__);
     }
-    g_tiertwo_sync_state.SetCurrentSyncPhase(nextAsset);
+    RequestedMasternodeAssets = nextAsset;
     RequestedMasternodeAttempt = 0;
     nAssetSyncStarted = GetTime();
 }
 
 std::string CMasternodeSync::GetSyncStatus()
 {
-    switch (g_tiertwo_sync_state.GetSyncPhase()) {
+    switch (masternodeSync.RequestedMasternodeAssets) {
     case MASTERNODE_SYNC_INITIAL:
         return _("MNs synchronization pending...");
     case MASTERNODE_SYNC_SPORKS:
@@ -145,7 +222,6 @@ std::string CMasternodeSync::GetSyncStatus()
 
 void CMasternodeSync::ProcessSyncStatusMsg(int nItemID, int nCount)
 {
-    int RequestedMasternodeAssets = g_tiertwo_sync_state.GetSyncPhase();
     if (RequestedMasternodeAssets >= MASTERNODE_SYNC_FINISHED) return;
 
     //this means we will receive no further communication
@@ -194,18 +270,7 @@ void CMasternodeSync::Process()
 
     if (tick++ % MASTERNODE_SYNC_TIMEOUT != 0) return;
 
-    // if the last call to this function was more than 60 minutes ago (client was in sleep mode)
-    // reset the sync process
-    int64_t now = GetTime();
-    if (lastProcess != 0 && now > lastProcess + 60 * 60) {
-        Reset();
-    }
-    lastProcess = now;
-
-    // Update chain sync status using the 'lastProcess' time
-    UpdateBlockchainSynced(isRegTestNet);
-
-    if (g_tiertwo_sync_state.IsSynced()) {
+    if (IsSynced()) {
         if (isRegTestNet) {
             return;
         }
@@ -221,8 +286,7 @@ void CMasternodeSync::Process()
         }
     }
 
-    // Try syncing again
-    int RequestedMasternodeAssets = g_tiertwo_sync_state.GetSyncPhase();
+    //try syncing again
     if (RequestedMasternodeAssets == MASTERNODE_SYNC_FAILED && lastFailure + (1 * 60) < GetTime()) {
         Reset();
     } else if (RequestedMasternodeAssets == MASTERNODE_SYNC_FAILED) {
@@ -232,7 +296,7 @@ void CMasternodeSync::Process()
     if (RequestedMasternodeAssets == MASTERNODE_SYNC_INITIAL) SwitchToNextAsset();
 
     // sporks synced but blockchain is not, wait until we're almost at a recent block to continue
-    if (!g_tiertwo_sync_state.IsBlockchainSynced() &&
+    if (!IsBlockchainSynced() &&
         RequestedMasternodeAssets > MASTERNODE_SYNC_SPORKS) return;
 
     // Skip after legacy obsolete. !TODO: remove when transition to DMN is complete
@@ -257,7 +321,7 @@ void CMasternodeSync::Process()
 void CMasternodeSync::syncTimeout(const std::string& reason)
 {
     LogPrintf("%s - ERROR - Sync has failed on %s, will retry later\n", __func__, reason);
-    g_tiertwo_sync_state.SetCurrentSyncPhase(MASTERNODE_SYNC_FAILED);
+    RequestedMasternodeAssets = MASTERNODE_SYNC_FAILED;
     RequestedMasternodeAttempt = 0;
     lastFailure = GetTime();
     nCountFailures++;
@@ -265,7 +329,6 @@ void CMasternodeSync::syncTimeout(const std::string& reason)
 
 bool CMasternodeSync::SyncWithNode(CNode* pnode, bool fLegacyMnObsolete)
 {
-    int RequestedMasternodeAssets = g_tiertwo_sync_state.GetSyncPhase();
     CNetMsgMaker msgMaker(pnode->GetSendVersion());
 
     //set to synced
@@ -286,7 +349,7 @@ bool CMasternodeSync::SyncWithNode(CNode* pnode, bool fLegacyMnObsolete)
         return false;
     }
 
-    if (pnode->nVersion < ActiveProtocol() || !pnode->CanRelay()) {
+    if (pnode->nVersion < ActiveProtocol()) {
         return true; // move to next peer
     }
 
@@ -296,7 +359,6 @@ bool CMasternodeSync::SyncWithNode(CNode* pnode, bool fLegacyMnObsolete)
             return false;
         }
 
-        int lastMasternodeList = g_tiertwo_sync_state.GetlastMasternodeList();
         LogPrint(BCLog::MASTERNODE, "CMasternodeSync::Process() - lastMasternodeList %lld (GetTime() - MASTERNODE_SYNC_TIMEOUT) %lld\n", lastMasternodeList, GetTime() - MASTERNODE_SYNC_TIMEOUT);
         if (lastMasternodeList > 0 && lastMasternodeList < GetTime() - MASTERNODE_SYNC_TIMEOUT * 8 && RequestedMasternodeAttempt >= MASTERNODE_SYNC_THRESHOLD) {
             // hasn't received a new item in the last 40 seconds AND has sent at least a minimum of MASTERNODE_SYNC_THRESHOLD GETMNLIST requests,
@@ -341,13 +403,12 @@ bool CMasternodeSync::SyncWithNode(CNode* pnode, bool fLegacyMnObsolete)
             return false;
         }
 
-        int lastMasternodeWinner = g_tiertwo_sync_state.GetlastMasternodeWinner();
         if (lastMasternodeWinner > 0 && lastMasternodeWinner < GetTime() - MASTERNODE_SYNC_TIMEOUT * 2 && RequestedMasternodeAttempt >= MASTERNODE_SYNC_THRESHOLD) { //hasn't received a new item in the last five seconds, so we'll move to the
             SwitchToNextAsset();
             // in case we received a budget item while we were syncing the mnw, let's reset the last budget item received time.
             // reason: if we received for example a single proposal +50 seconds ago, then once the budget sync starts (right after this call),
             // it will look like the sync is finished, and will not wait to receive any budget data and declare the sync over.
-            g_tiertwo_sync_state.ResetLastBudgetItem();
+            lastBudgetItem = 0;
             return false;
         }
 
@@ -362,7 +423,7 @@ bool CMasternodeSync::SyncWithNode(CNode* pnode, bool fLegacyMnObsolete)
                 // in case we received a budget item while we were syncing the mnw, let's reset the last budget item received time.
                 // reason: if we received for example a single proposal +50 seconds ago, then once the budget sync starts (right after this call),
                 // it will look like the sync is finished, and will not wait to receive any budget data and declare the sync over.
-                g_tiertwo_sync_state.ResetLastBudgetItem();
+                lastBudgetItem = 0;
             }
             return false;
         }
@@ -385,7 +446,6 @@ bool CMasternodeSync::SyncWithNode(CNode* pnode, bool fLegacyMnObsolete)
     }
 
     if (RequestedMasternodeAssets == MASTERNODE_SYNC_BUDGET) {
-        int lastBudgetItem = g_tiertwo_sync_state.GetlastBudgetItem();
         // We'll start rejecting votes if we accidentally get set as synced too soon
         if (lastBudgetItem > 0 && lastBudgetItem < GetTime() - MASTERNODE_SYNC_TIMEOUT * 10 && RequestedMasternodeAttempt >= MASTERNODE_SYNC_THRESHOLD) {
             // Hasn't received a new item in the last fifty seconds and more than MASTERNODE_SYNC_THRESHOLD requests were sent,

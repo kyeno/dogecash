@@ -5,6 +5,7 @@
 #include "tx_verify.h"
 
 #include "consensus/consensus.h"
+#include "evo/specialtx.h"
 #include "consensus/zerocoin_verify.h"
 #include "sapling/sapling_validation.h"
 #include "../validation.h"
@@ -54,13 +55,11 @@ unsigned int GetP2SHSigOpCount(const CTransaction& tx, const CCoinsViewCache& in
 bool CheckTransaction(const CTransaction& tx, CValidationState& state, bool fColdStakingActive)
 {
     // Basic checks that don't depend on any context
-    // Transactions containing empty `vin` must have non-empty `vShieldedSpend`,
-    // or they must be quorum commitments (only one per-type allowed in a block)
-    if (tx.vin.empty() && (tx.sapData && tx.sapData->vShieldedSpend.empty()) && !tx.IsQuorumCommitmentTx())
+    // Transactions containing empty `vin` must have non-empty `vShieldedSpend`.
+    if (tx.vin.empty() && (tx.sapData && tx.sapData->vShieldedSpend.empty()))
         return state.DoS(10, false, REJECT_INVALID, "bad-txns-vin-empty");
-    // Transactions containing empty `vout` must have non-empty `vShieldedOutput`,
-    // or they must be quorum commitments (only one per-type allowed in a block)
-    if (tx.vout.empty() && (tx.sapData && tx.sapData->vShieldedOutput.empty()) && !tx.IsQuorumCommitmentTx())
+    // Transactions containing empty `vout` must have non-empty `vShieldedOutput`.
+    if (tx.vout.empty() && (tx.sapData && tx.sapData->vShieldedOutput.empty()))
         return state.DoS(10, false, REJECT_INVALID, "bad-txns-vout-empty");
 
     // Version check

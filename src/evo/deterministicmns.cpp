@@ -1,24 +1,22 @@
 // Copyright (c) 2018-2021 The Dash Core developers
 // Copyright (c) 2021 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "evo/deterministicmns.h"
 
-#include "chain.h"
-#include "coins.h"
 #include "chainparams.h"
 #include "consensus/upgrades.h"
-#include "consensus/validation.h"
 #include "core_io.h"
+#include "evo/specialtx.h"
 #include "key_io.h"
 #include "guiinterface.h"
-#include "llmq/quorums_utils.h"
+#include "masternode.h" // for MasternodeCollateralMinConf
 #include "masternodeman.h" // for mnodeman (!TODO: remove)
 #include "script/standard.h"
 #include "spork.h"
 #include "sync.h"
+#include "validation.h"
 
 #include <univalue.h>
 
@@ -92,6 +90,16 @@ void CDeterministicMN::ToJson(UniValue& obj) const
     obj.pushKV("proTxHash", proTxHash.ToString());
     obj.pushKV("collateralHash", collateralOutpoint.hash.ToString());
     obj.pushKV("collateralIndex", (int)collateralOutpoint.n);
+
+    std::string collateralAddressStr = "";
+    Coin coin;
+    if (GetUTXOCoin(collateralOutpoint, coin)) {
+        CTxDestination dest;
+        if (ExtractDestination(coin.out.scriptPubKey, dest)) {
+            collateralAddressStr = EncodeDestination(dest);
+        }
+    }
+    obj.pushKV("collateralAddress", collateralAddressStr);
     obj.pushKV("operatorReward", (double)nOperatorReward / 100);
     obj.pushKV("dmnstate", stateObj);
 }
@@ -559,7 +567,7 @@ bool CDeterministicMNManager::UndoBlock(const CBlock& block, const CBlockIndex* 
     return true;
 }
 
-void CDeterministicMNManager::SetTipIndex(const CBlockIndex* pindex)
+void CDeterministicMNManager::UpdatedBlockTip(const CBlockIndex* pindex)
 {
     LOCK(cs);
     tipIndex = pindex;
@@ -568,7 +576,7 @@ void CDeterministicMNManager::SetTipIndex(const CBlockIndex* pindex)
 bool CDeterministicMNManager::BuildNewListFromBlock(const CBlock& block, const CBlockIndex* pindexPrev, CValidationState& _state, CDeterministicMNList& mnListRet, bool debugLogs)
 {
     AssertLockHeld(cs);
-    const auto& consensus = Params().GetConsensus();
+
     int nHeight = pindexPrev->nHeight + 1;
 
     CDeterministicMNList oldList = GetListForBlock(pindexPrev);
@@ -589,7 +597,7 @@ bool CDeterministicMNManager::BuildNewListFromBlock(const CBlock& block, const C
         // this works on the previous block, so confirmation will happen one block after nMasternodeMinimumConfirmations
         // has been reached, but the block hash will then point to the block at nMasternodeMinimumConfirmations
         int nConfirmations = pindexPrev->nHeight - dmn->pdmnState->nRegisteredHeight;
-        if (nConfirmations >= consensus.MasternodeCollateralMinConf()) {
+        if (nConfirmations >= MasternodeCollateralMinConf()) {
             auto newState = std::make_shared<CDeterministicMNState>(*dmn->pdmnState);
             newState->UpdateConfirmedHash(dmn->proTxHash, pindexPrev->GetBlockHash());
             newList.UpdateMN(dmn->proTxHash, newState);
@@ -621,6 +629,14 @@ bool CDeterministicMNManager::BuildNewListFromBlock(const CBlock& block, const C
             if (old_mn) {
                 old_mn->SetSpent();
                 mnodeman.CheckAndRemove();
+            }
+
+            Coin coin;
+            const CAmount collAmt = Params().GetConsensus().nMNCollateralAmt;
+            if (!pl.collateralOutpoint.hash.IsNull() && (!GetUTXOCoin(pl.collateralOutpoint, coin) || coin.out.nValue != collAmt)) {
+                // should actually never get to this point as CheckProRegTx should have handled this case.
+                // We do this additional check nevertheless to be 100% sure
+                return _state.DoS(100, false, REJECT_INVALID, "bad-protx-collateral");
             }
 
             auto replacedDmn = newList.GetMNByCollateral(dmn->collateralOutpoint);
@@ -755,22 +771,6 @@ bool CDeterministicMNManager::BuildNewListFromBlock(const CBlock& block, const C
                 LogPrintf("CDeterministicMNManager::%s -- MN %s updated at height %d: %s\n",
                     __func__, pl.proTxHash.ToString(), nHeight, pl.ToString());
             }
-        } else if (tx.nType == CTransaction::TxType::LLMQCOMM) {
-            llmq::LLMQCommPL pl;
-            if (!GetTxPayload(tx, pl)) {
-                return _state.DoS(100, false, REJECT_INVALID, "bad-qc-payload");
-            }
-            if (!pl.commitment.IsNull()) {
-                // Double-check that the quorum index is in the active chain
-                const auto& params = consensus.llmqs.at((Consensus::LLMQType)pl.commitment.llmqType);
-                uint32_t quorumHeight = pl.nHeight - (pl.nHeight % params.dkgInterval);
-                auto quorumIndex = pindexPrev->GetAncestor(quorumHeight);
-                if (!quorumIndex || quorumIndex->GetBlockHash() != pl.commitment.quorumHash) {
-                    return _state.DoS(100, false, REJECT_INVALID, "bad-qc-quorum-hash");
-                }
-                // Check for failed DKG participation by MNs
-                HandleQuorumCommitment(pl.commitment, quorumIndex, newList, debugLogs);
-            }
         }
 
     }
@@ -802,26 +802,6 @@ bool CDeterministicMNManager::BuildNewListFromBlock(const CBlock& block, const C
     mnListRet = std::move(newList);
 
     return true;
-}
-
-void CDeterministicMNManager::HandleQuorumCommitment(llmq::CFinalCommitment& qc, const CBlockIndex* pindexQuorum, CDeterministicMNList& mnList, bool debugLogs)
-{
-    // The commitment has already been validated at this point so it's safe to use members of it
-
-    auto members = GetAllQuorumMembers((Consensus::LLMQType)qc.llmqType, pindexQuorum);
-
-    for (size_t i = 0; i < members.size(); i++) {
-        if (!mnList.HasMN(members[i]->proTxHash)) {
-            continue;
-        }
-        if (!qc.validMembers[i]) {
-            // punish MN for failed DKG participation
-            // The idea is to immediately ban a MN when it fails 2 DKG sessions with only a few blocks in-between
-            // If there were enough blocks between failures, the MN has a chance to recover as he reduces his penalty by 1 for every block
-            // If it however fails 3 times in the timespan of a single payment cycle, it should definitely get banned
-            mnList.PoSePunish(members[i]->proTxHash, mnList.CalcPenalty(66), debugLogs);
-        }
-    }
 }
 
 void CDeterministicMNManager::DecreasePoSePenalties(CDeterministicMNList& mnList)
@@ -971,12 +951,4 @@ void CDeterministicMNManager::CleanupCache(int nHeight)
     for (const auto& h : toDeleteDiffs) {
         mnListDiffsCache.erase(h);
     }
-}
-
-std::vector<CDeterministicMNCPtr> CDeterministicMNManager::GetAllQuorumMembers(Consensus::LLMQType llmqType, const CBlockIndex* pindexQuorum)
-{
-    auto& params = Params().GetConsensus().llmqs.at(llmqType);
-    auto allMns = GetListForBlock(pindexQuorum);
-    auto modifier = ::SerializeHash(std::make_pair(static_cast<uint8_t>(llmqType), pindexQuorum->GetBlockHash()));
-    return allMns.CalculateQuorum(params.size, modifier);
 }

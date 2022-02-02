@@ -2,7 +2,6 @@
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2021 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or https://www.opensource.org/licenses/mit-license.php.
 
@@ -49,13 +48,14 @@ public:
 };
 
 extern const char * const DOGECASH_CONF_FILENAME;
-extern const char * const DogeCash_PID_FILENAME;
-extern const char * const DogeCash_MASTERNODE_CONF_FILENAME;
+extern const char * const DOGECASH_PID_FILENAME;
+extern const char * const DOGECASH_MASTERNODE_CONF_FILENAME;
 extern const char * const DEFAULT_DEBUGLOGFILE;
 
 //DogeCash only features
 
 extern std::atomic<bool> fMasterNode;
+extern bool fLiteMode;
 
 extern CTranslationInterface translationInterface;
 
@@ -101,8 +101,6 @@ fs::path GetDefaultDataDir();
 // The blocks directory is always net specific.
 const fs::path &GetBlocksDir();
 const fs::path &GetDataDir(bool fNetSpecific = true);
-// Return true if -datadir option points to a valid directory or is not specified.
-bool CheckDataDirOption();
 // Sapling network dir
 const fs::path &ZC_GetParamsDir();
 // Init sapling library
@@ -110,6 +108,10 @@ void initZKSNARKS();
 void ClearDatadirCache();
 fs::path GetConfigFile(const std::string& confPath);
 fs::path GetMasternodeConfigFile();
+#ifndef WIN32
+fs::path GetPidFile();
+void CreatePidFile(const fs::path& path, pid_t pid);
+#endif
 #ifdef WIN32
 fs::path GetSpecialFolderPath(int nFolder, bool fCreate = true);
 #endif

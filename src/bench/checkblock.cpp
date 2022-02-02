@@ -41,7 +41,7 @@ static void DeserializeAndCheckBlockTest(benchmark::State& state)
         assert(rewound);
 
         CValidationState state;
-        assert(WITH_LOCK(cs_main, return CheckBlock(block, state); ));
+        assert(CheckBlock(block, state));
     }
 }
 

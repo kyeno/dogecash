@@ -1,7 +1,5 @@
 // Copyright (c) 2009-2012 The Bitcoin developers
 // Copyright (c) 2015-2020 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
-// Copyright (c) 2018-2020 The DogeCash developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -10,10 +8,10 @@
 #include "evo/deterministicmns.h"
 #include "key_io.h"
 #include "masternode-payments.h"
+#include "masternode-sync.h"
 #include "masternodeconfig.h"
 #include "masternodeman.h"
 #include "netbase.h"
-#include "tiertwo/tiertwo_sync_state.h"
 #include "rpc/server.h"
 #ifdef ENABLE_WALLET
 #include "wallet/wallet.h"
@@ -23,23 +21,6 @@
 #include <univalue.h>
 
 #include <boost/tokenizer.hpp>
-
-// Duplicated from rpcevo.cpp for the compatibility phase. Remove after v6
-static UniValue DmnToJson(const CDeterministicMNCPtr dmn)
-{
-    UniValue ret(UniValue::VOBJ);
-    dmn->ToJson(ret);
-    Coin coin;
-    if (!WITH_LOCK(cs_main, return pcoinsTip->GetUTXOCoin(dmn->collateralOutpoint, coin); )) {
-        return ret;
-    }
-    CTxDestination dest;
-    if (!ExtractDestination(coin.out.scriptPubKey, dest)) {
-        return ret;
-    }
-    ret.pushKV("collateralAddress", EncodeDestination(dest));
-    return ret;
-}
 
 UniValue mnping(const JSONRPCRequest& request)
 {
@@ -101,8 +82,7 @@ UniValue initmasternode(const JSONRPCRequest& request)
         }
         auto res = activeMasternodeManager->SetOperatorKey(_strMasterNodePrivKey);
         if (!res) throw std::runtime_error(res.getError());
-        const CBlockIndex* pindexTip = WITH_LOCK(cs_main, return chainActive.Tip(); );
-        activeMasternodeManager->Init(pindexTip);
+        activeMasternodeManager->Init();
         if (activeMasternodeManager->GetState() == CActiveDeterministicMasternodeManager::MASTERNODE_ERROR) {
             throw std::runtime_error(activeMasternodeManager->GetStatus());
         }
@@ -195,7 +175,8 @@ UniValue listmasternodes(const JSONRPCRequest& request)
     if (deterministicMNManager->LegacyMNObsolete()) {
         auto mnList = deterministicMNManager->GetListAtChainTip();
         mnList.ForEachMN(false, [&](const CDeterministicMNCPtr& dmn) {
-            UniValue obj = DmnToJson(dmn);
+            UniValue obj(UniValue::VOBJ);
+            dmn->ToJson(obj);
             if (filterMasternode(obj, strFilter, !dmn->IsPoSeBanned())) {
                 ret.push_back(obj);
             }
@@ -220,7 +201,8 @@ UniValue listmasternodes(const JSONRPCRequest& request)
             // Deterministic masternode
             auto dmn = mnList.GetMNByCollateral(mn.vin.prevout);
             if (dmn) {
-                UniValue obj = DmnToJson(dmn);
+                UniValue obj(UniValue::VOBJ);
+                dmn->ToJson(obj);
                 bool fEnabled = !dmn->IsPoSeBanned();
                 if (filterMasternode(obj, strFilter, fEnabled)) {
                     // Added for backward compatibility with legacy masternodes
@@ -480,8 +462,8 @@ UniValue startmasternode(const JSONRPCRequest& request)
 
     if (strCommand == "all" || strCommand == "many" || strCommand == "missing" || strCommand == "disabled") {
         if ((strCommand == "missing" || strCommand == "disabled") &&
-            (g_tiertwo_sync_state.GetSyncPhase() <= MASTERNODE_SYNC_LIST ||
-                    g_tiertwo_sync_state.GetSyncPhase() == MASTERNODE_SYNC_FAILED)) {
+            (masternodeSync.RequestedMasternodeAssets <= MASTERNODE_SYNC_LIST ||
+                masternodeSync.RequestedMasternodeAssets == MASTERNODE_SYNC_FAILED)) {
             throw std::runtime_error("You can't use this command until masternode list is synced\n");
         }
 
