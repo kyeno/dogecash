@@ -1,8 +1,6 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2020 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
-// Copyright (c) 2018-2020 The DogeCash developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -178,17 +176,13 @@ void RPCConsole::setClientModel(ClientModel* model)
     ui->trafficGraph->setClientModel(model);
     if (model && clientModel->getPeerTableModel() && clientModel->getBanTableModel()) {
         // Keep up to date with client
-        int num_connections = model->getNumConnections();
-        setNumConnections(num_connections);
+        setNumConnections(model->getNumConnections());
         connect(model, &ClientModel::numConnectionsChanged, this, &RPCConsole::setNumConnections);
 
         setNumBlocks(model->getNumBlocks());
         connect(model, &ClientModel::numBlocksChanged, this, &RPCConsole::setNumBlocks);
 
         connect(model, &ClientModel::strMasternodesChanged, this, &RPCConsole::setMasternodeCount);
-
-        updateNetworkState(num_connections);
-        connect(model, &ClientModel::networkActiveChanged, this, &RPCConsole::setNetworkActive);
 
         updateTrafficStats(model->getTotalBytesRecv(), model->getTotalBytesSent());
         connect(model, &ClientModel::bytesChanged, this, &RPCConsole::updateTrafficStats);
@@ -409,7 +403,7 @@ void RPCConsole::clear()
     QString clsKey = "Ctrl-L";
 #endif
 
-    message(RPCExecutor::CMD_REPLY, (tr("Welcome to the DogeCash RPC console.") + "<br>" +
+    message(RPCExecutor::CMD_REPLY, (tr("Welcome to the PIVX RPC console.") + "<br>" +
                         tr("Use up and down arrows to navigate history, and %1 to clear screen.").arg("<b>"+clsKey+"</b>") + "<br>" +
                         tr("Type %1 for an overview of available commands.").arg("<b>help</b>") + "<br>" +
                         tr("For more information on using this console type %1.").arg("<b>help-console</b>") +
@@ -442,35 +436,16 @@ void RPCConsole::message(int category, const QString& message, bool html)
     ui->messagesWidget->append(out);
 }
 
-void RPCConsole::updateNetworkState(int numConnections)
-{
-    bool netActivityState = clientModel->getNetworkActive();
-    QString connections;
-    if (!netActivityState && numConnections == 0) {
-        connections = tr("Network activity disabled");
-    } else {
-        connections = QString::number(numConnections) + " (";
-        connections += tr("In:") + " " + QString::number(clientModel->getNumConnections(CONNECTIONS_IN)) + " / ";
-        connections += tr("Out:") + " " + QString::number(clientModel->getNumConnections(CONNECTIONS_OUT)) + ")";
-        if(!netActivityState) {
-            connections += " " + tr("Network activity disabled");
-        }
-    }
-    ui->numberOfConnections->setText(connections);
-}
-
 void RPCConsole::setNumConnections(int count)
 {
     if (!clientModel)
         return;
 
-    updateNetworkState(count);
-}
+    QString connections = QString::number(count) + " (";
+    connections += tr("In:") + " " + QString::number(clientModel->getNumConnections(CONNECTIONS_IN)) + " / ";
+    connections += tr("Out:") + " " + QString::number(clientModel->getNumConnections(CONNECTIONS_OUT)) + ")";
 
-void RPCConsole::setNetworkActive(bool networkActive)
-{
-    if (!clientModel) return;
-    updateNetworkState(clientModel->getNumConnections());
+    ui->numberOfConnections->setText(connections);
 }
 
 void RPCConsole::setNumBlocks(int count)
@@ -860,3 +835,4 @@ void RPCConsole::showOrHideBanTableIfRequired()
     ui->banlistWidget->setVisible(visible);
     ui->banHeading->setVisible(visible);
 }
+

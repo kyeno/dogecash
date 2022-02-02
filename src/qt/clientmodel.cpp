@@ -1,8 +1,6 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2020 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
-// Copyright (c) 2018-2020 The DogeCash developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -77,11 +75,10 @@ int ClientModel::getNumConnections(unsigned int flags) const
     return 0;
 }
 
-QString ClientModel::getMasternodeCountString()
+QString ClientModel::getMasternodeCountString() const
 {
     const auto& info = mnodeman.getMNsInfo();
     int unknown = std::max(0, info.total - info.ipv4 - info.ipv6 - info.onion);
-    m_cached_masternodes_count = info.total;
     return tr("Total: %1 (IPv4: %2 / IPv6: %3 / Tor: %4 / Unknown: %5)").arg(QString::number(info.total))
                                                                         .arg(QString::number(info.ipv4))
                                                                         .arg(QString::number(info.ipv6))
@@ -89,7 +86,7 @@ QString ClientModel::getMasternodeCountString()
                                                                         .arg(QString::number(unknown));
 }
 
-QString ClientModel::getMasternodesCountString()
+QString ClientModel::getMasternodesCount()
 {
     if (!cachedMasternodeCountString.isEmpty()) {
         return cachedMasternodeCountString;
@@ -98,6 +95,11 @@ QString ClientModel::getMasternodesCountString()
     // Force an update
     cachedMasternodeCountString = getMasternodeCountString();
     return cachedMasternodeCountString;
+}
+
+CAmount ClientModel::getMNCollateralRequiredAmount()
+{
+    return Params().GetConsensus().nMNCollateralAmt;
 }
 
 int ClientModel::getNumBlocks()
@@ -207,11 +209,6 @@ void ClientModel::updateNumConnections(int numConnections)
     Q_EMIT numConnectionsChanged(numConnections);
 }
 
-void ClientModel::updateNetworkActive(bool networkActive)
-{
-    Q_EMIT networkActiveChanged(networkActive);
-}
-
 void ClientModel::updateAlert()
 {
     Q_EMIT alertsChanged(getStatusBarWarnings());
@@ -232,21 +229,6 @@ enum BlockSource ClientModel::getBlockSource() const
         return BLOCK_SOURCE_NETWORK;
 
     return BLOCK_SOURCE_NONE;
-}
-
-void ClientModel::setNetworkActive(bool active)
-{
-    if (g_connman) {
-        g_connman->SetNetworkActive(active);
-    }
-}
-
-bool ClientModel::getNetworkActive() const
-{
-    if (g_connman) {
-        return g_connman->GetNetworkActive();
-    }
-    return false;
 }
 
 QString ClientModel::getStatusBarWarnings() const
@@ -336,12 +318,6 @@ static void NotifyNumConnectionsChanged(ClientModel* clientmodel, int newNumConn
         Q_ARG(int, newNumConnections));
 }
 
-static void NotifyNetworkActiveChanged(ClientModel *clientmodel, bool networkActive)
-{
-    QMetaObject::invokeMethod(clientmodel, "updateNetworkActive", Qt::QueuedConnection,
-                              Q_ARG(bool, networkActive));
-}
-
 static void NotifyAlertChanged(ClientModel* clientmodel)
 {
     qDebug() << "NotifyAlertChanged";
@@ -359,7 +335,6 @@ void ClientModel::subscribeToCoreSignals()
     // Connect signals to client
     m_handler_show_progress = interfaces::MakeHandler(uiInterface.ShowProgress.connect(std::bind(ShowProgress, this, std::placeholders::_1, std::placeholders::_2)));
     m_handler_notify_num_connections_changed = interfaces::MakeHandler(uiInterface.NotifyNumConnectionsChanged.connect(std::bind(NotifyNumConnectionsChanged, this, std::placeholders::_1)));
-    m_handler_notify_net_activity_changed = interfaces::MakeHandler(uiInterface.NotifyNetworkActiveChanged.connect(std::bind(NotifyNetworkActiveChanged, this, std::placeholders::_1)));
     m_handler_notify_alert_changed = interfaces::MakeHandler(uiInterface.NotifyAlertChanged.connect(std::bind(NotifyAlertChanged, this)));
     m_handler_banned_list_changed = interfaces::MakeHandler(uiInterface.BannedListChanged.connect(std::bind(BannedListChanged, this)));
     m_handler_notify_block_tip = interfaces::MakeHandler(uiInterface.NotifyBlockTip.connect(std::bind(BlockTipChanged, this, std::placeholders::_1, std::placeholders::_2)));
@@ -370,7 +345,6 @@ void ClientModel::unsubscribeFromCoreSignals()
     // Disconnect signals from client
     m_handler_show_progress->disconnect();
     m_handler_notify_num_connections_changed->disconnect();
-    m_handler_notify_net_activity_changed->disconnect();
     m_handler_notify_alert_changed->disconnect();
     m_handler_banned_list_changed->disconnect();
     m_handler_notify_block_tip->disconnect();

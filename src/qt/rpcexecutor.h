@@ -1,11 +1,10 @@
 // Copyright (c) 2011-2017 The Bitcoin developers
 // Copyright (c) 2015-2021 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef DogeCash_QT_RPCEXECUTOR_H
-#define DogeCash_QT_RPCEXECUTOR_H
+#ifndef DOGECASH_QT_RPCEXECUTOR_H
+#define DOGECASH_QT_RPCEXECUTOR_H
 
 #include "rpc/server.h"
 
@@ -76,4 +75,4 @@ public:
 };
 
 
-#endif // DogeCash_QT_RPCEXECUTOR_H
+#endif // DOGECASH_QT_RPCEXECUTOR_H

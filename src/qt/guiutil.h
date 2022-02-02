@@ -1,6 +1,5 @@
 // Copyright (c) 2011-2013 The Bitcoin developers
 // Copyright (c) 2017-2020 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -60,8 +59,8 @@ QFont bitcoinAddressFont();
 CAmount parseValue(const QString& amount, int displayUnit = 0);
 
 // Format an amount
-QString formatBalance(CAmount amount, int nDisplayUnit = 0, bool isZdogec = false);
-QString formatBalanceWithoutHtml(CAmount amount, int nDisplayUnit = 0, bool isZdogec = false);
+QString formatBalance(CAmount amount, int nDisplayUnit = 0, bool isZpiv = false);
+QString formatBalanceWithoutHtml(CAmount amount, int nDisplayUnit = 0, bool isZpiv = false);
 
 
 // Set up widgets for address and amounts

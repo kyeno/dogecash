@@ -1,6 +1,5 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
 // Copyright (c) 2017-2019 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -82,8 +81,6 @@ public Q_SLOTS:
     void message(int category, const QString &message, bool html);
     /** Set number of connections shown in the UI */
     void setNumConnections(int count);
-    /** Set network state shown in the UI */
-    void setNetworkActive(bool networkActive);
     /** Set number of blocks shown in the UI */
     void setNumBlocks(int count);
     /** Set number of masternodes shown in the UI */
@@ -153,9 +150,6 @@ private:
     QMenu *peersTableContextMenu;
     QMenu *banTableContextMenu;
     RPCTimerInterface *rpcTimerInterface;
-
-    /** Update UI with latest network info from model. */
-    void updateNetworkState(int num_connections);
 };
 
 #endif // BITCOIN_QT_RPCCONSOLE_H

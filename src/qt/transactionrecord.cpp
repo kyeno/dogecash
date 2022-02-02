@@ -1,8 +1,6 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2020 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
-// Copyright (c) 2018-2020 The DogeCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -41,7 +39,7 @@ bool TransactionRecord::decomposeCoinStake(const CWallet* wallet, const CWalletT
             sub.debit = -nDebit;
             loadHotOrColdStakeOrContract(wallet, wtx, sub);
         } else {
-            // DOGEC stake reward
+            // PIV stake reward
             CTxDestination address;
             if (!ExtractDestination(wtx.tx->vout[1].scriptPubKey, address))
                 return true;
@@ -51,10 +49,10 @@ bool TransactionRecord::decomposeCoinStake(const CWallet* wallet, const CWalletT
             sub.address = EncodeDestination(address);
             sub.credit = nCredit - nDebit;
         }
-    } else if (isminetype mine = wallet->IsMine(wtx.tx->vout[2])) {
+    } else {
         //Masternode reward
         CTxDestination destMN;
-        int nIndexMN = (int) wtx.tx->vout.size() - 2;
+        int nIndexMN = (int) wtx.tx->vout.size() - 1;
         if (ExtractDestination(wtx.tx->vout[nIndexMN].scriptPubKey, destMN) && (mine = IsMine(*wallet, destMN)) ) {
             sub.involvesWatchAddress = mine & ISMINE_WATCH_ONLY;
             sub.address = EncodeDestination(destMN);
@@ -63,15 +61,7 @@ bool TransactionRecord::decomposeCoinStake(const CWallet* wallet, const CWalletT
             CAmount mn_reward = Params().GetConsensus().nMNBlockReward;
             sub.type = sub.credit > mn_reward ? TransactionRecord::BudgetPayment : TransactionRecord::MNReward;
         }
-    } else if (isminetype mine = wallet->IsMine(wtx.tx->vout[3])) {
-        //Developer Fee
-        CTxDestination destDevFee;
-        int nIndexDevFee = (int) wtx.tx->vout.size() - 1;
-        if (ExtractDestination(wtx.tx->vout[nIndexDevFee].scriptPubKey, destDevFee) && (mine = IsMine(*wallet, destDevFee)) ) {
-            sub.involvesWatchAddress = mine & ISMINE_WATCH_ONLY;
-            sub.address = EncodeDestination(destDevFee);
-            sub.credit = wtx.tx->vout[nIndexDevFee].nValue;
-            sub.type = TransactionRecord::DevReward;
+    }
 
     parts.append(sub);
     return true;
@@ -622,9 +612,8 @@ void TransactionRecord::updateStatus(const CWalletTx& wtx, int chainHeight)
     // For generated transactions, determine maturity
     else if (type == TransactionRecord::Generated ||
             type == TransactionRecord::StakeMint ||
-            type == TransactionRecord::StakeZDOGEC ||
+            type == TransactionRecord::StakeZPIV ||
             type == TransactionRecord::MNReward ||
-            type == TransactionRecord::DevReward ||
             type == TransactionRecord::BudgetPayment ||
             type == TransactionRecord::StakeDelegated ||
             type == TransactionRecord::StakeHot) {
@@ -666,7 +655,7 @@ int TransactionRecord::getOutputIndex() const
 
 bool TransactionRecord::isCoinStake() const
 {
-    return type == TransactionRecord::StakeMint || type == TransactionRecord::Generated || type == TransactionRecord::StakeZDOGEC;
+    return type == TransactionRecord::StakeMint || type == TransactionRecord::Generated || type == TransactionRecord::StakeZPIV;
 }
 
 bool TransactionRecord::isMNReward() const

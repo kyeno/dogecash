@@ -1,8 +1,6 @@
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2020 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
-// Copyright (c) 2018-2020 The DogeCash developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -10,7 +8,7 @@
 #include "config/dogecash-config.h"
 #endif
 
-#include "qt/dogec/dogecashgui.h"
+#include "qt/dogecash/dogecashgui.h"
 
 
 #include "fs.h"
@@ -24,8 +22,8 @@
 #include "qt/intro.h"
 #include "qt/optionsmodel.h"
 #include "qt/networkstyle.h"
-#include "qt/dogec/splash.h"
-#include "qt/dogec/welcomecontentwidget.h"
+#include "qt/dogecash/splash.h"
+#include "qt/dogecash/welcomecontentwidget.h"
 #include "qt/winshutdownmonitor.h"
 #include "rpc/server.h"
 #include "shutdown.h"
@@ -34,8 +32,8 @@
 #include "warnings.h"
 
 #ifdef ENABLE_WALLET
-#include "qt/dogec/governancemodel.h"
-#include "qt/dogec/mnmodel.h"
+#include "qt/dogecash/governancemodel.h"
+#include "qt/dogecash/mnmodel.h"
 #include "paymentserver.h"
 #include "walletmodel.h"
 #include "interfaces/wallet.h"
@@ -615,9 +613,9 @@ int main(int argc, char* argv[])
     if (!Intro::pickDataDirectory())
         return 0;
 
-    /// 6. Determine availability of data directory and parse dogecash.conf
+    /// 6. Determine availability of data and blocks directory and parse dogecash.conf
     /// - Do not call GetDataDir(true) before this step finishes
-    if (!CheckDataDirOption()) {
+    if (!fs::is_directory(GetDataDir(false))) {
         QMessageBox::critical(nullptr, PACKAGE_NAME,
             QObject::tr("Error: Specified data directory \"%1\" does not exist.").arg(QString::fromStdString(gArgs.GetArg("-datadir", ""))));
         return 1;

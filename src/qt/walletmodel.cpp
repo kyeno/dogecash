@@ -1,8 +1,6 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2020 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
-// Copyright (c) 2018-2020 The DogeCash developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -21,6 +19,7 @@
 #include "qt/clientmodel.h"
 #include "qt/guiconstants.h"
 #include "qt/optionsmodel.h"
+#include "qt/recentrequeststablemodel.h"
 #include "qt/transactiontablemodel.h"
 #include "qt/walletmodeltransaction.h"
 
@@ -51,6 +50,7 @@ WalletModel::WalletModel(CWallet* wallet, OptionsModel* optionsModel, QObject* p
 
     addressTableModel = new AddressTableModel(wallet, this);
     transactionTableModel = new TransactionTableModel(wallet, this);
+    recentRequestsTableModel = new RecentRequestsTableModel(wallet, this);
 }
 
 void WalletModel::init()
@@ -662,7 +662,7 @@ OperationResult WalletModel::createAndSendProposalFeeTx(CBudgetProposal& proposa
     CTransactionRef wtx;
     const uint256& nHash = proposal.GetHash();
     CReserveKey keyChange(wallet);
-    if (!wallet->CreateBudgetFeeTX(wtx, nHash, keyChange, BUDGET_FEE_TX_OLD)) { // 50 DOGEC collateral for proposal
+    if (!wallet->CreateBudgetFeeTX(wtx, nHash, keyChange, false)) { // 50 PIV collateral for proposal
         return {false , "Error making fee transaction for proposal. Please check your wallet balance."};
     }
 
@@ -696,6 +696,11 @@ AddressTableModel* WalletModel::getAddressTableModel()
 TransactionTableModel* WalletModel::getTransactionTableModel()
 {
     return transactionTableModel;
+}
+
+RecentRequestsTableModel* WalletModel::getRecentRequestsTableModel()
+{
+    return recentRequestsTableModel;
 }
 
 WalletModel::EncryptionStatus WalletModel::getEncryptionStatus() const
@@ -1028,7 +1033,7 @@ QString WalletModel::getSaplingAddressString(const CWalletTx* wtx, const Sapling
     return ret.left(18) + "..." + ret.right(18);
 }
 
-// returns a COutPoint of 10000 DOGEC if found
+// returns a COutPoint of 10000 PIV if found
 bool WalletModel::getMNCollateralCandidate(COutPoint& outPoint)
 {
     CWallet::AvailableCoinsFilter coinsFilter;

@@ -564,7 +564,7 @@ for staking</source>
     </message>
     <message>
         <location line="+81"/>
-        <source>Select DOGEC Outputs to Spend</source>
+        <source>Select PIV Outputs to Spend</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -601,7 +601,7 @@ for staking</source>
     <message>
         <location line="-269"/>
         <location line="+461"/>
-        <source>0.00 DOGEC</source>
+        <source>0.00 PIV</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -858,7 +858,7 @@ stake on your behalf, while you keep the keys securely offline.</source>
     </message>
     <message>
         <location line="-139"/>
-        <source>Accept DOGEC delegation / Delegate DOGEC</source>
+        <source>Accept PIV delegation / Delegate PIV</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1090,7 +1090,7 @@ address</source>
     </message>
     <message>
         <location line="+13"/>
-        <source>Make sure you have 50 DOGEC for the proposal fee</source>
+        <source>Make sure you have 50 PIV for the proposal fee</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1217,7 +1217,7 @@ address</source>
     </message>
     <message>
         <location line="+357"/>
-        <source>How to get DOGEC</source>
+        <source>How to get PIV</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -1817,7 +1817,7 @@ Be part of the DAO.</source>
     </message>
     <message>
         <location line="-210"/>
-        <source>To create a DogeCash Masternode you must dedicate %1 (the unit of PIVX) to the network (however, these coins are still yours and will never leave your possession).</source>
+        <source>To create a DogeCash Masternode you must dedicate %1 (the unit of DogeCash) to the network (however, these coins are still yours and will never leave your possession).</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3362,7 +3362,7 @@ Address: %4
     <name>ReceiveWidget</name>
     <message>
         <location filename="../dogecash/forms/receivewidget.ui" line="+81"/>
-        <source>Scan the QR code or copy the address to receive DOGEC</source>
+        <source>Scan the QR code or copy the address to receive PIV</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3377,7 +3377,7 @@ Address: %4
     </message>
     <message>
         <location line="+19"/>
-        <source>Accept transparent or shielded DOGEC</source>
+        <source>Accept transparent or shielded PIV</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3775,7 +3775,7 @@ try unlocking the wallet</source>
     </message>
     <message>
         <location line="+38"/>
-        <source>The fee will be deducted from the amount being sent. The recipient will receive less DOGEC than you enter in the amount field. If multiple recipients are selected, the fee is split equally.</source>
+        <source>The fee will be deducted from the amount being sent. The recipient will receive less PIV than you enter in the amount field. If multiple recipients are selected, the fee is split equally.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4553,7 +4553,7 @@ There was an error trying to save the address list to %1. Please try again.</sou
     </message>
     <message>
         <location line="+31"/>
-        <source>2) Why are my DOGEC unspendable?</source>
+        <source>2) Why are my PIV unspendable?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4573,7 +4573,7 @@ There was an error trying to save the address list to %1. Please try again.</sou
     </message>
     <message>
         <location line="+21"/>
-        <source>Why are my DOGEC unspendable?</source>
+        <source>Why are my PIV unspendable?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4583,7 +4583,7 @@ There was an error trying to save the address list to %1. Please try again.</sou
     </message>
     <message>
         <location line="+18"/>
-        <source>How do I stake DOGEC?</source>
+        <source>How do I stake PIV?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -4628,7 +4628,7 @@ There was an error trying to save the address list to %1. Please try again.</sou
     </message>
     <message>
         <location line="+138"/>
-        <source>3) How do I stake DOGEC?</source>
+        <source>3) How do I stake PIV?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -6378,7 +6378,7 @@ Select fewer inputs with coin control.</source>
     </message>
     <message>
         <location line="+83"/>
-        <source>The masternode network is PIVX&apos;s second layer network on top of the blockchain that enables our DAO to provide decentralized governance and a treasury.</source>
+        <source>The masternode network is DogeCash&apos;s second layer network on top of the blockchain that enables our DAO to provide decentralized governance and a treasury.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>

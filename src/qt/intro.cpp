@@ -1,7 +1,6 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2019 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -16,7 +15,7 @@
 #include "guiutil.h"
 
 #include "util/system.h"
-#include "qt/dogec/qtutils.h"
+#include "qt/dogecash/qtutils.h"
 
 #include <QFileDialog>
 #include <QMessageBox>

@@ -1,8 +1,6 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2020 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
-// Copyright (c) 2018-2020 The DogeCash developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -17,9 +15,11 @@
 #include "guiconstants.h"
 #include "guiutil.h"
 #include "walletmodel.h"
-#include "qt/dogec/qtutils.h"
-#include "qt/dogec/loadingdialog.h"
-#include "qt/dogec/defaultdialog.h"
+#include "qt/dogecash/qtutils.h"
+#include "qt/dogecash/loadingdialog.h"
+#include "qt/dogecash/defaultdialog.h"
+#include "qt/dogecash/dogecashgui.h"
+#include <QDebug>
 
 #include <QKeyEvent>
 #include <QMessageBox>
@@ -351,9 +351,9 @@ void AskPassphraseDialog::warningMessage()
     openStandardDialog(
             tr("Wallet encrypted"),
             "<qt>" +
-            tr("Your wallet is now encrypted. "
+            tr("%1 will close now to finish the encryption process. "
                "Remember that encrypting your wallet cannot fully protect "
-               "your PIVs from being stolen by malware infecting your computer.") +
+               "your PIVs from being stolen by malware infecting your computer.").arg(PACKAGE_NAME) +
             "<br><br><b>" +
             tr("IMPORTANT: Any previous backups you have made of your wallet file "
                "should be replaced with the newly generated, encrypted wallet file. "
@@ -362,6 +362,7 @@ void AskPassphraseDialog::warningMessage()
             "</b></qt>",
             tr("OK")
             );
+    QApplication::quit();
 }
 
 void AskPassphraseDialog::errorEncryptingWallet()

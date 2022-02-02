@@ -20,7 +20,7 @@ BEGIN
         BLOCK "040904E4" // U.S. English - multilingual (hex)
         BEGIN
             VALUE "CompanyName",        "DogeCash"
-            VALUE "FileDescription",    PACKAGE_NAME " (OSS GUI client for PIVX)"
+            VALUE "FileDescription",    PACKAGE_NAME " (OSS GUI client for DogeCash)"
             VALUE "FileVersion",        VER_FILEVERSION_STR
             VALUE "InternalName",       "dogecash-qt"
             VALUE "LegalCopyright",     COPYRIGHT_STR

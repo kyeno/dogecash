@@ -1,5 +1,4 @@
 // Copyright (c) 2019 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -8,7 +7,7 @@
 
 #include "guiutil.h"
 #include "walletmodel.h"
-#include "qt/dogec/qtutils.h"
+#include "qt/dogecash/qtutils.h"
 
 #include <QUrl>
 #include <QFile>

@@ -1,12 +1,11 @@
 // Copyright (c) 2011-2014 The Bitcoin developers
 // Copyright (c) 2014-2016 The Dash developers
 // Copyright (c) 2017-2020 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef DogeCash_QT_WALLETMODEL_H
-#define DogeCash_QT_WALLETMODEL_H
+#ifndef DOGECASH_QT_WALLETMODEL_H
+#define DOGECASH_QT_WALLETMODEL_H
 
 #if defined(HAVE_CONFIG_H)
 #include "config/dogecash-config.h"
@@ -29,6 +28,7 @@ class AddressTableModel;
 class CBudgetProposal;
 class ClientModel;
 class OptionsModel;
+class RecentRequestsTableModel;
 class TransactionTableModel;
 class WalletModelTransaction;
 
@@ -141,6 +141,7 @@ public:
     OptionsModel* getOptionsModel();
     AddressTableModel* getAddressTableModel();
     TransactionTableModel* getTransactionTableModel();
+    RecentRequestsTableModel* getRecentRequestsTableModel();
 
     void resetWalletOptions(QSettings& settings);
     bool isTestNetwork() const;
@@ -390,6 +391,7 @@ private:
 
     AddressTableModel* addressTableModel;
     TransactionTableModel* transactionTableModel;
+    RecentRequestsTableModel* recentRequestsTableModel;
 
     // Cache balance to be able to detect changes
     interfaces::WalletBalances m_cached_balances;
@@ -457,4 +459,4 @@ public Q_SLOTS:
     bool updateAddressBookLabels(const CWDestination& address, const std::string& strName, const std::string& strPurpose);
 };
 
-#endif // DogeCash_QT_WALLETMODEL_H
+#endif // DOGECASH_QT_WALLETMODEL_H
