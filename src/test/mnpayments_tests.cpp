@@ -1,5 +1,4 @@
 // Copyright (c) 2021 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or https://www.opensource.org/licenses/mit-license.php.
 
@@ -8,9 +7,9 @@
 #include "blockassembler.h"
 #include "consensus/merkle.h"
 #include "masternode-payments.h"
+#include "masternode-sync.h"
 #include "masternodeman.h"
 #include "spork.h"
-#include "tiertwo/tiertwo_sync_state.h"
 #include "primitives/transaction.h"
 #include "utilmoneystr.h"
 #include "util/blockstatecatcher.h"
@@ -23,7 +22,7 @@ BOOST_AUTO_TEST_SUITE(mnpayments_tests)
 void enableMnSyncAndMNPayments()
 {
     // force mnsync complete
-    g_tiertwo_sync_state.SetCurrentSyncPhase(MASTERNODE_SYNC_FINISHED);
+    masternodeSync.RequestedMasternodeAssets = MASTERNODE_SYNC_FINISHED;
 
     // enable SPORK_13
     int64_t nTime = GetTime() - 10;

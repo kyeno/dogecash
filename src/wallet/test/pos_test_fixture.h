@@ -1,10 +1,9 @@
 // Copyright (c) 2021 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or https://www.opensource.org/licenses/mit-license.php.
 
-#ifndef DogeCash_POS_TEST_FIXTURE_H
-#define DogeCash_POS_TEST_FIXTURE_H
+#ifndef DOGECASH_POS_TEST_FIXTURE_H
+#define DOGECASH_POS_TEST_FIXTURE_H
 
 #include "test/test_dogecash.h"
 
@@ -22,4 +21,4 @@ struct TestPoSChainSetup: public TestChainSetup
     ~TestPoSChainSetup();
 };
 
-#endif // DogeCash_POS_TEST_FIXTURE_H
+#endif // DOGECASH_POS_TEST_FIXTURE_H

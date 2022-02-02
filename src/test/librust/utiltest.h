@@ -1,11 +1,10 @@
 // Copyright (c) 2016-2020 The Zcash developers
 // Copyright (c) 2020 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or https://www.opensource.org/licenses/mit-license.php .
 
-#ifndef DogeCash_UTIL_TEST_H
-#define DogeCash_UTIL_TEST_H
+#ifndef DOGECASH_UTIL_TEST_H
+#define DOGECASH_UTIL_TEST_H
 
 #include "sapling/address.h"
 #include "sapling/incrementalmerkletree.h"
@@ -75,4 +74,4 @@ CWalletTx GetValidSaplingReceive(const Consensus::Params& consensusParams,
                                  bool genNewKey = false,
                                  const CWallet* pwalletIn = nullptr);
 
-#endif // DogeCash_UTIL_TEST_H
+#endif // DOGECASH_UTIL_TEST_H

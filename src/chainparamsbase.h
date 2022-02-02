@@ -1,11 +1,10 @@
 // Copyright (c) 2014-2021 The Bitcoin developers
 // Copyright (c) 2017-2021 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef DogeCash_CHAINPARAMSBASE_H
-#define DogeCash_CHAINPARAMSBASE_H
+#ifndef DOGECASH_CHAINPARAMSBASE_H
+#define DOGECASH_CHAINPARAMSBASE_H
 
 #include <memory>
 #include <string>
@@ -64,4 +63,4 @@ void SelectBaseParams(const std::string& chain);
  */
 std::string ChainNameFromCommandLine();
 
-#endif // DogeCash_CHAINPARAMSBASE_H
+#endif // DOGECASH_CHAINPARAMSBASE_H

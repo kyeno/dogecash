@@ -1,10 +1,9 @@
 // Copyright (c) 2020 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or https://www.opensource.org/licenses/mit-license.php.
 
-#ifndef DogeCash_SAPLING_TEST_FIXTURE_H
-#define DogeCash_SAPLING_TEST_FIXTURE_H
+#ifndef DOGECASH_SAPLING_TEST_FIXTURE_H
+#define DOGECASH_SAPLING_TEST_FIXTURE_H
 
 #include "test/test_dogecash.h"
 
@@ -26,4 +25,4 @@ struct SaplingRegTestingSetup : public SaplingTestingSetup
 };
 
 
-#endif //DogeCash_SAPLING_TEST_FIXTURE_H
+#endif //DOGECASH_SAPLING_TEST_FIXTURE_H

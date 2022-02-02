@@ -1,5 +1,4 @@
 // Copyright (c) 2018-2020 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -8,9 +7,9 @@
 #include "bls/bls_wrapper.h"
 #include "budget/budgetmanager.h"
 #include "masternode-payments.h"
+#include "masternode-sync.h"
 #include "spork.h"
 #include "test/util/blocksutil.h"
-#include "tiertwo/tiertwo_sync_state.h"
 #include "tinyformat.h"
 #include "utilmoneystr.h"
 #include "validation.h"
@@ -30,7 +29,7 @@ void CheckBudgetValue(int nHeight, std::string strNetwork, CAmount nExpectedValu
 void enableMnSyncAndSuperblocksPayment()
 {
     // force mnsync complete
-    g_tiertwo_sync_state.SetCurrentSyncPhase(MASTERNODE_SYNC_FINISHED);
+    masternodeSync.RequestedMasternodeAssets = MASTERNODE_SYNC_FINISHED;
 
     // enable SPORK_13
     int64_t nTime = GetTime() - 10;
@@ -347,7 +346,7 @@ BOOST_FIXTURE_TEST_CASE(IsCoinbaseValueValid_test, TestingSetup)
     CValidationState state;
 
     // force mnsync complete
-    g_tiertwo_sync_state.SetCurrentSyncPhase(MASTERNODE_SYNC_FINISHED);
+    masternodeSync.RequestedMasternodeAssets = MASTERNODE_SYNC_FINISHED;
 
     // -- Regular blocks
 

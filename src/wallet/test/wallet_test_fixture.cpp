@@ -1,6 +1,5 @@
 // Copyright (c) 2016-2021 The Bitcoin Core developers
 // Copyright (c) 2020-2021 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -11,10 +10,8 @@
 #include "wallet/rpcwallet.h"
 #include "wallet/wallet.h"
 
-WalletTestingSetupBase::WalletTestingSetupBase(const std::string& chainName,
-                                               const std::string& wallet_name,
-                                               std::unique_ptr<WalletDatabase> db) :
-        SaplingTestingSetup(chainName), m_wallet(wallet_name, std::move(db))
+WalletTestingSetup::WalletTestingSetup(const std::string& chainName):
+        SaplingTestingSetup(chainName), m_wallet("mock", WalletDatabase::CreateMock())
 {
     bool fFirstRun;
     m_wallet.LoadWallet(fFirstRun);
@@ -23,10 +20,7 @@ WalletTestingSetupBase::WalletTestingSetupBase(const std::string& chainName,
     RegisterWalletRPCCommands(tableRPC);
 }
 
-WalletTestingSetupBase::~WalletTestingSetupBase()
+WalletTestingSetup::~WalletTestingSetup()
 {
     UnregisterValidationInterface(&m_wallet);
 }
-
-WalletTestingSetup::WalletTestingSetup(const std::string& chainName) :
-        WalletTestingSetupBase(chainName, "mock", WalletDatabase::CreateMock()) {}

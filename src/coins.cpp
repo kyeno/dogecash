@@ -1,13 +1,12 @@
 // Copyright (c) 2012-2014 The Bitcoin developers
 // Copyright (c) 2015-2020 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
-// Copyright (c) 2018-2020 The DogeCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "coins.h"
 
 #include "consensus/consensus.h"
+#include "policy/fees.h"
 #include "invalid.h"
 #include "logging.h"
 #include "random.h"
@@ -581,9 +580,4 @@ bool CCoinsViewCache::HaveShieldedRequirements(const CTransaction& tx) const
     }
 
     return true;
-}
-
-bool CCoinsViewCache::GetUTXOCoin(const COutPoint& outpoint, Coin& coin) const
-{
-    return GetCoin(outpoint, coin) && !coin.IsSpent();
 }

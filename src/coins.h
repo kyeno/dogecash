@@ -1,7 +1,6 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2016-2020 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -330,9 +329,6 @@ public:
     bool HaveCoin(const COutPoint& outpoint) const override;
     uint256 GetBestBlock() const override;
     void SetBestBlock(const uint256& hashBlock);
-
-    //! Get the coin and check if it's spent
-    bool GetUTXOCoin(const COutPoint& outpoint, Coin& coin) const;
 
     bool BatchWrite(CCoinsMap& mapCoins,
                     const uint256& hashBlock,

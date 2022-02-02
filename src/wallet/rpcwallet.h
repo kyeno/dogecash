@@ -1,10 +1,9 @@
 // Copyright (c) 2016-2021 The Bitcoin Core developers
 // Copyright (c) 2021 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
-#ifndef DogeCash_WALLET_RPCWALLET_H
-#define DogeCash_WALLET_RPCWALLET_H
+#ifndef DOGECASH_WALLET_RPCWALLET_H
+#define DOGECASH_WALLET_RPCWALLET_H
 
 #include <string>
 
@@ -26,4 +25,4 @@ std::string HelpRequiringPassphrase(CWallet* const pwallet);
 bool EnsureWalletIsAvailable(CWallet* const pwallet, bool avoidException);
 void EnsureWalletIsUnlocked(CWallet* const pwallet, bool fAllowAnonOnly = false);
 
-#endif //DogeCash_WALLET_RPCWALLET_H
+#endif //DOGECASH_WALLET_RPCWALLET_H

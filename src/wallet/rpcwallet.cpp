@@ -2,8 +2,6 @@
 // Copyright (c) 2009-2014 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2020 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
-// Copyright (c) 2018-2020 The DogeCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -30,6 +28,7 @@
 #include "wallet/wallet.h"
 #include "wallet/walletdb.h"
 #include "wallet/walletutil.h"
+#include "zpivchain.h"
 
 #include <stdint.h>
 #include <univalue.h>
@@ -75,10 +74,8 @@ void EnsureWalletIsUnlocked(CWallet* const pwallet, bool fAllowAnonOnly)
         throw JSONRPCError(RPC_WALLET_UNLOCK_NEEDED, "Error: Please enter the wallet passphrase with walletpassphrase first.");
 }
 
-static void WalletTxToJSON(const CWalletTx& wtx, UniValue& entry) EXCLUSIVE_LOCKS_REQUIRED(cs_main)
+void WalletTxToJSON(const CWalletTx& wtx, UniValue& entry)
 {
-    AssertLockHeld(cs_main);
-
     int confirms = wtx.GetDepthInMainChain();
     entry.pushKV("confirmations", confirms);
     entry.pushKV("bcconfirmations", confirms);      // DEPRECATED in 4.3.99
@@ -87,7 +84,7 @@ static void WalletTxToJSON(const CWalletTx& wtx, UniValue& entry) EXCLUSIVE_LOCK
     if (confirms > 0) {
         entry.pushKV("blockhash", wtx.m_confirm.hashBlock.GetHex());
         entry.pushKV("blockindex", wtx.m_confirm.nIndex);
-        entry.pushKV("blocktime", LookupBlockIndex(wtx.m_confirm.hashBlock)->GetBlockTime());
+        entry.pushKV("blocktime", mapBlockIndex[wtx.m_confirm.hashBlock]->GetBlockTime());
     } else {
         entry.pushKV("trusted", wtx.IsTrusted());
     }
@@ -1097,13 +1094,12 @@ static UniValue ShieldSendManyTo(CWallet * const pwallet,
 
     // add comments
     const uint256& txHash = uint256S(txid);
-    auto it = pwallet->mapWallet.find(txHash);
-    assert(it != pwallet->mapWallet.end());
+    assert(pwallet->mapWallet.count(txHash));
     if (!commentStr.empty()) {
-        it->second.mapValue["comment"] = commentStr;
+        pwallet->mapWallet.at(txHash).mapValue["comment"] = commentStr;
     }
     if (!toStr.empty()) {
-        it->second.mapValue["to"] = toStr;
+        pwallet->mapWallet.at(txHash).mapValue["to"] = toStr;
     }
 
     return txid;
@@ -1124,7 +1120,7 @@ UniValue sendtoaddress(const JSONRPCRequest& request)
 
             "\nArguments:\n"
             "1. \"address\"     (string, required) The dogecash address to send to.\n"
-            "2. \"amount\"      (numeric, required) The amount in DOGEC to send. eg 0.1\n"
+            "2. \"amount\"      (numeric, required) The amount in PIV to send. eg 0.1\n"
             "3. \"comment\"     (string, optional) A comment used to store what the transaction is for. \n"
             "                             This is not part of the transaction, just kept in your wallet.\n"
             "4. \"comment-to\"  (string, optional) A comment to store the name of the person or organization \n"
@@ -1313,7 +1309,7 @@ UniValue delegatestake(const JSONRPCRequest& request)
 
             "\nArguments:\n"
             "1. \"staking_addr\"      (string, required) The dogecash staking address to delegate.\n"
-            "2. \"amount\"            (numeric, required) The amount in DOGEC to delegate for staking. eg 100\n"
+            "2. \"amount\"            (numeric, required) The amount in PIV to delegate for staking. eg 100\n"
             "3. \"owner_addr\"        (string, optional) The dogecash address corresponding to the key that will be able to spend the stake.\n"
             "                               If not provided, or empty string, a new wallet address is generated.\n"
             "4. \"ext_owner\"         (boolean, optional, default = false) use the provided 'owneraddress' anyway, even if not present in this wallet.\n"
@@ -1370,7 +1366,7 @@ UniValue rawdelegatestake(const JSONRPCRequest& request)
 
             "\nArguments:\n"
             "1. \"staking_addr\"      (string, required) The dogecash staking address to delegate.\n"
-            "2. \"amount\"            (numeric, required) The amount in DOGEC to delegate for staking. eg 100\n"
+            "2. \"amount\"            (numeric, required) The amount in PIV to delegate for staking. eg 100\n"
             "3. \"owner_addr\"        (string, optional) The dogecash address corresponding to the key that will be able to spend the stake.\n"
             "                               If not provided, or empty string, a new wallet address is generated.\n"
             "4. \"ext_owner\"         (boolean, optional, default = false) use the provided 'owneraddress' anyway, even if not present in this wallet.\n"
@@ -1536,10 +1532,9 @@ UniValue viewshieldtransaction(const JSONRPCRequest& request)
     hash.SetHex(request.params[0].get_str());
 
     UniValue entry(UniValue::VOBJ);
-    auto it = pwallet->mapWallet.find(hash);
-    if (it == pwallet->mapWallet.end())
+    if (!pwallet->mapWallet.count(hash))
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid or non-wallet transaction id");
-    const CWalletTx& wtx = it->second;
+    const CWalletTx& wtx = pwallet->mapWallet.at(hash);
 
     if (!wtx.tx->IsShieldedTx()) {
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid transaction, no shield data available");
@@ -1620,9 +1615,8 @@ UniValue viewshieldtransaction(const JSONRPCRequest& request)
     // Sapling outputs
     for (uint32_t i = 0; i < wtx.tx->sapData->vShieldedOutput.size(); ++i) {
         auto op = SaplingOutPoint(hash, i);
-        auto it = wtx.mapSaplingNoteData.find(op);
-        if (it == wtx.mapSaplingNoteData.end()) continue;
-        const auto& nd = it->second;
+        if (!wtx.mapSaplingNoteData.count(op)) continue;
+        const auto& nd = wtx.mapSaplingNoteData.at(op);
 
         const bool isOutgoing = !nd.IsMyNote();
         std::string addrStr = "unknown";
@@ -1844,7 +1838,7 @@ UniValue shieldsendmany(const JSONRPCRequest& request)
                 "2. \"amounts\"             (array, required) An array of json objects representing the amounts to send.\n"
                 "    [{\n"
                 "      \"address\":address  (string, required) The address is a transparent addr or shield addr\n"
-                "      \"amount\":amount    (numeric, required) The numeric amount in " + "DOGEC" + " is the value\n"
+                "      \"amount\":amount    (numeric, required) The numeric amount in " + "PIV" + " is the value\n"
                 "      \"memo\":memo        (string, optional) If the address is a shield addr, message string of max 512 bytes\n"
                 "    }, ... ]\n"
                 "3. minconf               (numeric, optional, default=1) Only use funds confirmed at least this many times.\n"
@@ -1853,7 +1847,7 @@ UniValue shieldsendmany(const JSONRPCRequest& request)
                 "                            based on the expected transaction size and the current value of -minRelayTxFee.\n"
                 "5. subtract_fee_from     (array, optional) A json array with addresses.\n"
                 "                           The fee will be equally deducted from the amount of each selected address.\n"
-                "                           Those recipients will receive less DOGEC than you enter in their corresponding amount field.\n"
+                "                           Those recipients will receive less PIV than you enter in their corresponding amount field.\n"
                 "                           If no addresses are specified here, the sender pays the fee.\n"
                 "    [\n"
                 "      \"address\"          (string) Subtract fee from this address\n"
@@ -1907,7 +1901,7 @@ UniValue rawshieldsendmany(const JSONRPCRequest& request)
                 "2. \"amounts\"             (array, required) An array of json objects representing the amounts to send.\n"
                 "    [{\n"
                 "      \"address\":address  (string, required) The address is a transparent addr or shield addr\n"
-                "      \"amount\":amount    (numeric, required) The numeric amount in " + "DOGEC" + " is the value\n"
+                "      \"amount\":amount    (numeric, required) The numeric amount in " + "PIV" + " is the value\n"
                 "      \"memo\":memo        (string, optional) If the address is a shield addr, message string of max 512 bytes\n"
                 "    }, ... ]\n"
                 "3. minconf               (numeric, optional, default=1) Only use funds confirmed at least this many times.\n"
@@ -1953,7 +1947,7 @@ UniValue listaddressgroupings(const JSONRPCRequest& request)
             "  [\n"
             "    [\n"
             "      \"dogecashaddress\",     (string) The dogecash address\n"
-            "      amount,                 (numeric) The amount in DOGEC\n"
+            "      amount,                 (numeric) The amount in PIV\n"
             "      \"label\"             (string, optional) The label\n"
             "    ]\n"
             "    ,...\n"
@@ -2063,7 +2057,7 @@ UniValue getreceivedbyaddress(const JSONRPCRequest& request)
             "2. minconf        (numeric, optional, default=1) Only include transactions confirmed at least this many times.\n"
 
             "\nResult:\n"
-            "amount   (numeric) The total amount in DOGEC received at this address.\n"
+            "amount   (numeric) The total amount in PIV received at this address.\n"
 
             "\nExamples:\n"
             "\nThe amount from transactions with at least 1 confirmation\n" +
@@ -2129,7 +2123,7 @@ UniValue getreceivedbylabel(const JSONRPCRequest& request)
             "2. minconf          (numeric, optional, default=1) Only include transactions confirmed at least this many times.\n"
 
             "\nResult:\n"
-            "amount              (numeric) The total amount in DOGEC received for this label.\n"
+            "amount              (numeric) The total amount in PIV received for this label.\n"
 
             "\nExamples:\n"
             "\nAmount received by the default label with at least 1 confirmation\n" +
@@ -2196,7 +2190,7 @@ UniValue getbalance(const JSONRPCRequest& request)
             "4. include_shield    (bool, optional, default=true) Also include shield balance\n"
 
             "\nResult:\n"
-            "amount              (numeric) The total amount in DOGEC received for this wallet.\n"
+            "amount              (numeric) The total amount in PIV received for this wallet.\n"
 
             "\nExamples:\n"
             "\nThe total amount in the wallet\n" +
@@ -2238,7 +2232,7 @@ UniValue getcoldstakingbalance(const JSONRPCRequest& request)
             "\nReturns the server's total available cold balance.\n"
 
             "\nResult:\n"
-            "amount              (numeric) The total amount in DOGEC received for this wallet in P2CS contracts.\n"
+            "amount              (numeric) The total amount in PIV received for this wallet in P2CS contracts.\n"
 
             "\nExamples:\n"
             "\nThe total amount in the wallet\n" +
@@ -2269,7 +2263,7 @@ UniValue getdelegatedbalance(const JSONRPCRequest& request)
             "to a cold staking address to stake on behalf of addresses of this wallet).\n"
 
             "\nResult:\n"
-            "amount              (numeric) The total amount in DOGEC received for this wallet in P2CS contracts.\n"
+            "amount              (numeric) The total amount in PIV received for this wallet in P2CS contracts.\n"
 
             "\nExamples:\n"
             "\nThe total amount in the wallet\n" +
@@ -2407,7 +2401,7 @@ UniValue sendmany(const JSONRPCRequest& request)
             "2. \"amounts\"             (string, required) A json object with addresses and amounts\n"
             "    {\n"
             "      \"address\":amount   (numeric) The dogecash address (either transparent or shield) is the key,\n"
-            "                                     the numeric amount in DOGEC is the value\n"
+            "                                     the numeric amount in PIV is the value\n"
             "      ,...\n"
             "    }\n"
             "3. minconf                 (numeric, optional, default=1) Only use the balance confirmed at least this many times.\n"
@@ -2415,7 +2409,7 @@ UniValue sendmany(const JSONRPCRequest& request)
             "5. include_delegated       (bool, optional, default=false) Also include balance delegated to cold stakers\n"
             "6. subtract_fee_from       (array, optional) A json array with addresses.\n"
             "                           The fee will be equally deducted from the amount of each selected address.\n"
-            "                           Those recipients will receive less DOGEC than you enter in their corresponding amount field.\n"
+            "                           Those recipients will receive less PIV than you enter in their corresponding amount field.\n"
             "                           If no addresses are specified here, the sender pays the fee.\n"
             "    [\n"
             "      \"address\"          (string) Subtract fee from this address\n"
@@ -2705,7 +2699,7 @@ UniValue listreceivedbyaddress(const JSONRPCRequest& request)
             "  {\n"
             "    \"involvesWatchonly\" : \"true\",    (bool) Only returned if imported addresses were involved in transaction\n"
             "    \"address\" : \"receivingaddress\",  (string) The receiving address\n"
-            "    \"amount\" : x.xxx,                  (numeric) The total amount in DOGEC received by the address\n"
+            "    \"amount\" : x.xxx,                  (numeric) The total amount in PIV received by the address\n"
             "    \"confirmations\" : n                (numeric) The number of confirmations of the most recent transaction included\n"
             "    \"bcconfirmations\" : n,             (numeric) DEPRECATED: Will be removed in a future release\n"
             "    \"label\" : \"label\",               (string) The label of the receiving address. The default label is \"\".\n"
@@ -2813,9 +2807,8 @@ UniValue listreceivedbyshieldaddress(const JSONRPCRequest& request)
         int index = -1;
         int64_t time = 0;
 
-        auto it = pwallet->mapWallet.find(entry.op.hash);
-        if (it != pwallet->mapWallet.end()) {
-            const CWalletTx& wtx = it->second;
+        if (pwallet->mapWallet.count(entry.op.hash)) {
+            const CWalletTx& wtx = pwallet->mapWallet.at(entry.op.hash);
             if (!wtx.m_confirm.hashBlock.IsNull())
                 height = mapBlockIndex[wtx.m_confirm.hashBlock]->nHeight;
             index = wtx.m_confirm.nIndex;
@@ -2962,10 +2955,8 @@ static void MaybePushAddress(UniValue & entry, const CTxDestination &dest)
         entry.pushKV("address", EncodeDestination(dest));
 }
 
-static void ListTransactions(CWallet* const pwallet, const CWalletTx& wtx, int nMinDepth, bool fLong, UniValue& ret, const isminefilter& filter) EXCLUSIVE_LOCKS_REQUIRED(cs_main)
+static void ListTransactions(CWallet* const pwallet, const CWalletTx& wtx, int nMinDepth, bool fLong, UniValue& ret, const isminefilter& filter)
 {
-    AssertLockHeld(cs_main);
-
     CAmount nFee;
     std::list<COutputEntry> listReceived;
     std::list<COutputEntry> listSent;
@@ -3051,10 +3042,10 @@ UniValue listtransactions(const JSONRPCRequest& request)
             "  {\n"
             "    \"address\":\"dogecashaddress\",    (string) The dogecash address of the transaction.\n"
             "    \"category\":\"category\",      (string) The transaction category (send|receive|orphan|immature|generate).\n"
-            "    \"amount\": x.xxx,          (numeric) The amount in DOGEC. This is negative for the 'send' category, and positive\n"
+            "    \"amount\": x.xxx,          (numeric) The amount in PIV. This is negative for the 'send' category, and positive\n"
             "                                         for the 'receive' category,\n"
             "    \"vout\" : n,               (numeric) the vout value\n"
-            "    \"fee\": x.xxx,             (numeric) The amount of the fee in DOGEC. This is negative and only available for the \n"
+            "    \"fee\": x.xxx,             (numeric) The amount of the fee in PIV. This is negative and only available for the \n"
             "                                         'send' category of transactions.\n"
             "    \"confirmations\": n,     (numeric) The number of blockchain confirmations for the transaction. Available for 'send'\n"
             "                                         'receive' category of transactions. Negative confirmations indicate the\n"
@@ -3169,10 +3160,10 @@ UniValue listsinceblock(const JSONRPCRequest& request)
             "  \"transactions\": [\n"
             "    \"address\":\"dogecashaddress\",    (string) The dogecash address of the transaction. Not present for move transactions (category = move).\n"
             "    \"category\":\"send|receive\",     (string) The transaction category. 'send' has negative amounts, 'receive' has positive amounts.\n"
-            "    \"amount\": x.xxx,          (numeric) The amount in DOGEC. This is negative for the 'send' category, and for the 'move' category for moves \n"
+            "    \"amount\": x.xxx,          (numeric) The amount in PIV. This is negative for the 'send' category, and for the 'move' category for moves \n"
             "                                          outbound. It is positive for the 'receive' category, and for the 'move' category for inbound funds.\n"
             "    \"vout\" : n,               (numeric) the vout value\n"
-            "    \"fee\": x.xxx,             (numeric) The amount of the fee in DOGEC. This is negative and only available for the 'send' category of transactions.\n"
+            "    \"fee\": x.xxx,             (numeric) The amount of the fee in PIV. This is negative and only available for the 'send' category of transactions.\n"
             "    \"confirmations\": n,       (numeric) The number of confirmations for the transaction. Available for 'send' and 'receive' category of transactions.\n"
             "    \"bcconfirmations\" : n,             (numeric) DEPRECATED: Will be removed in a future release\n"
             "    \"blockhash\": \"hashvalue\",     (string) The block hash containing the transaction. Available for 'send' and 'receive' category of transactions.\n"
@@ -3207,7 +3198,9 @@ UniValue listsinceblock(const JSONRPCRequest& request)
         uint256 blockId;
 
         blockId.SetHex(request.params[0].get_str());
-        pindex = LookupBlockIndex(blockId);
+        BlockMap::iterator it = mapBlockIndex.find(blockId);
+        if (it != mapBlockIndex.end())
+            pindex = it->second;
     }
 
     if (request.params.size() > 1) {
@@ -3260,7 +3253,7 @@ UniValue gettransaction(const JSONRPCRequest& request)
 
             "\nResult:\n"
             "{\n"
-            "  \"amount\" : x.xxx,        (numeric) The transaction amount in DOGEC\n"
+            "  \"amount\" : x.xxx,        (numeric) The transaction amount in PIV\n"
             "  \"confirmations\" : n,     (numeric) The number of confirmations\n"
             "  \"bcconfirmations\" : n,             (numeric) DEPRECATED: Will be removed in a future release\n"
             "  \"blockhash\" : \"hash\",  (string) The block hash\n"
@@ -3273,7 +3266,7 @@ UniValue gettransaction(const JSONRPCRequest& request)
             "    {\n"
             "      \"address\" : \"dogecashaddress\",   (string) The dogecash address involved in the transaction\n"
             "      \"category\" : \"send|receive\",    (string) The category, either 'send' or 'receive'\n"
-            "      \"amount\" : x.xxx                  (numeric) The amount in DOGEC\n"
+            "      \"amount\" : x.xxx                  (numeric) The amount in PIV\n"
             "      \"label\" : \"label\",              (string) A comment for the address/transaction, if any\n"
             "      \"vout\" : n,                       (numeric) the vout value\n"
             "    }\n"
@@ -3302,11 +3295,9 @@ UniValue gettransaction(const JSONRPCRequest& request)
             filter = filter | ISMINE_WATCH_ONLY;
 
     UniValue entry(UniValue::VOBJ);
-    auto it = pwallet->mapWallet.find(hash);
-    if (it == pwallet->mapWallet.end()) {
+    if (!pwallet->mapWallet.count(hash))
         throw JSONRPCError(RPC_INVALID_ADDRESS_OR_KEY, "Invalid or non-wallet transaction id");
-    }
-    const CWalletTx& wtx = it->second;
+    const CWalletTx& wtx = pwallet->mapWallet.at(hash);
 
     CAmount nCredit = wtx.GetCredit(filter);
     CAmount nDebit = wtx.GetDebit(filter);
@@ -3638,6 +3629,7 @@ UniValue encryptwallet(const JSONRPCRequest& request)
             "will require the passphrase to be set prior the making these calls.\n"
             "Use the walletpassphrase call for this, and then walletlock call.\n"
             "If the wallet is already encrypted, use the walletpassphrasechange call.\n"
+            "Note that this will shutdown the server.\n"
 
             "\nArguments:\n"
             "1. \"passphrase\"    (string) The pass phrase to encrypt the wallet with. It must be at least 1 character, but should be long.\n"
@@ -3676,7 +3668,11 @@ UniValue encryptwallet(const JSONRPCRequest& request)
     if (!pwallet->EncryptWallet(strWalletPass))
         throw JSONRPCError(RPC_WALLET_ENCRYPTION_FAILED, "Error: Failed to encrypt the wallet.");
 
-    return "wallet encrypted; The keypool has been flushed, you need to make a new backup.";
+    // BDB seems to have a bad habit of writing old data into
+    // slack space in .dat files; that is bad if the old data is
+    // unencrypted private keys. So:
+    StartShutdown();
+    return "wallet encrypted; dogecash server stopping, restart to run with encrypted wallet. The keypool has been flushed, you need to make a new backup.";
 }
 
 UniValue listunspent(const JSONRPCRequest& request)
@@ -3724,7 +3720,7 @@ UniValue listunspent(const JSONRPCRequest& request)
                 "    \"label\" : \"label\",      (string) The associated label, or \"\" for the default label\n"
                 "    \"scriptPubKey\" : \"key\", (string) the script key\n"
                 "    \"redeemScript\" : \"key\", (string) the redeemscript key\n"
-                "    \"amount\" : x.xxx,         (numeric) the transaction amount in DOGEC\n"
+                "    \"amount\" : x.xxx,         (numeric) the transaction amount in PIV\n"
                 "    \"confirmations\" : n,      (numeric) The number of confirmations\n"
                 "    \"spendable\" : true|false  (boolean) Whether we have the private keys to spend this output\n"
                 "    \"solvable\" : xxx          (boolean) Whether we know how to spend this output, ignoring the lack of keys\n"
@@ -3759,8 +3755,6 @@ UniValue listunspent(const JSONRPCRequest& request)
         nMaxDepth = request.params[1].get_int();
     }
 
-    CWallet::AvailableCoinsFilter coinFilter;
-
     std::set<CTxDestination> destinations;
     if (request.params.size() > 2) {
         RPCTypeCheckArgument(request.params[2], UniValue::VARR);
@@ -3774,7 +3768,6 @@ UniValue listunspent(const JSONRPCRequest& request)
                 throw JSONRPCError(RPC_INVALID_PARAMETER, std::string("Invalid parameter, duplicated address: ") + input.get_str());
             destinations.insert(dest);
         }
-        coinFilter.onlyFilteredDest = &destinations;
     }
 
     // List watch only utxo
@@ -3786,6 +3779,7 @@ UniValue listunspent(const JSONRPCRequest& request)
             nWatchonlyConfig = 1;
     }
 
+    CWallet::AvailableCoinsFilter coinFilter;
     if (request.params.size() > 4) {
         const UniValue& options = request.params[4].get_obj();
 
@@ -3829,26 +3823,39 @@ UniValue listunspent(const JSONRPCRequest& request)
         if (out.nDepth < nMinDepth || out.nDepth > nMaxDepth)
             continue;
 
+        if (!destinations.empty()) {
+            CTxDestination address;
+            if (!ExtractDestination(out.tx->tx->vout[out.i].scriptPubKey, address))
+                continue;
+
+            if (!destinations.count(address))
+                continue;
+        }
+
+        CAmount nValue = out.tx->tx->vout[out.i].nValue;
+        const CScript& pk = out.tx->tx->vout[out.i].scriptPubKey;
         UniValue entry(UniValue::VOBJ);
         entry.pushKV("txid", out.tx->GetHash().GetHex());
         entry.pushKV("vout", out.i);
         entry.pushKV("generated", out.tx->IsCoinStake() || out.tx->IsCoinBase());
         CTxDestination address;
-        const CScript& scriptPubKey = out.tx->tx->vout[out.i].scriptPubKey;
-        if (ExtractDestination(scriptPubKey, address)) {
+        if (ExtractDestination(out.tx->tx->vout[out.i].scriptPubKey, address)) {
             entry.pushKV("address", EncodeDestination(address));
             if (pwallet->HasAddressBook(address)) {
                 entry.pushKV("label", pwallet->GetNameForAddressBookEntry(address));
             }
-            if (scriptPubKey.IsPayToScriptHash()) {
+        }
+        entry.pushKV("scriptPubKey", HexStr(pk));
+        if (pk.IsPayToScriptHash()) {
+            CTxDestination address;
+            if (ExtractDestination(pk, address)) {
                 const CScriptID& hash = boost::get<CScriptID>(address);
                 CScript redeemScript;
                 if (pwallet->GetCScript(hash, redeemScript))
                     entry.pushKV("redeemScript", HexStr(redeemScript));
             }
         }
-        entry.pushKV("scriptPubKey", HexStr(scriptPubKey));
-        entry.pushKV("amount", ValueFromAmount(out.tx->tx->vout[out.i].nValue));
+        entry.pushKV("amount", ValueFromAmount(nValue));
         entry.pushKV("confirmations", out.nDepth);
         entry.pushKV("spendable", out.fSpendable);
         entry.pushKV("solvable", out.fSolvable);
@@ -3887,11 +3894,11 @@ UniValue fundrawtransaction(const JSONRPCRequest& request)
             "     \"changePosition\"    (numeric, optional, default random) The index of the change output\n"
             "     \"includeWatching\"   (boolean, optional, default false) Also select inputs which are watch only\n"
             "     \"lockUnspents\"      (boolean, optional, default false) Lock selected unspent outputs\n"
-            "     \"feeRate\"           (numeric, optional, default 0=estimate) Set a specific feerate (DOGEC per KB)\n"
+            "     \"feeRate\"           (numeric, optional, default 0=estimate) Set a specific feerate (PIV per KB)\n"
             "     \"subtractFeeFromOutputs\" (array, optional) A json array of integers.\n"
             "                              The fee will be equally deducted from the amount of each specified output.\n"
             "                              The outputs are specified by their zero-based index, before any change output is added.\n"
-            "                              Those recipients will receive less DOGEC than you enter in their corresponding amount field.\n"
+            "                              Those recipients will receive less PIV than you enter in their corresponding amount field.\n"
             "                              If no outputs are specified here, the sender pays the fee.\n"
             "                                  [vout_index,...]\n"
             "   }\n"
@@ -4199,7 +4206,7 @@ UniValue settxfee(const JSONRPCRequest& request)
             "\nSet the transaction fee per kB.\n"
 
             "\nArguments:\n"
-            "1. amount         (numeric, required) The transaction fee in DOGEC/kB rounded to the nearest 0.00000001\n"
+            "1. amount         (numeric, required) The transaction fee in PIV/kB rounded to the nearest 0.00000001\n"
 
             "\nResult\n"
             "true|false        (boolean) Returns true if successful\n"
@@ -4233,22 +4240,22 @@ UniValue getwalletinfo(const JSONRPCRequest& request)
             "{\n"
             "  \"walletname\": xxxxx,                     (string) the wallet name\n"
             "  \"walletversion\": xxxxx,                  (numeric) the wallet version\n"
-            "  \"balance\": xxxxxxx,                      (numeric) the total DOGEC balance of the wallet (cold balance excluded)\n"
-            "  \"delegated_balance\": xxxxx,              (numeric) the DOGEC balance held in P2CS (cold staking) contracts\n"
-            "  \"cold_staking_balance\": xx,              (numeric) the DOGEC balance held in cold staking addresses\n"
-            "  \"unconfirmed_balance\": xxx,              (numeric) the total unconfirmed balance of the wallet in DOGEC\n"
-            "  \"immature_delegated_balance\": xxxxxx,    (numeric) the delegated immature balance of the wallet in DOGEC\n"
-            "  \"immature_cold_staking_balance\": xxxxxx, (numeric) the cold-staking immature balance of the wallet in DOGEC\n"
-            "  \"immature_balance\": xxxxxx,              (numeric) the total immature balance of the wallet in DOGEC\n"
+            "  \"balance\": xxxxxxx,                      (numeric) the total PIV balance of the wallet (cold balance excluded)\n"
+            "  \"delegated_balance\": xxxxx,              (numeric) the PIV balance held in P2CS (cold staking) contracts\n"
+            "  \"cold_staking_balance\": xx,              (numeric) the PIV balance held in cold staking addresses\n"
+            "  \"unconfirmed_balance\": xxx,              (numeric) the total unconfirmed balance of the wallet in PIV\n"
+            "  \"immature_delegated_balance\": xxxxxx,    (numeric) the delegated immature balance of the wallet in PIV\n"
+            "  \"immature_cold_staking_balance\": xxxxxx, (numeric) the cold-staking immature balance of the wallet in PIV\n"
+            "  \"immature_balance\": xxxxxx,              (numeric) the total immature balance of the wallet in PIV\n"
             "  \"txcount\": xxxxxxx,                      (numeric) the total number of transactions in the wallet\n"
             "  \"autocombine_enabled\": true|false,       (boolean) true if autocombine is enabled, otherwise false\n"
-            "  \"autocombine_threshold\": x.xxx,          (numeric) the current autocombine threshold in DOGEC\n"
+            "  \"autocombine_threshold\": x.xxx,          (numeric) the current autocombine threshold in PIV\n"
             "  \"keypoololdest\": xxxxxx,                 (numeric) the timestamp (seconds since GMT epoch) of the oldest pre-generated key in the key pool\n"
             "  \"keypoolsize\": xxxx,                     (numeric) how many new keys are pre-generated (only counts external keys)\n"
             "  \"keypoolsize_hd_internal\": xxxx,         (numeric) how many new keys are pre-generated for internal use (used for change outputs, only appears if the wallet is using this feature, otherwise external keys are used)\n"
             "  \"keypoolsize_hd_staking\": xxxx,          (numeric) how many new keys are pre-generated for staking use (used for staking contracts, only appears if the wallet is using this feature)\n"
             "  \"unlocked_until\": ttt,                   (numeric) the timestamp in seconds since epoch (midnight Jan 1 1970 GMT) that the wallet is unlocked for transfers, or 0 if the wallet is locked\n"
-            "  \"paytxfee\": x.xxxx                       (numeric) the transaction fee configuration, set in DOGEC/kB\n"
+            "  \"paytxfee\": x.xxxx                       (numeric) the transaction fee configuration, set in PIV/kB\n"
             "  \"hdseedid\": \"<hash160>\"                (string, optional) the Hash160 of the HD seed (only present when HD is enabled)\n"
             "  \"last_processed_block\": xxxxx,          (numeric) the last block processed block height\n"
             "}\n"
@@ -4354,7 +4361,7 @@ UniValue getstakingstatus(const JSONRPCRequest& request)
             "  \"mnsync\": true|false,              (boolean) whether the required masternode/spork data is synced\n"
             "  \"walletunlocked\": true|false,      (boolean) whether the wallet is unlocked\n"
             "  \"stakeablecoins\": n                (numeric) number of stakeable UTXOs\n"
-            "  \"stakingbalance\": d                (numeric) DOGEC value of the stakeable coins (minus reserve balance, if any)\n"
+            "  \"stakingbalance\": d                (numeric) PIV value of the stakeable coins (minus reserve balance, if any)\n"
             "  \"stakesplitthreshold\": d           (numeric) value of the current threshold for stake split\n"
             "  \"lastattempt_age\": n               (numeric) seconds since last stake attempt\n"
             "  \"lastattempt_depth\": n             (numeric) depth of the block on top of which the last stake attempt was made\n"
@@ -4410,11 +4417,11 @@ UniValue setstakesplitthreshold(const JSONRPCRequest& request)
             "Whenever a successful stake is found, the stake amount is split across as many outputs (each with a value\n"
             "higher than the threshold) as possible.\n"
             "E.g. If the coinstake input + the block reward is 2000, and the split threshold is 499, the corresponding\n"
-            "coinstake transaction will have 4 outputs (of 500 DOGEC each)."
+            "coinstake transaction will have 4 outputs (of 500 PIV each)."
             + HelpRequiringPassphrase(pwallet) + "\n"
 
             "\nArguments:\n"
-            "1. value                   (numeric, required) Threshold value (in DOGEC).\n"
+            "1. value                   (numeric, required) Threshold value (in PIV).\n"
             "                                     Set to 0 to disable stake-splitting\n"
             "                                     If > 0, it must be >= " + FormatMoney(CWallet::minStakeSplitThreshold) + "\n"
 
@@ -4528,7 +4535,7 @@ UniValue setautocombinethreshold(const JSONRPCRequest& request)
             "\nResult:\n"
             "{\n"
             "  \"enabled\": true|false,      (boolean) true if auto-combine is enabled, otherwise false\n"
-            "  \"threshold\": n.nnn,         (numeric) auto-combine threshold in DOGEC\n"
+            "  \"threshold\": n.nnn,         (numeric) auto-combine threshold in PIV\n"
             "  \"saved\": true|false         (boolean) true if setting was saved to the database, otherwise false\n"
             "}\n"
 
@@ -4584,7 +4591,7 @@ UniValue getautocombinethreshold(const JSONRPCRequest& request)
             "\nResult:\n"
             "{\n"
             "  \"enabled\": true|false,        (boolean) true if auto-combine is enabled, otherwise false\n"
-            "  \"threshold\": n.nnn            (numeric) the auto-combine threshold amount in DOGEC\n"
+            "  \"threshold\": n.nnn            (numeric) the auto-combine threshold amount in PIV\n"
             "}\n"
 
             "\nExamples:\n" +

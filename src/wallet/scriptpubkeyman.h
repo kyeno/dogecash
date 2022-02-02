@@ -1,11 +1,10 @@
 // Copyright (c) 2019 The Bitcoin Core developers
 // Copyright (c) 2020 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef DogeCash_SCRIPTPUBKEYMAN_H
-#define DogeCash_SCRIPTPUBKEYMAN_H
+#ifndef DOGECASH_SCRIPTPUBKEYMAN_H
+#define DOGECASH_SCRIPTPUBKEYMAN_H
 
 #include "wallet/hdchain.h"
 #include "wallet/wallet.h"
@@ -161,4 +160,4 @@ private:
 };
 
 
-#endif //DogeCash_SCRIPTPUBKEYMAN_H
+#endif //DOGECASH_SCRIPTPUBKEYMAN_H

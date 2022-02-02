@@ -2,7 +2,6 @@
 // Copyright (c) 2009-2021 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2021 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -12,9 +11,10 @@
 
 #include "wallet/wallet.h"
 
+#include "budget/budgetmanager.h"
 #include "checkpoints.h"
 #include "coincontrol.h"
-#include "evo/providertx.h"
+#include "evo/deterministicmns.h"
 #include "guiinterfaceutil.h"
 #include "masternode.h"
 #include "policy/policy.h"
@@ -26,6 +26,7 @@
 #include "util/validation.h"
 #include "utilmoneystr.h"
 #include "wallet/fees.h"
+#include "zpivchain.h"
 
 #include <future>
 #include <boost/algorithm/string/replace.hpp>
@@ -42,7 +43,7 @@ bool fPayAtLeastCustomFee = true;
 bool bSpendZeroConfChange = DEFAULT_SPEND_ZEROCONF_CHANGE;
 
 /**
- * Fees smaller than this (in udogec) are considered zero fee (for transaction creation)
+ * Fees smaller than this (in upiv) are considered zero fee (for transaction creation)
  * We are ~100 times smaller then bitcoin now (2015-06-23), set minTxFee 10 times higher
  * so it's still 10 times lower comparing to bitcoin.
  * Override with -mintxfee
@@ -416,8 +417,18 @@ bool CWallet::Unlock(const CKeyingMaterial& vMasterKeyIn)
         for (; mi != mapCryptedKeys.end(); ++mi) {
             const CPubKey& vchPubKey = (*mi).second.first;
             const std::vector<unsigned char>& vchCryptedSecret = (*mi).second.second;
+            CKeyingMaterial vchSecret;
+            if (!DecryptSecret(vMasterKeyIn, vchCryptedSecret, vchPubKey.GetHash(), vchSecret)) {
+                keyFail = true;
+                break;
+            }
+            if (vchSecret.size() != 32) {
+                keyFail = true;
+                break;
+            }
             CKey key;
-            if (!DecryptKey(vMasterKeyIn, vchCryptedSecret, vchPubKey, key)) {
+            key.Set(vchSecret.begin(), vchSecret.end(), vchPubKey.IsCompressed());
+            if (key.GetPubKey() != vchPubKey) {
                 keyFail = true;
                 break;
             }
@@ -744,9 +755,8 @@ void CWallet::AddToSpends(const COutPoint& outpoint, const uint256& wtxid)
 
 void CWallet::AddToSpends(const uint256& wtxid)
 {
-    auto it = mapWallet.find(wtxid);
-    assert(it != mapWallet.end());
-    CWalletTx& thisTx = it->second;
+    assert(mapWallet.count(wtxid));
+    CWalletTx& thisTx = mapWallet.at(wtxid);
     if (thisTx.IsCoinBase()) // Coinbases don't spend anything!
         return;
 
@@ -869,12 +879,6 @@ bool CWallet::EncryptWallet(const SecureString& strWalletPassphrase)
         // Need to completely rewrite the wallet file; if we don't, bdb might keep
         // bits of the unencrypted private key in slack space in the database file.
         database->Rewrite();
-
-        // BDB seems to have a bad habit of writing old data into
-        // slack space in .dat files; that is bad if the old data is
-        // unencrypted private keys. So:
-        database->ReloadDbEnv();
-
     }
     NotifyStatusChanged(this);
 
@@ -987,11 +991,10 @@ bool CWallet::AddToWallet(const CWalletTx& wtxIn, bool fFlushOnClose)
 }
 
 // Internal function for now, this will be part of a chain interface class in the future.
-static Optional<int> getTipBlockHeight(const uint256& hash) EXCLUSIVE_LOCKS_REQUIRED(cs_main)
+Optional<int> getTipBlockHeight(const uint256& hash)
 {
-    AssertLockHeld(cs_main);
-
-    CBlockIndex* pindex = LookupBlockIndex(hash);
+    auto it = mapBlockIndex.find(hash);
+    CBlockIndex* pindex = it == mapBlockIndex.end() ? nullptr : it->second;
     if (pindex && chainActive.Contains(pindex)) {
         return Optional<int>(pindex->nHeight);
     }
@@ -1441,9 +1444,9 @@ void CWallet::MarkAffectedTransactionsDirty(const CTransaction& tx)
     if (HasSaplingSPKM() && tx.IsShieldedTx()) {
         for (const SpendDescription &spend : tx.sapData->vShieldedSpend) {
             const uint256& nullifier = spend.nullifier;
-            auto nit = m_sspk_man->mapSaplingNullifiersToNotes.find(nullifier);
-            if (nit != m_sspk_man->mapSaplingNullifiersToNotes.end()) {
-                auto it = mapWallet.find(nit->second.hash);
+            if (m_sspk_man->mapSaplingNullifiersToNotes.count(nullifier) &&
+                mapWallet.count(m_sspk_man->mapSaplingNullifiersToNotes[nullifier].hash)) {
+                auto it = mapWallet.find(m_sspk_man->mapSaplingNullifiersToNotes[nullifier].hash);
                 if (it != mapWallet.end()) {
                     it->second.MarkDirty();
                 }
@@ -2213,6 +2216,8 @@ CAmount CWallet::GetDelegatedBalance() const
 
 CAmount CWallet::GetLockedCoins() const
 {
+    if (fLiteMode) return 0;
+
     LOCK(cs_wallet);
     if (setLockedCoins.empty()) return 0;
 
@@ -2443,9 +2448,8 @@ bool CWallet::GetMasternodeVinAndKeys(CTxIn& txinRet, CPubKey& pubKeyRet, CKey& 
     CTxOut txOut = wtx->tx->vout[nOutputIndex];
 
     // Masternode collateral value
-    const auto& consensus = Params().GetConsensus();
-    if (txOut.nValue != consensus.nMNCollateralAmt) {
-        strError = strprintf("Invalid collateral tx value, must be %s DOGEC", FormatMoney(Params().GetConsensus().nMNCollateralAmt));
+    if (txOut.nValue != Params().GetConsensus().nMNCollateralAmt) {
+        strError = strprintf("Invalid collateral tx value, must be %s PIV", FormatMoney(Params().GetConsensus().nMNCollateralAmt));
         return error("%s: tx %s, index %d not a masternode collateral", __func__, strTxHash, nOutputIndex);
     }
 
@@ -2467,8 +2471,8 @@ bool CWallet::GetMasternodeVinAndKeys(CTxIn& txinRet, CPubKey& pubKeyRet, CKey& 
     }
 
     // Depth must be at least MASTERNODE_MIN_CONFIRMATIONS
-    if (nDepth < consensus.MasternodeCollateralMinConf()) {
-        strError = strprintf("Collateral tx must have at least %d confirmations, has %d", consensus.MasternodeCollateralMinConf(), nDepth);
+    if (nDepth < MasternodeCollateralMinConf()) {
+        strError = strprintf("Collateral tx must have at least %d confirmations, has %d", MasternodeCollateralMinConf(), nDepth);
         return error("%s: %s", __func__, strError);
     }
 
@@ -2919,7 +2923,7 @@ std::map<libzcash::SaplingPaymentAddress, std::vector<SaplingNoteEntry>> CWallet
     return m_sspk_man->ListNotes();
 }
 
-bool CWallet::CreateBudgetFeeTX(CTransactionRef& tx, const uint256& hash, CReserveKey& keyChange, CAmount fee)
+bool CWallet::CreateBudgetFeeTX(CTransactionRef& tx, const uint256& hash, CReserveKey& keyChange, bool fFinalization)
 {
     CScript scriptChange;
     scriptChange << OP_RETURN << ToByteVector(hash);
@@ -2927,7 +2931,7 @@ bool CWallet::CreateBudgetFeeTX(CTransactionRef& tx, const uint256& hash, CReser
     CAmount nFeeRet = 0;
     std::string strFail = "";
     std::vector<CRecipient> vecSend;
-    vecSend.emplace_back(scriptChange, fee, false);
+    vecSend.emplace_back(scriptChange, (fFinalization ? BUDGET_FEE_TX : BUDGET_FEE_TX_OLD), false);
 
     CCoinControl* coinControl = nullptr;
     int nChangePosInOut = -1;
@@ -3935,10 +3939,13 @@ void CWallet::GetKeyBirthTimes(std::map<CKeyID, int64_t>& mapKeyBirth) const
     // map in which we'll infer heights of other keys
     CBlockIndex* pindexMax = chainActive[std::max(0, chainActive.Height() - 144)]; // the tip can be reorganised; use a 144-block safety margin
     std::map<CKeyID, CBlockIndex*> mapKeyFirstBlock;
-    for (const CKeyID& keyid : GetKeys()) {
+    std::set<CKeyID> setKeys;
+    GetKeys(setKeys);
+    for (const CKeyID& keyid : setKeys) {
         if (mapKeyBirth.count(keyid) == 0)
             mapKeyFirstBlock[keyid] = pindexMax;
     }
+    setKeys.clear();
 
     // if there are no such keys, we're done
     if (mapKeyFirstBlock.empty())
@@ -3948,11 +3955,11 @@ void CWallet::GetKeyBirthTimes(std::map<CKeyID, int64_t>& mapKeyBirth) const
     std::vector<CKeyID> vAffected;
     for (const auto& entry : mapWallet) {
         // iterate over all wallet transactions...
-        const CWalletTx& wtx = entry.second;
-        CBlockIndex* pindex = LookupBlockIndex(wtx.m_confirm.hashBlock);
-        if (pindex && chainActive.Contains(pindex)) {
+        const CWalletTx &wtx = entry.second;
+        BlockMap::const_iterator blit = mapBlockIndex.find(wtx.m_confirm.hashBlock);
+        if (blit != mapBlockIndex.end() && chainActive.Contains(blit->second)) {
             // ... which are already in a block
-            int nHeight = pindex->nHeight;
+            int nHeight = blit->second->nHeight;
             for (const CTxOut& txout : wtx.tx->vout) {
                 // iterate over all their outputs
                 CAffectedKeysVisitor(*this, vAffected).Process(txout.scriptPubKey);
@@ -3960,7 +3967,7 @@ void CWallet::GetKeyBirthTimes(std::map<CKeyID, int64_t>& mapKeyBirth) const
                     // ... and all their affected keys
                     std::map<CKeyID, CBlockIndex*>::iterator rit = mapKeyFirstBlock.find(keyid);
                     if (rit != mapKeyFirstBlock.end() && nHeight < rit->second->nHeight)
-                        rit->second = pindex;
+                        rit->second = blit->second;
                 }
                 vAffected.clear();
             }
@@ -4112,11 +4119,6 @@ void CWallet::AutoCombineDust(CConnman* connman)
     }
 }
 
-void CWallet::LockOutpointIfMineWithMutex(const CTransactionRef& ptx, const COutPoint& c)
-{
-    WITH_LOCK(cs_wallet, LockOutpointIfMine(ptx, c));
-}
-
 void CWallet::LockOutpointIfMine(const CTransactionRef& ptx, const COutPoint& c)
 {
     AssertLockHeld(cs_wallet);
@@ -4134,6 +4136,17 @@ void CWallet::LockOutpointIfMine(const CTransactionRef& ptx, const COutPoint& c)
     if (!txout.IsNull() && IsMine(txout) != ISMINE_NO && !IsSpent(c)) {
         LockCoin(c);
     }
+}
+
+// Called during Init
+void CWallet::ScanMasternodeCollateralsAndLock(const CDeterministicMNList& mnList)
+{
+    LOCK(cs_wallet);
+
+    LogPrintf("Locking masternode collaterals...\n");
+    mnList.ForEachMN(false, [&](const CDeterministicMNCPtr& dmn) {
+        LockOutpointIfMine(nullptr, dmn->collateralOutpoint);
+    });
 }
 
 // Called from AddToWalletIfInvolvingMe
@@ -4203,7 +4216,7 @@ CWallet* CWallet::CreateWalletFromFile(const std::string& name, const fs::path& 
     const bool fLegacyWallet = gArgs.GetBoolArg("-legacywallet", false);
     if (gArgs.GetBoolArg("-upgradewallet", fFirstRun && !fLegacyWallet) ||
             (!walletInstance->IsLocked() && prev_version == FEATURE_PRE_SPLIT_KEYPOOL)) {
-        if (prev_version <= FEATURE_PRE_DogeCash && walletInstance->IsLocked()) {
+        if (prev_version <= FEATURE_PRE_DOGECASH && walletInstance->IsLocked()) {
             // Cannot upgrade a locked wallet
             UIError(_("Cannot upgrade a locked wallet."));
             return nullptr;
@@ -4250,7 +4263,7 @@ CWallet* CWallet::CreateWalletFromFile(const std::string& name, const fs::path& 
             }
             // Create legacy wallet
             LogPrintf("Creating Pre-HD Wallet\n");
-            walletInstance->SetMaxVersion(FEATURE_PRE_DogeCash);
+            walletInstance->SetMaxVersion(FEATURE_PRE_DOGECASH);
         }
 
         // Top up the keypool
@@ -4267,11 +4280,7 @@ CWallet* CWallet::CreateWalletFromFile(const std::string& name, const fs::path& 
 
     LOCK(cs_main);
     CBlockIndex* pindexRescan = chainActive.Genesis();
-
-    if (gArgs.GetBoolArg("-rescan", false)) {
-        // clear note witness cache before a full rescan
-        walletInstance->ClearNoteWitnessCache();
-    } else {
+    if (!gArgs.GetBoolArg("-rescan", false)) {
         WalletBatch batch(*walletInstance->database);
         CBlockLocator locator;
         if (batch.ReadBestBlock(locator))
@@ -4399,8 +4408,6 @@ bool CWalletTx::IsInMainChainImmature() const
 
 bool CWalletTx::AcceptToMemoryPool(CValidationState& state)
 {
-    AssertLockHeld(cs_main);
-
     // Quick check to avoid re-setting fInMempool to false
     if (mempool.exists(tx->GetHash())) {
         return false;
@@ -4459,7 +4466,7 @@ void CWallet::SetNull()
     // Stake split threshold
     nStakeSplitThreshold = DEFAULT_STAKE_SPLIT_THRESHOLD;
 
-    // User-defined fee DOGEC/kb
+    // User-defined fee PIV/kb
     fUseCustomFee = false;
     nCustomFee = CWallet::minTxFee.GetFeePerK();
 
@@ -4613,8 +4620,6 @@ void CWallet::IncrementNoteWitnesses(const CBlockIndex* pindex,
                             SaplingMerkleTree& saplingTree) { m_sspk_man->IncrementNoteWitnesses(pindex, pblock, saplingTree); }
 
 void CWallet::DecrementNoteWitnesses(const CBlockIndex* pindex) { m_sspk_man->DecrementNoteWitnesses(pindex->nHeight); }
-
-void CWallet::ClearNoteWitnessCache() { m_sspk_man->ClearNoteWitnessCache(); }
 
 bool CWallet::AddSaplingZKey(const libzcash::SaplingExtendedSpendingKey &key) { return m_sspk_man->AddSaplingZKey(key); }
 

@@ -1,10 +1,9 @@
 // Copyright (c) 2020 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef DogeCash_HDCHAIN_H
-#define DogeCash_HDCHAIN_H
+#ifndef DOGECASH_HDCHAIN_H
+#define DOGECASH_HDCHAIN_H
 
 #include "key.h"
 
@@ -66,4 +65,4 @@ public:
     }
 };
 
-#endif // DogeCash_HDCHAIN_H
+#endif // DOGECASH_HDCHAIN_H

@@ -1,6 +1,5 @@
 // Copyright (c) 2011-2013 The Bitcoin Core developers
 // Copyright (c) 2017-2020 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -15,7 +14,6 @@
 #include "evo/deterministicmns.h"
 #include "evo/evodb.h"
 #include "evo/evonotificationinterface.h"
-#include "llmq/quorums_init.h"
 #include "miner.h"
 #include "net_processing.h"
 #include "rpc/server.h"
@@ -101,7 +99,6 @@ TestingSetup::TestingSetup(const std::string& chainName) : BasicTestingSetup(cha
         pblocktree.reset(new CBlockTreeDB(1 << 20, true));
         pcoinsdbview.reset(new CCoinsViewDB(1 << 23, true));
         pcoinsTip.reset(new CCoinsViewCache(pcoinsdbview.get()));
-        llmq::InitLLMQSystem(*evoDb);
         if (!LoadGenesisBlock()) {
             throw std::runtime_error("Error initializing block database");
         }
@@ -133,7 +130,6 @@ TestingSetup::~TestingSetup()
         pblocktree.reset();
         zerocoinDB.reset();
         pSporkDB.reset();
-        llmq::DestroyLLMQSystem();
 }
 
 // Test chain only available on regtest
@@ -174,9 +170,7 @@ CBlock TestChainSetup::CreateAndProcessBlock(const std::vector<CMutableTransacti
 CBlock TestChainSetup::CreateBlock(const std::vector<CMutableTransaction>& txns,
                                    const CScript& scriptPubKey,
                                    bool fNoMempoolTx,
-                                   bool fTestBlockValidity,
-                                   bool fIncludeQfc,
-                                   CBlockIndex* customPrevBlock)
+                                   bool fTestBlockValidity)
 {
     std::unique_ptr<CBlockTemplate> pblocktemplate = BlockAssembler(
             Params(), DEFAULT_PRINTPRIORITY).CreateNewBlock(scriptPubKey,
@@ -184,10 +178,7 @@ CBlock TestChainSetup::CreateBlock(const std::vector<CMutableTransaction>& txns,
                                                             false,   // fProofOfStake
                                                             nullptr, // availableCoins
                                                             fNoMempoolTx,
-                                                            fTestBlockValidity,
-                                                            customPrevBlock,
-                                                            true,
-                                                            fIncludeQfc);
+                                                            fTestBlockValidity);
     std::shared_ptr<CBlock> pblock = std::make_shared<CBlock>(pblocktemplate->block);
 
     // Add passed-in txns:
@@ -195,8 +186,7 @@ CBlock TestChainSetup::CreateBlock(const std::vector<CMutableTransaction>& txns,
         pblock->vtx.push_back(MakeTransactionRef(tx));
     }
 
-    const int nHeight = (customPrevBlock != nullptr ? customPrevBlock->nHeight + 1
-                                                    : WITH_LOCK(cs_main, return chainActive.Height()) + 1);
+    const int nHeight = WITH_LOCK(cs_main, return chainActive.Height()) + 1;
 
     // Re-compute sapling root
     pblock->hashFinalSaplingRoot = CalculateSaplingTreeRoot(pblock.get(), nHeight, Params());

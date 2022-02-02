@@ -1,7 +1,5 @@
 // Copyright (c) 2014-2016 The Dash developers
 // Copyright (c) 2015-2020 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
-// Copyright (c) 2018-2020 The DogeCash developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -10,6 +8,7 @@
 
 #include "key.h"
 #include "evo/deterministicmns.h"
+#include "net.h"
 #include "operationresult.h"
 #include "sync.h"
 #include "validationinterface.h"
@@ -57,8 +56,8 @@ public:
     virtual ~CActiveDeterministicMasternodeManager() = default;
     virtual void UpdatedBlockTip(const CBlockIndex* pindexNew, const CBlockIndex* pindexFork, bool fInitialDownload);
 
-    void Init(const CBlockIndex* pindexTip);
-    void Reset(masternode_state_t _state, const CBlockIndex* pindexTip);
+    void Init();
+    void Reset(masternode_state_t _state);
     // Sets the Deterministic Masternode Operator's private/public key
     OperationResult SetOperatorKey(const std::string& strMNOperatorPrivKey);
     // If the active masternode is ready, and the keyID matches with the registered one,

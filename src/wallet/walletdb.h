@@ -1,12 +1,11 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2021 The Bitcoin developers
 // Copyright (c) 2016-2021 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef DogeCash_WALLETDB_H
-#define DogeCash_WALLETDB_H
+#ifndef DOGECASH_WALLETDB_H
+#define DOGECASH_WALLETDB_H
 
 #include "amount.h"
 #include "wallet/db.h"
@@ -238,4 +237,4 @@ bool AutoBackupWallet(CWallet& wallet, std::string& strBackupWarning, std::strin
 //! Compacts BDB state so that wallet.dat is self-contained (if there are changes)
 void MaybeCompactWalletDB();
 
-#endif // DogeCash_WALLETDB_H
+#endif // DOGECASH_WALLETDB_H

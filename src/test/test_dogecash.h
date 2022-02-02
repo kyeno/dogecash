@@ -1,10 +1,9 @@
 // Copyright (c) 2015-2019 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef DogeCash_TEST_TEST_DogeCash_H
-#define DogeCash_TEST_TEST_DogeCash_H
+#ifndef DOGECASH_TEST_TEST_DOGECASH_H
+#define DOGECASH_TEST_TEST_DOGECASH_H
 
 #include "fs.h"
 #include "scheduler.h"
@@ -98,9 +97,7 @@ struct TestChainSetup : public TestingSetup
     CBlock CreateBlock(const std::vector<CMutableTransaction>& txns,
                        const CScript& scriptPubKey,
                        bool fNoMempoolTx = true,
-                       bool fTestBlockValidity = true,
-                       bool fIncludeQfc = true,
-                       CBlockIndex* customPrevBlock = nullptr);
+                       bool fTestBlockValidity = true);
     CBlock CreateBlock(const std::vector<CMutableTransaction>& txns, const CKey& scriptKey, bool fTestBlockValidity = true);
 
     std::vector<CTransaction> coinbaseTxns; // For convenience, coinbase transactions

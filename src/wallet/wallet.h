@@ -2,12 +2,11 @@
 // Copyright (c) 2009-2021 The Bitcoin developers
 // Copyright (c) 2014-2015 The Dash developers
 // Copyright (c) 2015-2021 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef DogeCash_WALLET_H
-#define DogeCash_WALLET_H
+#ifndef DOGECASH_WALLET_H
+#define DOGECASH_WALLET_H
 
 #include "addressbook.h"
 #include "amount.h"
@@ -100,6 +99,7 @@ class ScriptPubKeyMan;
 class SaplingScriptPubKeyMan;
 class SaplingNoteData;
 struct SaplingNoteEntry;
+class CDeterministicMNList;
 
 /** (client) version numbers for particular wallet features */
 enum WalletFeature {
@@ -108,7 +108,7 @@ enum WalletFeature {
     FEATURE_WALLETCRYPT = 40000, // wallet encryption
     FEATURE_COMPRPUBKEY = 60000, // compressed public keys
 
-    FEATURE_PRE_DogeCash = 61000, // inherited version..
+    FEATURE_PRE_DOGECASH = 61000, // inherited version..
 
     // The following features were implemented in BTC but not in our wallet, we can simply skip them.
     // FEATURE_HD = 130000,  Hierarchical key derivation after BIP32 (HD Wallet)
@@ -564,7 +564,7 @@ public:
     bool IsCoinStake() const { return tx->IsCoinStake(); }
 
     /** Pass this transaction to the mempool. Fails if absolute fee exceeds absurd fee. */
-    bool AcceptToMemoryPool(CValidationState& state) EXCLUSIVE_LOCKS_REQUIRED(cs_main);
+    bool AcceptToMemoryPool(CValidationState& state);
 };
 
 
@@ -736,7 +736,7 @@ public:
     // Staker status (last hashed block and time)
     CStakerStatus* pStakerStatus = nullptr;
 
-    // User-defined fee DOGEC/kb
+    // User-defined fee PIV/kb
     bool fUseCustomFee;
     CAmount nCustomFee;
 
@@ -851,7 +851,7 @@ public:
      */
     std::map<libzcash::SaplingPaymentAddress, std::vector<SaplingNoteEntry>> ListNotes() const;
 
-    /// Get 10000 DOGEC output and keys which can be used for the Masternode
+    /// Get 10000 PIV output and keys which can be used for the Masternode
     bool GetMasternodeVinAndKeys(CTxIn& txinRet, CPubKey& pubKeyRet,
             CKey& keyRet, std::string strTxHash, std::string strOutputIndex, std::string& strError);
     /// Extract txin information and keys from output
@@ -886,11 +886,13 @@ public:
      *  -- If ptx is null, c is the output of a transaction in mapWallet
      */
     void LockOutpointIfMine(const CTransactionRef& ptx, const COutPoint& c);
+
     /*
-     * Same functionality as above but locking the cs_wallet mutex internally.
-     * future: add capability to lock the mutex from outside of this class without exposing it.
+     *  Locks cs_wallet
+     *  Called during Init. If a DMN collateral is found in the wallet,
+     *  lock the corresponding coin, to prevent accidental spending.
      */
-    void LockOutpointIfMineWithMutex(const CTransactionRef& ptx, const COutPoint& c);
+    void ScanMasternodeCollateralsAndLock(const CDeterministicMNList& mnList);
 
     /*
      *  Requires cs_wallet lock.
@@ -927,9 +929,6 @@ public:
 
     //! pindex is the old tip being disconnected.
     void DecrementNoteWitnesses(const CBlockIndex* pindex);
-
-    //! clear note witness cache
-    void ClearNoteWitnessCache();
 
 
     //! Adds Sapling spending key to the store, and saves it to disk
@@ -1002,7 +1001,7 @@ public:
     bool EncryptWallet(const SecureString& strWalletPassphrase);
 
     std::vector<CKeyID> GetAffectedKeys(const CScript& spk);
-    void GetKeyBirthTimes(std::map<CKeyID, int64_t>& mapKeyBirth) const EXCLUSIVE_LOCKS_REQUIRED(cs_main);
+    void GetKeyBirthTimes(std::map<CKeyID, int64_t>& mapKeyBirth) const;
 
     /**
      * Increment the next transaction order id
@@ -1123,7 +1122,7 @@ public:
 
     std::set<CTxDestination> GetLabelAddresses(const std::string& label) const;
 
-    bool CreateBudgetFeeTX(CTransactionRef& tx, const uint256& hash, CReserveKey& keyChange, CAmount fee);
+    bool CreateBudgetFeeTX(CTransactionRef& tx, const uint256& hash, CReserveKey& keyChange, bool fFinalization);
 
     bool IsUsed(const CTxDestination address) const;
 
@@ -1336,4 +1335,4 @@ public:
     }
 };
 
-#endif // DogeCash_WALLET_H
+#endif // DOGECASH_WALLET_H

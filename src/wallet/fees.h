@@ -1,12 +1,11 @@
 // Copyright (c) 2009-2010 Satoshi Nakamoto
 // Copyright (c) 2009-2017 The Bitcoin Core developers
 // Copyright (c) 2021 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
-#ifndef DogeCash_WALLET_FEES_H
-#define DogeCash_WALLET_FEES_H
+#ifndef DOGECASH_WALLET_FEES_H
+#define DOGECASH_WALLET_FEES_H
 
 #include "amount.h"
 
@@ -25,4 +24,4 @@ CAmount GetRequiredFee(unsigned int nTxBytes);
 CAmount GetMinimumFee(unsigned int nTxBytes, unsigned int nConfirmTarget, const CTxMemPool& pool);
 
 
-#endif // DogeCash_WALLET_FEES_H
+#endif // DOGECASH_WALLET_FEES_H

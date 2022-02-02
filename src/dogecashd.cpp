@@ -26,7 +26,7 @@
  *
  * \section intro_sec Introduction
  *
- * This is the developer documentation of the reference client for an experimental new digital currency called DogeCash (http://www.DogeCash.org),
+ * This is the developer documentation of the reference client for an experimental new digital currency called DogeCash (http://www.dogecash.org),
  * which enables instant payments to anyone, anywhere in the world. DogeCash uses peer-to-peer technology to operate
  * with no central authority: managing transactions and issuing money are carried out collectively by the network.
  *
@@ -55,7 +55,7 @@ bool AppInit(int argc, char* argv[])
     //
     // Parameters
     //
-    // If Qt is used, parameters/DogeCash.conf are parsed in qt/DogeCash.cpp's main()
+    // If Qt is used, parameters/dogecash.conf are parsed in qt/dogecash.cpp's main()
     gArgs.ParseParameters(argc, argv);
 
     // Process help and version before taking care about datadir

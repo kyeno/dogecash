@@ -1,7 +1,5 @@
 // Copyright (c) 2014-2016 The Dash developers
 // Copyright (c) 2015-2020 The PIVX developers
-// Copyright (c) 2022 The DogeCash developers
-// Copyright (c) 2018-2020 The DogeCash developers
 // Distributed under the MIT/X11 software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
@@ -9,14 +7,14 @@
 
 #include "addrman.h"
 #include "bls/bls_wrapper.h"
+#include "evo/providertx.h"
+#include "masternode-sync.h"
 #include "masternode.h"
 #include "masternodeconfig.h"
 #include "masternodeman.h"
 #include "messagesigner.h"
 #include "netbase.h"
 #include "protocol.h"
-#include "tiertwo/net_masternodes.h"
-#include "tiertwo/tiertwo_sync_state.h"
 #include "validation.h"
 
 // Keep track of the active Masternode
@@ -87,7 +85,7 @@ OperationResult CActiveDeterministicMasternodeManager::GetOperatorKey(CBLSSecret
     return OperationResult(true);
 }
 
-void CActiveDeterministicMasternodeManager::Init(const CBlockIndex* pindexTip)
+void CActiveDeterministicMasternodeManager::Init()
 {
     // set masternode arg if called from RPC
     if (!fMasterNode) {
@@ -95,7 +93,7 @@ void CActiveDeterministicMasternodeManager::Init(const CBlockIndex* pindexTip)
         fMasterNode = true;
     }
 
-    if (!deterministicMNManager->IsDIP3Enforced(pindexTip->nHeight)) {
+    if (!deterministicMNManager->IsDIP3Enforced()) {
         state = MASTERNODE_ERROR;
         strError = "Evo upgrade is not active yet.";
         LogPrintf("%s -- ERROR: %s\n", __func__, strError);
@@ -120,7 +118,7 @@ void CActiveDeterministicMasternodeManager::Init(const CBlockIndex* pindexTip)
         return;
     }
 
-    CDeterministicMNList mnList = deterministicMNManager->GetListForBlock(pindexTip);
+    CDeterministicMNList mnList = deterministicMNManager->GetListAtChainTip();
 
     CDeterministicMNCPtr dmn = mnList.GetMNByOperatorKey(info.pubKeyOperator);
     if (!dmn) {
@@ -136,7 +134,6 @@ void CActiveDeterministicMasternodeManager::Init(const CBlockIndex* pindexTip)
     LogPrintf("%s: proTxHash=%s, proTx=%s\n", __func__, dmn->proTxHash.ToString(), dmn->ToString());
 
     info.proTxHash = dmn->proTxHash;
-    g_connman->GetTierTwoConnMan()->setLocalDMN(info.proTxHash);
 
     if (info.service != dmn->pdmnState->addr) {
         state = MASTERNODE_ERROR;
@@ -150,7 +147,7 @@ void CActiveDeterministicMasternodeManager::Init(const CBlockIndex* pindexTip)
         // Check socket connectivity
         const std::string& strService = info.service.ToString();
         LogPrintf("%s: Checking inbound connection to '%s'\n", __func__, strService);
-        SOCKET hSocket = INVALID_SOCKET;
+        SOCKET hSocket;
         bool fConnected = ConnectSocketDirectly(info.service, hSocket, nConnectTimeout) && IsSelectableSocket(hSocket);
         CloseSocket(hSocket);
 
@@ -164,12 +161,12 @@ void CActiveDeterministicMasternodeManager::Init(const CBlockIndex* pindexTip)
     state = MASTERNODE_READY;
 }
 
-void CActiveDeterministicMasternodeManager::Reset(masternode_state_t _state, const CBlockIndex* pindexTip)
+void CActiveDeterministicMasternodeManager::Reset(masternode_state_t _state)
 {
     state = _state;
     SetNullProTx();
     // MN might have reappeared in same block with a new ProTx
-    Init(pindexTip);
+    Init();
 }
 
 void CActiveDeterministicMasternodeManager::UpdatedBlockTip(const CBlockIndex* pindexNew, const CBlockIndex* pindexFork, bool fInitialDownload)
@@ -177,14 +174,14 @@ void CActiveDeterministicMasternodeManager::UpdatedBlockTip(const CBlockIndex* p
     if (fInitialDownload)
         return;
 
-    if (!fMasterNode || !deterministicMNManager->IsDIP3Enforced(pindexNew->nHeight))
+    if (!fMasterNode || !deterministicMNManager->IsDIP3Enforced())
         return;
 
     if (state == MASTERNODE_READY) {
         auto newDmn = deterministicMNManager->GetListForBlock(pindexNew).GetValidMN(info.proTxHash);
         if (newDmn == nullptr) {
             // MN disappeared from MN list
-            Reset(MASTERNODE_REMOVED, pindexNew);
+            Reset(MASTERNODE_REMOVED);
             return;
         }
 
@@ -198,19 +195,19 @@ void CActiveDeterministicMasternodeManager::UpdatedBlockTip(const CBlockIndex* p
 
         if (newDmn->pdmnState->pubKeyOperator != oldDmn->pdmnState->pubKeyOperator) {
             // MN operator key changed or revoked
-            Reset(MASTERNODE_OPERATOR_KEY_CHANGED, pindexNew);
+            Reset(MASTERNODE_OPERATOR_KEY_CHANGED);
             return;
         }
 
         if (newDmn->pdmnState->addr != oldDmn->pdmnState->addr) {
             // MN IP changed
-            Reset(MASTERNODE_PROTX_IP_CHANGED, pindexNew);
+            Reset(MASTERNODE_PROTX_IP_CHANGED);
             return;
         }
     } else {
         // MN might have (re)appeared with a new ProTx or we've found some peers
         // and figured out our local address
-        Init(pindexNew);
+        Init();
     }
 }
 
@@ -277,7 +274,7 @@ OperationResult initMasternode(const std::string& _strMasterNodePrivKey, const s
     activeMasternode.service = addrTest;
     fMasterNode = true;
 
-    if (g_tiertwo_sync_state.IsBlockchainSynced()) {
+    if (masternodeSync.IsBlockchainSynced()) {
         // Check if the masternode already exists in the list
         CMasternode* pmn = mnodeman.Find(pubkey);
         if (pmn) activeMasternode.EnableHotColdMasterNode(pmn->vin, pmn->addr);
@@ -311,7 +308,7 @@ void CActiveMasternode::ManageStatus()
     }
 
     //need correct blocks to send ping
-    if (!Params().IsRegTestNet() && !g_tiertwo_sync_state.IsBlockchainSynced()) {
+    if (!Params().IsRegTestNet() && !masternodeSync.IsBlockchainSynced()) {
         status = ACTIVE_MASTERNODE_SYNC_IN_PROCESS;
         LogPrintf("CActiveMasternode::ManageStatus() - %s\n", GetStatusMessage());
         return;
