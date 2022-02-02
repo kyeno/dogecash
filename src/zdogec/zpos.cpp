@@ -5,7 +5,7 @@
 #include "zdogec/zpos.h"
 
 #include "validation.h"
-#include "zdogecchain.h"
+#include "zdogec/zdogecmodule.h"
 
 
 /*
@@ -72,7 +72,7 @@ CLegacyZDogecStake* CLegacyZDogecStake::NewZDogecStake(const CTxIn& txin, int nH
     }
 
     // Check spend type
-    libzerocoin::CoinSpend spend = TxInToZerocoinSpend(txin);
+    libzerocoin::CoinSpend spend = ZDOGECModule::TxInToZerocoinSpend(txin);
     if (spend.getSpendType() != libzerocoin::SpendType::STAKE) {
         LogPrintf("%s : spend is using the wrong SpendType (%d)", __func__, (int)spend.getSpendType());
         return nullptr;
