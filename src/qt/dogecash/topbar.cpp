@@ -74,9 +74,9 @@ TopBar::TopBar(DogeCashGUI* _mainWindow, QWidget *parent) :
 
     // Amount information top
     ui->widgetTopAmount->setVisible(false);
-    setCssProperty({ui->labelAmountTopPiv, ui->labelAmountTopShieldedPiv}, "amount-small-topbar");
-    setCssProperty({ui->labelAmountPiv}, "amount-topbar");
-    setCssProperty({ui->labelPendingPiv, ui->labelImmaturePiv}, "amount-small-topbar");
+    setCssProperty({ui->labelAmountTopDogec, ui->labelAmountTopShieldedDogec}, "amount-small-topbar");
+    setCssProperty({ui->labelAmountDogec}, "amount-topbar");
+    setCssProperty({ui->labelPendingDogec, ui->labelImmatureDogec}, "amount-small-topbar");
 
     // Progress Sync
     progressBar = new QProgressBar(ui->layoutSync);
@@ -668,19 +668,19 @@ void TopBar::updateBalances(const interfaces::WalletBalances& newBalance)
     }
     ui->labelTitle1->setText(nLockedBalance > 0 ? tr("Available (Locked included)") : tr("Available"));
 
-    // PIV Total
-    QString totalPiv = GUIUtil::formatBalance(newBalance.balance, nDisplayUnit);
+    // DOGEC Total
+    QString totalDogec = GUIUtil::formatBalance(newBalance.balance, nDisplayUnit);
     QString totalTransparent = GUIUtil::formatBalance(newBalance.balance - newBalance.shielded_balance);
     QString totalShielded = GUIUtil::formatBalance(newBalance.shielded_balance);
 
-    // PIV
+    // DOGEC
     // Top
-    ui->labelAmountTopPiv->setText(totalTransparent);
-    ui->labelAmountTopShieldedPiv->setText(totalShielded);
+    ui->labelAmountTopDogec->setText(totalTransparent);
+    ui->labelAmountTopShieldedDogec->setText(totalShielded);
     // Expanded
-    ui->labelAmountPiv->setText(totalPiv);
-    ui->labelPendingPiv->setText(GUIUtil::formatBalance(newBalance.unconfirmed_balance + newBalance.unconfirmed_shielded_balance, nDisplayUnit));
-    ui->labelImmaturePiv->setText(GUIUtil::formatBalance(newBalance.immature_balance, nDisplayUnit));
+    ui->labelAmountDogec->setText(totalDogec);
+    ui->labelPendingDogec->setText(GUIUtil::formatBalance(newBalance.unconfirmed_balance + newBalance.unconfirmed_shielded_balance, nDisplayUnit));
+    ui->labelImmatureDogec->setText(GUIUtil::formatBalance(newBalance.immature_balance, nDisplayUnit));
 }
 
 void TopBar::resizeEvent(QResizeEvent *event)

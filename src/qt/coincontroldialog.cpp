@@ -586,8 +586,8 @@ void CoinControlDialog::updateLabels()
         return;
 
     ui->labelTitle->setText(fSelectTransparent ?
-            "Select PIV Outputs to Spend" :
-            "Select Shielded PIV to Spend");
+            "Select DOGEC Outputs to Spend" :
+            "Select Shielded DOGEC to Spend");
 
     const TotalAmounts& t = getTotals();
 
@@ -597,7 +597,7 @@ void CoinControlDialog::updateLabels()
     updatePushButtonSelectAll(coinControl->QuantitySelected() * 2 > nSelectableInputs);
 
     // actually update labels
-    int nDisplayUnit = BitcoinUnits::PIV;
+    int nDisplayUnit = BitcoinUnits::DOGEC;
     if (model && model->getOptionsModel())
         nDisplayUnit = model->getOptionsModel()->getDisplayUnit();
 

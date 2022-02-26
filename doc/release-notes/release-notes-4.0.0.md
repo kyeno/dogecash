@@ -67,7 +67,7 @@ Multi-Split Stake Splitting
 
 Stake splitting has received a makeover and now supports splitting to more than two (2) outputs. [PR #968](https://github.com/dogecash/DogeCash/pull/968) introduced the change, which is controlled by the wallet's `stakesplitthreshold` setting.
 
-The default split threshold remains at 2000 PIV, and can be adjusted in the GUI's Settings page, or via the RPC `setstakesplitthreshold` command.
+The default split threshold remains at 2000 DOGEC, and can be adjusted in the GUI's Settings page, or via the RPC `setstakesplitthreshold` command.
 
 For a real example, with a stake split threshold of 1500, and a UTXO of 4708.1557; the current stake split algorithm would break that into two outputs of approximately 2355.07785. With this new logic; it will be broken into 3 outputs instead of two; each sized 1570.0519 (4708.1557 input + 2 stake = 4710.1557 / 3 outputs = 1570.0519.
 
@@ -136,8 +136,8 @@ Additionally, a new (optional) argument, `includeCold`, has been added to the `l
 The `validateaddress` command now includes an additional response field, `isstaking`, to indicate wither or not the specified address is a cold staking address.
 
 The `getwalletinfo` command now includes two additional response fields:
-- `delegated_balance` - PIV balance held in P2CS contracts (delegated amount total).
-- `cold_staking_balance` - PIV balance held in cold staking addresses.
+- `delegated_balance` - DOGEC balance held in P2CS contracts (delegated amount total).
+- `cold_staking_balance` - DOGEC balance held in cold staking addresses.
 
 ### Newly introduced commands
 
@@ -177,7 +177,7 @@ Requires wallet passphrase to be set with walletpassphrase call.
 
 Arguments:
 1. "stakingaddress"      (string, required) The dogecash staking address to delegate.
-2. "amount"              (numeric, required) The amount in PIV to delegate for staking. eg 100
+2. "amount"              (numeric, required) The amount in DOGEC to delegate for staking. eg 100
 3. "owneraddress"        (string, optional) The dogecash address corresponding to the key that will be able to spend the stake.
                                If not provided, or empty string, a new wallet address is generated.
 4. "fExternalOwner"      (boolean, optional, default = false) use the provided 'owneraddress' anyway, even if not present in this wallet.
@@ -203,7 +203,7 @@ Requires wallet passphrase to be set with walletpassphrase call.
 
 Arguments:
 1. "stakingaddress"      (string, required) The dogecash staking address to delegate.
-2. "amount"              (numeric, required) The amount in PIV to delegate for staking. eg 100
+2. "amount"              (numeric, required) The amount in DOGEC to delegate for staking. eg 100
 3. "owneraddress"        (string, optional) The dogecash address corresponding to the key that will be able to spend the stake.
                                If not provided, or empty string, a new wallet address is generated.
 4. "fExternalOwner"      (boolean, optional, default = false) use the provided 'owneraddress' anyway, even if not present in this wallet.
@@ -262,7 +262,7 @@ Arguments:
 1. "account"      (string, optional) The selected account, or "*" for entire wallet. It may be the default account using "".
 
 Result:
-amount              (numeric) The total amount in PIV received for this account in P2CS contracts.
+amount              (numeric) The total amount in DOGEC received for this account in P2CS contracts.
 ```
 
 `delegatoradd` whitelists a delegated owner address for cold staking:

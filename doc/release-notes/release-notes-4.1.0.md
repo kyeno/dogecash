@@ -132,7 +132,7 @@ Transaction and address data can now be quickly exported to a CSV file from the 
 
 Transaction output format is comma separated with header row as follows:
 ```
-"Confirmed","Date","Type","Label","Address","Amount (PIV)","ID"
+"Confirmed","Date","Type","Label","Address","Amount (DOGEC)","ID"
 ```
 
 Address output format is comma separated with header row as follows:
@@ -155,7 +155,7 @@ Automatic zDOGEC backup has been disabled. Thus, the following configuration opt
 
 The stake split threshold is no longer required to be integer. It can be a fractional amount. A threshold value of 0 disables the stake-split functionality.
 
-The default value for the stake-split threshold has been lowered from 2000 PIV, down  to 500 PIV.
+The default value for the stake-split threshold has been lowered from 2000 DOGEC, down  to 500 DOGEC.
 
 ### Changed command-line options
 
@@ -206,7 +206,7 @@ RPC Changes
      "mnsync": true|false,               (boolean) whether masternode data is synced
      "walletunlocked": true|false,       (boolean) whether the wallet is unlocked
      "stakeablecoins": n,                (numeric) number of stakeable UTXOs
-     "stakingbalance": d,                (numeric) PIV value of the stakeable coins (minus reserve balance, if any)
+     "stakingbalance": d,                (numeric) DOGEC value of the stakeable coins (minus reserve balance, if any)
      "stakesplitthreshold": d,           (numeric) value of the current threshold for stake split
      "lastattempt_age": n,               (numeric) seconds since last stake attempt
      "lastattempt_depth": n,             (numeric) depth of the block on top of which the last stake attempt was made

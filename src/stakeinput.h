@@ -29,17 +29,17 @@ public:
 };
 
 
-class CPivStake : public CStakeInput
+class CDogecStake : public CStakeInput
 {
 private:
     const CTxOut outputFrom;
     const COutPoint outpointFrom;
 
 public:
-    CPivStake(const CTxOut& _from, const COutPoint& _outPointFrom, const CBlockIndex* _pindexFrom) :
+    CDogecStake(const CTxOut& _from, const COutPoint& _outPointFrom, const CBlockIndex* _pindexFrom) :
             CStakeInput(_pindexFrom), outputFrom(_from), outpointFrom(_outPointFrom) {}
 
-    static CPivStake* NewPivStake(const CTxIn& txin, int nHeight, uint32_t nTime);
+    static CDogecStake* NewDogecStake(const CTxIn& txin, int nHeight, uint32_t nTime);
 
     const CBlockIndex* GetIndexFrom() const override;
     bool GetTxOutFrom(CTxOut& out) const override;

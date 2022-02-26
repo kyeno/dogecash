@@ -50,11 +50,11 @@ class ReorgStakeTest(DogeCashTestFramework):
         assert_equal(self.nodes[nodeid].getblockcount(), wi['last_processed_block'])
         return wi['balance'] + wi['immature_balance']
 
-    def check_money_supply(self, expected_piv):
-        # verify that nodes have the expected PIV supply
-        piv_supply = [self.nodes[i].getsupplyinfo(True)['transparentsupply']
+    def check_money_supply(self, expected_dogec):
+        # verify that nodes have the expected DOGEC supply
+        dogec_supply = [self.nodes[i].getsupplyinfo(True)['transparentsupply']
                       for i in range(self.num_nodes)]
-        assert_equal(piv_supply, [DecimalAmt(expected_piv)] * self.num_nodes)
+        assert_equal(dogec_supply, [DecimalAmt(expected_dogec)] * self.num_nodes)
 
 
     def run_test(self):
@@ -65,7 +65,7 @@ class ReorgStakeTest(DogeCashTestFramework):
                     return True, x
             return False, None
 
-        # PIV supply: block rewards
+        # DOGEC supply: block rewards
         expected_money_supply = 250.0 * 200
         self.check_money_supply(expected_money_supply)
         initial_time = self.mocktime
@@ -161,8 +161,8 @@ class ReorgStakeTest(DogeCashTestFramework):
         res, utxo = findUtxoInList(stakeinput["txid"], stakeinput["vout"], self.nodes[0].listunspent())
         assert not res
 
-        # Verify that PIV supply was properly updated after the reorgs (including burned fee)
-        self.log.info("Check PIV supply...")
+        # Verify that DOGEC supply was properly updated after the reorgs (including burned fee)
+        self.log.info("Check DOGEC supply...")
         expected_money_supply += 250.0 * (self.nodes[1].getblockcount() - 200) - 0.01
         self.check_money_supply(expected_money_supply)
         self.log.info("Supply checks out.")

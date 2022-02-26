@@ -39,7 +39,7 @@ bool TransactionRecord::decomposeCoinStake(const CWallet* wallet, const CWalletT
             sub.debit = -nDebit;
             loadHotOrColdStakeOrContract(wallet, wtx, sub);
         } else {
-            // PIV stake reward
+            // DOGEC stake reward
             CTxDestination address;
             if (!ExtractDestination(wtx.tx->vout[1].scriptPubKey, address))
                 return true;
@@ -333,7 +333,7 @@ bool TransactionRecord::decomposeDebitTransaction(const CWallet* wallet, const C
             sub.address = getValueOrReturnEmpty(wtx.mapValue, "to");
             if (sub.address.empty() && txout.scriptPubKey.StartsWithOpcode(OP_RETURN)) {
                 sub.type = TransactionRecord::SendToNobody;
-                // Burned PIVs, op_return could be for a kind of data stored there. For now, support UTF8 comments.
+                // Burned DOGECs, op_return could be for a kind of data stored there. For now, support UTF8 comments.
                 std::string comment = wtx.GetComment();
                 if (!comment.empty() && IsValidUTF8(comment)) {
                     sub.address = comment;

@@ -37,13 +37,13 @@ Notable Changes
 
 Recent exploits of the Zerocoin protocol (Wrapped serials and broken P1 proof) required us to enable the zerocoin spork and deactivate zDOGEC functionality in order to secure the supply until the pertinent review process was completed.
 
-Moving forward from this undesired situation, we are enabling a secure and chain storage friendly solution for the zerocoin public spend (aka zDOGEC to PIV conversion).
+Moving forward from this undesired situation, we are enabling a secure and chain storage friendly solution for the zerocoin public spend (aka zDOGEC to DOGEC conversion).
 
 The explanation of how this works can be found in #891
 
 After block `1,880,000` has past, `SPORK_16` will be deactivated to allow zDOGEC spends to occur using this new public spend method for version 2 zDOGEC (version 1 zDOGEC won't be spendable, see note below). zDOGEC public spends, as the name suggests, are **NOT** private, they reveal the input mint that is being spent. The minting of **NEW** zDOGEC, as well as zDOGEC staking will remain disabled for the time being.
 
-It is advised that users spend/convert their existing zDOGEC to PIV, which can be done via the GUI or RPC as it was prior to the disabling of zDOGEC. Note that with the public spend method, the restriction on the number of denominations per transaction (previously 7) has been lifted, and now allows for several hundred denominations per transaction.
+It is advised that users spend/convert their existing zDOGEC to DOGEC, which can be done via the GUI or RPC as it was prior to the disabling of zDOGEC. Note that with the public spend method, the restriction on the number of denominations per transaction (previously 7) has been lifted, and now allows for several hundred denominations per transaction.
 
 *Note on version 1 zDOGEC*: Version 1 zDOGEC was only available to me minted between versions v3.0.0 (Oct 6, 2017) and v3.1.0 (May 8, 2018). The announcement that version 1 zDOGEC was deprecated went out on May 1, 2018 with a recommendation for users to spend/convert their version 1 zDOGEC.
 

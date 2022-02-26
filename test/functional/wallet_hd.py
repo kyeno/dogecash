@@ -220,7 +220,7 @@ class WalletHDTest(DogeCashTestFramework):
         self.nodes[1].sethdseed(True, hdseed)
         z_add_3 = self.generate_shield_addr(masterkeyid, NUM_SHIELD_ADDS)
         assert_equal(z_add, z_add_3)
-        # Restart, zap, and check balance: 1 PIV * (NUM_HD_ADDS + NUM_SHIELD_ADDS) recovered from seed
+        # Restart, zap, and check balance: 1 DOGEC * (NUM_HD_ADDS + NUM_SHIELD_ADDS) recovered from seed
         self.stop_node(1)
         self.start_node(1, extra_args=self.extra_args[1] + ['-zapwallettxes=1'])
         assert_equal(self.nodes[1].getbalance(), NUM_HD_ADDS + NUM_SHIELD_ADDS)

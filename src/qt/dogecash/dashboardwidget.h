@@ -80,9 +80,9 @@ public:
 
     QMap<int, std::pair<qint64, qint64>> amountsByCache;
     qreal maxValue = 0;
-    qint64 totalPiv = 0;
+    qint64 totalDogec = 0;
     qint64 totalMN = 0;
-    QList<qreal> valuesPiv;
+    QList<qreal> valuesDogec;
     QList<qreal> valuesMN;
     QStringList xLabels;
 };

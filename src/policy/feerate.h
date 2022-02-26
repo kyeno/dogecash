@@ -14,7 +14,7 @@
 extern const std::string CURRENCY_UNIT;
 
 /**
- * Fee rate in PIV per kilobyte: CAmount / kB
+ * Fee rate in DOGEC per kilobyte: CAmount / kB
  */
 class CFeeRate
 {

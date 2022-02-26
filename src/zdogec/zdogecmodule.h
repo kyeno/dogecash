@@ -2,8 +2,8 @@
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 //
-#ifndef DOGECASH_ZPIVMODULE_H
-#define DOGECASH_ZPIVMODULE_H
+#ifndef DOGECASH_ZDOGECMODULE_H
+#define DOGECASH_ZDOGECMODULE_H
 
 #include "libzerocoin/bignum.h"
 #include "libzerocoin/Denominations.h"
@@ -62,7 +62,7 @@ public:
 
 class CValidationState;
 
-namespace ZPIVModule {
+namespace ZDOGECModule {
     CDataStream ScriptSigToSerializedSpend(const CScript& scriptSig);
     PublicCoinSpend parseCoinSpend(const CTxIn &in);
     bool parseCoinSpend(const CTxIn &in, const CTransaction& tx, const CTxOut &prevOut, PublicCoinSpend& publicCoinSpend);
@@ -80,4 +80,4 @@ namespace ZPIVModule {
 };
 
 
-#endif //DOGECASH_ZPIVMODULE_H
+#endif //DOGECASH_ZDOGECMODULE_H

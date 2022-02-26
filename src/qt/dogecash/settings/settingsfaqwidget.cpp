@@ -34,7 +34,7 @@ SettingsFaqWidget::SettingsFaqWidget(DogeCashGUI* parent, ClientModel* _model) :
     // Content
     setCssProperty({
            ui->labelNumber_Intro,
-           ui->labelNumber_UnspendablePIV,
+           ui->labelNumber_UnspendableDOGEC,
            ui->labelNumber_Stake,
            ui->labelNumber_Support,
            ui->labelNumber_Masternode,
@@ -43,7 +43,7 @@ SettingsFaqWidget::SettingsFaqWidget(DogeCashGUI* parent, ClientModel* _model) :
 
     setCssProperty({
               ui->labelSubtitle_Intro,
-              ui->labelSubtitle_UnspendablePIV,
+              ui->labelSubtitle_UnspendableDOGEC,
               ui->labelSubtitle_Stake,
               ui->labelSubtitle_Support,
               ui->labelSubtitle_Masternode,
@@ -53,7 +53,7 @@ SettingsFaqWidget::SettingsFaqWidget(DogeCashGUI* parent, ClientModel* _model) :
 
     setCssProperty({
               ui->labelContent_Intro,
-              ui->labelContent_UnspendablePIV,
+              ui->labelContent_UnspendableDOGEC,
               ui->labelContent_Stake,
               ui->labelContent_Support,
               ui->labelContent_Masternode,
@@ -63,7 +63,7 @@ SettingsFaqWidget::SettingsFaqWidget(DogeCashGUI* parent, ClientModel* _model) :
 
     setCssProperty({
               ui->pushButton_Intro,
-              ui->pushButton_UnspendablePIV,
+              ui->pushButton_UnspendableDOGEC,
               ui->pushButton_Stake,
               ui->pushButton_Support,
               ui->pushButton_Masternode,
@@ -87,14 +87,14 @@ SettingsFaqWidget::SettingsFaqWidget(DogeCashGUI* parent, ClientModel* _model) :
                "run Masternodes to create and vote on proposals.")));
     ui->labelContent_Intro->setText(introContent);
 
-    QString unspendablePIVContent = formatFAQContent(
+    QString unspendableDOGECContent = formatFAQContent(
         formatFAQParagraph(
             tr("Newly received DogeCash requires 6 confirmations on the network "
                "to become eligible for spending which can take ~6 minutes.")) +
         formatFAQParagraph(
             tr("Your DogeCash wallet also needs to be completely synchronized "
                "to see and spend balances on the network.")));
-    ui->labelContent_UnspendablePIV->setText(unspendablePIVContent);
+    ui->labelContent_UnspendableDOGEC->setText(unspendableDOGECContent);
 
     QString stakeContent = formatFAQContent(
         formatFAQOrderedList(
@@ -124,7 +124,7 @@ SettingsFaqWidget::SettingsFaqWidget(DogeCashGUI* parent, ClientModel* _model) :
                "to the network and in return, receive a portion of the block reward "
                "regularly. These services include:")
                 .arg(PACKAGE_NAME)
-                .arg(GUIUtil::formatBalance(clientModel->getMNCollateralRequiredAmount(), BitcoinUnits::PIV)) +
+                .arg(GUIUtil::formatBalance(clientModel->getMNCollateralRequiredAmount(), BitcoinUnits::DOGEC)) +
             formatFAQUnorderedList(
                 formatFAQListItem(tr("A decentralized governance (Proposal Voting)")) +
                 formatFAQListItem(tr("A decentralized budgeting system (Treasury)")) +
@@ -145,7 +145,7 @@ SettingsFaqWidget::SettingsFaqWidget(DogeCashGUI* parent, ClientModel* _model) :
             tr("Requirements:") +
             formatFAQUnorderedList(
                 formatFAQListItem(tr("%1 per single Masternode instance")
-                        .arg(GUIUtil::formatBalance(clientModel->getMNCollateralRequiredAmount(), BitcoinUnits::PIV))) +
+                        .arg(GUIUtil::formatBalance(clientModel->getMNCollateralRequiredAmount(), BitcoinUnits::DOGEC))) +
                 formatFAQListItem(tr("Must be stored in a core wallet")) +
                 formatFAQListItem(tr("Need dedicated IP address")) +
                 formatFAQListItem(tr("Masternode wallet to remain online")))));
@@ -157,7 +157,7 @@ SettingsFaqWidget::SettingsFaqWidget(DogeCashGUI* parent, ClientModel* _model) :
                "can reside during a Controller-Remote masternode setup. It is a wallet "
                "that can activate the remote masternode wallet(s) and allows you to keep "
                "your collateral coins offline while the remote masternode remains online.")
-                    .arg(GUIUtil::formatBalance(clientModel->getMNCollateralRequiredAmount(), BitcoinUnits::PIV))));
+                    .arg(GUIUtil::formatBalance(clientModel->getMNCollateralRequiredAmount(), BitcoinUnits::DOGEC))));
     ui->labelContent_MNController->setText(mNControllerContent);
 
 
@@ -171,7 +171,7 @@ SettingsFaqWidget::SettingsFaqWidget(DogeCashGUI* parent, ClientModel* _model) :
     // Buttons
     connect(ui->pushButtonExit, &QPushButton::clicked, this, &SettingsFaqWidget::close);
     connect(ui->pushButton_Intro, &QPushButton::clicked, [this](){onFaqClicked(ui->widget_Intro);});
-    connect(ui->pushButton_UnspendablePIV, &QPushButton::clicked, [this](){onFaqClicked(ui->widget_UnspendablePIV);});
+    connect(ui->pushButton_UnspendableDOGEC, &QPushButton::clicked, [this](){onFaqClicked(ui->widget_UnspendableDOGEC);});
     connect(ui->pushButton_Stake, &QPushButton::clicked, [this](){onFaqClicked(ui->widget_Stake);});
     connect(ui->pushButton_Support, &QPushButton::clicked, [this](){onFaqClicked(ui->widget_Support);});
     connect(ui->pushButton_Masternode, &QPushButton::clicked, [this](){onFaqClicked(ui->widget_Masternode);});
@@ -209,7 +209,7 @@ std::vector<QPushButton*> SettingsFaqWidget::getButtons()
 {
     return {
             ui->pushButton_Intro,
-            ui->pushButton_UnspendablePIV,
+            ui->pushButton_UnspendableDOGEC,
             ui->pushButton_Stake,
             ui->pushButton_Support,
             ui->pushButton_Masternode,

@@ -346,8 +346,8 @@ do stakingu</translation>
         <translation>Hasła nie pasują!</translation>
     </message>
     <message>
-        <source>%1 will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your PIVs from being stolen by malware infecting your computer.</source>
-        <translation>%1 zostanie teraz zamknięty, aby zakończyć proces szyfrowania. Pamiętaj, że zaszyfrowanie portfela nie może w pełni zabezpieczyć Twoich PIV przed kradzieżą przez złośliwe oprogramowanie infekujące Twój komputer.</translation>
+        <source>%1 will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your DOGECs from being stolen by malware infecting your computer.</source>
+        <translation>%1 zostanie teraz zamknięty, aby zakończyć proces szyfrowania. Pamiętaj, że zaszyfrowanie portfela nie może w pełni zabezpieczyć Twoich DOGEC przed kradzieżą przez złośliwe oprogramowanie infekujące Twój komputer.</translation>
     </message>
     <message>
         <source>IMPORTANT: Any previous backups you have made of your wallet file should be replaced with the newly generated, encrypted wallet file. For security reasons, previous backups of the unencrypted wallet file will become useless as soon as you start using the new, encrypted wallet.</source>
@@ -457,8 +457,8 @@ do stakingu</translation>
         <translation>Wybór monet</translation>
     </message>
     <message>
-        <source>Select PIV Outputs to Spend</source>
-        <translation>Wybierz adres wyjściowy PIV do wydania</translation>
+        <source>Select DOGEC Outputs to Spend</source>
+        <translation>Wybierz adres wyjściowy DOGEC do wydania</translation>
     </message>
     <message>
         <source>Dust:</source>
@@ -485,8 +485,8 @@ do stakingu</translation>
         <translation>Ilość</translation>
     </message>
     <message>
-        <source>0.00 PIV</source>
-        <translation>0.00 PIV</translation>
+        <source>0.00 DOGEC</source>
+        <translation>0.00 DOGEC</translation>
     </message>
     <message>
         <source>Select all</source>
@@ -680,9 +680,9 @@ do stakingu</translation>
         <translation>Błąd ładowania delegacji: %1</translation>
     </message>
     <message>
-        <source>You can delegate your PIVs, letting a hot node (24/7 online node)
+        <source>You can delegate your DOGECs, letting a hot node (24/7 online node)
 stake on your behalf, while you keep the keys securely offline.</source>
-        <translation>Możesz delegować swoje PIV, używając gorącego węzła (węzeł online 24/7)
+        <translation>Możesz delegować swoje DOGEC, używając gorącego węzła (węzeł online 24/7)
 stake w Twoim imieniu, podczas gdy klucze są bezpiecznie offline.</translation>
     </message>
     <message>
@@ -690,8 +690,8 @@ stake w Twoim imieniu, podczas gdy klucze są bezpiecznie offline.</translation>
         <translation>Wpisz adres właściciela</translation>
     </message>
     <message>
-        <source>Accept PIV delegation / Delegate PIV</source>
-        <translation>Zaakceptuj delegację PIV / Deleguj PIV</translation>
+        <source>Accept DOGEC delegation / Delegate DOGEC</source>
+        <translation>Zaakceptuj delegację DOGEC / Deleguj DOGEC</translation>
     </message>
     <message>
         <source>Cold Staking address</source>
@@ -932,8 +932,8 @@ adres</translation>
         <translation>Wyświetl historię swojego konta</translation>
     </message>
     <message>
-        <source>How to get PIV</source>
-        <translation>Jak zdobyć PIV</translation>
+        <source>How to get DOGEC</source>
+        <translation>Jak zdobyć DOGEC</translation>
     </message>
     <message>
         <source>Amount of staking rewards received.</source>
@@ -2481,8 +2481,8 @@ Adres: %4
 <context>
     <name>ReceiveWidget</name>
     <message>
-        <source>Scan the QR code or copy the address to receive PIV</source>
-        <translation>Zeskanuj kod QR lub skopiuj adres, aby otrzymać PIV</translation>
+        <source>Scan the QR code or copy the address to receive DOGEC</source>
+        <translation>Zeskanuj kod QR lub skopiuj adres, aby otrzymać DOGEC</translation>
     </message>
     <message>
         <source>Transparent</source>
@@ -2493,8 +2493,8 @@ Adres: %4
         <translation>Shielded</translation>
     </message>
     <message>
-        <source>Accept transparent or shielded PIV</source>
-        <translation>Zaakceptuj transparent albo shielded PIV</translation>
+        <source>Accept transparent or shielded DOGEC</source>
+        <translation>Zaakceptuj transparent albo shielded DOGEC</translation>
     </message>
     <message>
         <source>Add Label</source>
@@ -2809,8 +2809,8 @@ spróbuj odblokować portfel</translation>
         <translation>Wpisz etykietę</translation>
     </message>
     <message>
-        <source>The fee will be deducted from the amount being sent. The recipient will receive less PIV than you enter in the amount field. If multiple recipients are selected, the fee is split equally.</source>
-        <translation>Opłata zostanie odliczona od wysyłanej kwoty. Odbiorca otrzyma mniej PIV niż wpisałeś w polu kwoty. Jeśli wybrano kilku odbiorców, opłata zostanie podzielona po równo.</translation>
+        <source>The fee will be deducted from the amount being sent. The recipient will receive less DOGEC than you enter in the amount field. If multiple recipients are selected, the fee is split equally.</source>
+        <translation>Opłata zostanie odliczona od wysyłanej kwoty. Odbiorca otrzyma mniej DOGEC niż wpisałeś w polu kwoty. Jeśli wybrano kilku odbiorców, opłata zostanie podzielona po równo.</translation>
     </message>
     <message>
         <source>Subtract fee from amount</source>
@@ -2980,12 +2980,12 @@ Czy chce Pan/Pani kontynuować bez notatki?
         <translation>Nie masz żadnego %1 do wybrania.</translation>
     </message>
     <message>
-        <source>Error generating address to shield PIVs</source>
-        <translation>Błąd podczas generowania adresu dla shield PIV</translation>
+        <source>Error generating address to shield DOGECs</source>
+        <translation>Błąd podczas generowania adresu dla shield DOGEC</translation>
     </message>
     <message>
-        <source>You don't have any transparent PIVs to shield.</source>
-        <translation>Nie masz żadnych transparentnych PIVs do shield.</translation>
+        <source>You don't have any transparent DOGECs to shield.</source>
+        <translation>Nie masz żadnych transparentnych DOGECs do shield.</translation>
     </message>
     <message>
         <source>No contacts available, you can go to the contacts screen and add some there!</source>
@@ -3408,8 +3408,8 @@ Wystąpił błąd podczas próby zapisania listy adresów w %1. Proszę spróbuj
         <translation>1) Co to jest DogeCash?</translation>
     </message>
     <message>
-        <source>2) Why are my PIV unspendable?</source>
-        <translation>2) Dlaczego mojego PIV nie można wydać?</translation>
+        <source>2) Why are my DOGEC unspendable?</source>
+        <translation>2) Dlaczego mojego DOGEC nie można wydać?</translation>
     </message>
     <message>
         <source>1</source>
@@ -3424,16 +3424,16 @@ Wystąpił błąd podczas próby zapisania listy adresów w %1. Proszę spróbuj
         <translation>2</translation>
     </message>
     <message>
-        <source>Why are my PIV unspendable?</source>
-        <translation>Dlaczego mojego PIV nie można wydać?</translation>
+        <source>Why are my DOGEC unspendable?</source>
+        <translation>Dlaczego mojego DOGEC nie można wydać?</translation>
     </message>
     <message>
         <source>3</source>
         <translation>3</translation>
     </message>
     <message>
-        <source>How do I stake PIV?</source>
-        <translation>Jak stake-ować PIV?</translation>
+        <source>How do I stake DOGEC?</source>
+        <translation>Jak stake-ować DOGEC?</translation>
     </message>
     <message>
         <source>4</source>

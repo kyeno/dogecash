@@ -262,7 +262,7 @@ class DIP3Test(DogeCashTestFramework):
         # Test payments.
         # Mine 12 blocks and check that each masternode has been paid exactly twice.
         # Save last paid masternode. Check that it's the last paid also after the 12 blocks.
-        # Note: dmn2 sends (2 * 0.3 PIV) to the operator, and (2 * 2.7 PIV) to the owner
+        # Note: dmn2 sends (2 * 0.3 DOGEC) to the operator, and (2 * 2.7 DOGEC) to the owner
         self.log.info("Testing masternode payments...")
         last_paid_mn = self.get_last_paid_mn()
         starting_balances = {"operator": self.get_addr_balance(self.nodes[dmn2c.idx], op_rew["address"])}

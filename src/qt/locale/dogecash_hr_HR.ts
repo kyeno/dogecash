@@ -345,7 +345,7 @@ za staking</translation>
         <translation>Lozinke se ne podudaraju!</translation>
     </message>
     <message>
-        <source>%1 will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your PIVs from being stolen by malware infecting your computer.</source>
+        <source>%1 will close now to finish the encryption process. Remember that encrypting your wallet cannot fully protect your DOGECs from being stolen by malware infecting your computer.</source>
         <translation>%1 će se sada zatvoriti kako bi dovršio postupak šifriranja. Upamtite da šifriranje Vašeg novčanika ne može u potpunosti zaštititi Vaše novčiće od kradje zlonamjernim softverom koji može zaraziti Vaše računalo.</translation>
     </message>
     <message>
@@ -456,8 +456,8 @@ za staking</translation>
         <translation>Odabir novčića</translation>
     </message>
     <message>
-        <source>Select PIV Outputs to Spend</source>
-        <translation>Odaberi PIV za potrošiti</translation>
+        <source>Select DOGEC Outputs to Spend</source>
+        <translation>Odaberi DOGEC za potrošiti</translation>
     </message>
     <message>
         <source>Dust:</source>
@@ -484,8 +484,8 @@ za staking</translation>
         <translation>Iznos</translation>
     </message>
     <message>
-        <source>0.00 PIV</source>
-        <translation>0.00 PIV</translation>
+        <source>0.00 DOGEC</source>
+        <translation>0.00 DOGEC</translation>
     </message>
     <message>
         <source>Select all</source>
@@ -679,7 +679,7 @@ za staking</translation>
         <translation>Greška pri učitavanju delegacija: %1</translation>
     </message>
     <message>
-        <source>You can delegate your PIVs, letting a hot node (24/7 online node)
+        <source>You can delegate your DOGECs, letting a hot node (24/7 online node)
 stake on your behalf, while you keep the keys securely offline.</source>
         <translation>Možete delegirati vaše novčiće, dozvoljavajući drugom novčaniku (koji radi 24/7)
 staking u vaše ime, dok su vaši novčići spremljeni na sigurnom.</translation>
@@ -689,8 +689,8 @@ staking u vaše ime, dok su vaši novčići spremljeni na sigurnom.</translation
         <translation>Unesi adresu vlasnika</translation>
     </message>
     <message>
-        <source>Accept PIV delegation / Delegate PIV</source>
-        <translation>Prihvati PIV delegaciju / Delegiraj PIV</translation>
+        <source>Accept DOGEC delegation / Delegate DOGEC</source>
+        <translation>Prihvati DOGEC delegaciju / Delegiraj DOGEC</translation>
     </message>
     <message>
         <source>Cold Staking address</source>
@@ -883,8 +883,8 @@ vlasnika</translation>
         <translation>Napravi novi prijedlog</translation>
     </message>
     <message>
-        <source>Make sure you have 50 PIV for the proposal fee</source>
-        <translation>Provjerite imate li 50 PIV za naknadu za prijedlog</translation>
+        <source>Make sure you have 50 DOGEC for the proposal fee</source>
+        <translation>Provjerite imate li 50 DOGEC za naknadu za prijedlog</translation>
     </message>
     <message>
         <source>Proposal Name</source>
@@ -982,8 +982,8 @@ vlasnika</translation>
         <translation>Pogledajte povijest vašeg novčanika</translation>
     </message>
     <message>
-        <source>How to get PIV</source>
-        <translation>Kako dobiti PIV</translation>
+        <source>How to get DOGEC</source>
+        <translation>Kako dobiti DOGEC</translation>
     </message>
     <message>
         <source>Amount of staking rewards received.</source>
@@ -2720,8 +2720,8 @@ Adresa: %4
 <context>
     <name>ReceiveWidget</name>
     <message>
-        <source>Scan the QR code or copy the address to receive PIV</source>
-        <translation>Skeniraj QR kod ili kopiraj adresu da bi primio PIV</translation>
+        <source>Scan the QR code or copy the address to receive DOGEC</source>
+        <translation>Skeniraj QR kod ili kopiraj adresu da bi primio DOGEC</translation>
     </message>
     <message>
         <source>Transparent</source>
@@ -2732,8 +2732,8 @@ Adresa: %4
         <translation>Zaštićeno</translation>
     </message>
     <message>
-        <source>Accept transparent or shielded PIV</source>
-        <translation>Prihvati transparentan ili zaštićeni PIV</translation>
+        <source>Accept transparent or shielded DOGEC</source>
+        <translation>Prihvati transparentan ili zaštićeni DOGEC</translation>
     </message>
     <message>
         <source>Add Label</source>
@@ -3238,12 +3238,12 @@ Uz naknadu %2
 </translation>
     </message>
     <message>
-        <source>Error generating address to shield PIVs</source>
-        <translation>Pogreška pri generiranju adrese za zaštićene PIV-ove</translation>
+        <source>Error generating address to shield DOGECs</source>
+        <translation>Pogreška pri generiranju adrese za zaštićene DOGEC-ove</translation>
     </message>
     <message>
-        <source>You don't have any transparent PIVs to shield.</source>
-        <translation>Nemate nikakvih transparentnih PIV za zaštititi.</translation>
+        <source>You don't have any transparent DOGECs to shield.</source>
+        <translation>Nemate nikakvih transparentnih DOGEC za zaštititi.</translation>
     </message>
     <message>
         <source>No contacts available, you can go to the contacts screen and add some there!</source>
@@ -3685,8 +3685,8 @@ Došlo je do greške prilikom spremanja popisa adresa u %1. Molimo pokušajte po
         <translation>1) Što je DogeCash?</translation>
     </message>
     <message>
-        <source>2) Why are my PIV unspendable?</source>
-        <translation>2) Zašto se moji PIV ne mogu potrošiti?</translation>
+        <source>2) Why are my DOGEC unspendable?</source>
+        <translation>2) Zašto se moji DOGEC ne mogu potrošiti?</translation>
     </message>
     <message>
         <source>1</source>
@@ -3701,16 +3701,16 @@ Došlo je do greške prilikom spremanja popisa adresa u %1. Molimo pokušajte po
         <translation>2</translation>
     </message>
     <message>
-        <source>Why are my PIV unspendable?</source>
-        <translation>Zašto se moji PIV ne mogu potrošiti?</translation>
+        <source>Why are my DOGEC unspendable?</source>
+        <translation>Zašto se moji DOGEC ne mogu potrošiti?</translation>
     </message>
     <message>
         <source>3</source>
         <translation>3</translation>
     </message>
     <message>
-        <source>How do I stake PIV?</source>
-        <translation>Kako stakeat PIV?</translation>
+        <source>How do I stake DOGEC?</source>
+        <translation>Kako stakeat DOGEC?</translation>
     </message>
     <message>
         <source>4</source>
@@ -3746,8 +3746,8 @@ pitanja</translation>
         <translation>Zatvori FAQ</translation>
     </message>
     <message>
-        <source>3) How do I stake PIV?</source>
-        <translation>3) Kako stake-am PIV?</translation>
+        <source>3) How do I stake DOGEC?</source>
+        <translation>3) Kako stake-am DOGEC?</translation>
     </message>
     <message>
         <source>4) Where I should go if I need support?</source>
@@ -4851,7 +4851,7 @@ stvorit će se nova sigurnosna kopija.
         <translation>Zaštićeno slanje na</translation>
     </message>
     <message>
-        <source>Burned PIVs</source>
+        <source>Burned DOGECs</source>
         <translation>Uništeni PIVovi</translation>
     </message>
     <message>

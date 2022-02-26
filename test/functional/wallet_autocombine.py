@@ -40,7 +40,7 @@ class AutoCombineTest(DogeCashTestFramework):
         assert_equal(walletinfo['balance'], 500)
         assert_equal(walletinfo['txcount'], 102)
 
-        self.log.info("Set autocombine to 500 PIV")
+        self.log.info("Set autocombine to 500 DOGEC")
         setautocombine = self.nodes[0].setautocombinethreshold(True, 500)
         assert_equal(setautocombine['enabled'], True)
         assert_equal(setautocombine['threshold'], 500)

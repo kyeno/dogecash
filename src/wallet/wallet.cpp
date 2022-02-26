@@ -26,7 +26,7 @@
 #include "util/validation.h"
 #include "utilmoneystr.h"
 #include "wallet/fees.h"
-#include "zpivchain.h"
+#include "zdogecchain.h"
 
 #include <future>
 #include <boost/algorithm/string/replace.hpp>
@@ -43,7 +43,7 @@ bool fPayAtLeastCustomFee = true;
 bool bSpendZeroConfChange = DEFAULT_SPEND_ZEROCONF_CHANGE;
 
 /**
- * Fees smaller than this (in upiv) are considered zero fee (for transaction creation)
+ * Fees smaller than this (in udogec) are considered zero fee (for transaction creation)
  * We are ~100 times smaller then bitcoin now (2015-06-23), set minTxFee 10 times higher
  * so it's still 10 times lower comparing to bitcoin.
  * Override with -mintxfee
@@ -2449,7 +2449,7 @@ bool CWallet::GetMasternodeVinAndKeys(CTxIn& txinRet, CPubKey& pubKeyRet, CKey& 
 
     // Masternode collateral value
     if (txOut.nValue != Params().GetConsensus().nMNCollateralAmt) {
-        strError = strprintf("Invalid collateral tx value, must be %s PIV", FormatMoney(Params().GetConsensus().nMNCollateralAmt));
+        strError = strprintf("Invalid collateral tx value, must be %s DOGEC", FormatMoney(Params().GetConsensus().nMNCollateralAmt));
         return error("%s: tx %s, index %d not a masternode collateral", __func__, strTxHash, nOutputIndex);
     }
 
@@ -3333,7 +3333,7 @@ bool CWallet::CreateCoinStake(
     int nAttempts = 0;
     for (auto it = availableCoins->begin(); it != availableCoins->end();) {
         COutPoint outPoint = COutPoint(it->tx->GetHash(), it->i);
-        CPivStake stakeInput(it->tx->tx->vout[it->i],
+        CDogecStake stakeInput(it->tx->tx->vout[it->i],
                              outPoint,
                              it->pindex);
 
@@ -4466,7 +4466,7 @@ void CWallet::SetNull()
     // Stake split threshold
     nStakeSplitThreshold = DEFAULT_STAKE_SPLIT_THRESHOLD;
 
-    // User-defined fee PIV/kb
+    // User-defined fee DOGEC/kb
     fUseCustomFee = false;
     nCustomFee = CWallet::minTxFee.GetFeePerK();
 

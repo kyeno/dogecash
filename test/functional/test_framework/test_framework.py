@@ -1196,7 +1196,7 @@ class DogeCashTestFramework():
                                    get_collateral_vout(controller.getrawtransaction(dmn.proTx, True)))
 
     """
-    Create a ProReg tx, which references an 100 PIV UTXO as collateral.
+    Create a ProReg tx, which references an 100 DOGEC UTXO as collateral.
     The controller node owns the collateral and creates the ProReg tx.
     """
     def protx_register(self, miner, controller, dmn, collateral_addr):

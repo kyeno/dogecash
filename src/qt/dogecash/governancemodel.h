@@ -34,7 +34,7 @@ public:
     int votesNo;
     /** Payment script destination */
     std::string recipientAdd;
-    /** Amount of PIV paid per month */
+    /** Amount of DOGEC paid per month */
     CAmount amount;
     /** Amount of times that the proposal will be paid */
     int totalPayments;

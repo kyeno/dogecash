@@ -36,7 +36,7 @@ class ImportStakingTest(DogeCashTestFramework):
                              for i in range(2 * NUM_OF_DELEGATIONS)]
         delegations = []
         for i, sa in enumerate(staking_addresses):
-            # delegate 10 PIV
+            # delegate 10 DOGEC
             delegations.append(self.nodes[0].delegatestake(sa, 10)['txid'])
             # mine a block and check staking balance
             self.nodes[0].generate(1)

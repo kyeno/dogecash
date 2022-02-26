@@ -736,7 +736,7 @@ public:
     // Staker status (last hashed block and time)
     CStakerStatus* pStakerStatus = nullptr;
 
-    // User-defined fee PIV/kb
+    // User-defined fee DOGEC/kb
     bool fUseCustomFee;
     CAmount nCustomFee;
 
@@ -851,7 +851,7 @@ public:
      */
     std::map<libzcash::SaplingPaymentAddress, std::vector<SaplingNoteEntry>> ListNotes() const;
 
-    /// Get 10000 PIV output and keys which can be used for the Masternode
+    /// Get 10000 DOGEC output and keys which can be used for the Masternode
     bool GetMasternodeVinAndKeys(CTxIn& txinRet, CPubKey& pubKeyRet,
             CKey& keyRet, std::string strTxHash, std::string strOutputIndex, std::string& strError);
     /// Extract txin information and keys from output

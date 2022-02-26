@@ -444,8 +444,8 @@ para staking</translation>
         <translation>Selección de Moneda</translation>
     </message>
     <message>
-        <source>Select PIV Outputs to Spend</source>
-        <translation>Seleccionar Salidas PIV para Gastar</translation>
+        <source>Select DOGEC Outputs to Spend</source>
+        <translation>Seleccionar Salidas DOGEC para Gastar</translation>
     </message>
     <message>
         <source>Dust:</source>
@@ -472,8 +472,8 @@ para staking</translation>
         <translation>Cantidad</translation>
     </message>
     <message>
-        <source>0.00 PIV</source>
-        <translation>0.00 PIV</translation>
+        <source>0.00 DOGEC</source>
+        <translation>0.00 DOGEC</translation>
     </message>
     <message>
         <source>Select all</source>
@@ -663,9 +663,9 @@ para staking</translation>
         <translation>Error al cargar las delegaciones: %1</translation>
     </message>
     <message>
-        <source>You can delegate your PIVs, letting a hot node (24/7 online node)
+        <source>You can delegate your DOGECs, letting a hot node (24/7 online node)
 stake on your behalf, while you keep the keys securely offline.</source>
-        <translation>Puedes delegar tus PIV, dejando un nodo activo (nodo en línea 24/7)
+        <translation>Puedes delegar tus DOGEC, dejando un nodo activo (nodo en línea 24/7)
 Haga Stake en tu nombre, manteniendo las llaves en un lugar seguro fuera de línea.</translation>
     </message>
     <message>
@@ -673,8 +673,8 @@ Haga Stake en tu nombre, manteniendo las llaves en un lugar seguro fuera de lín
         <translation>Ingresa la dirección del propietario</translation>
     </message>
     <message>
-        <source>Accept PIV delegation / Delegate PIV</source>
-        <translation>Aceptar delegación de PIV / PIV Delegados</translation>
+        <source>Accept DOGEC delegation / Delegate DOGEC</source>
+        <translation>Aceptar delegación de DOGEC / DOGEC Delegados</translation>
     </message>
     <message>
         <source>Cold Staking address</source>
@@ -946,8 +946,8 @@ del propietario </translation>
         <translation>Ver el historial de su cuenta</translation>
     </message>
     <message>
-        <source>How to get PIV</source>
-        <translation>Cómo obtener PIV</translation>
+        <source>How to get DOGEC</source>
+        <translation>Cómo obtener DOGEC</translation>
     </message>
     <message>
         <source>Sort by</source>
@@ -2401,8 +2401,8 @@ Dirección: %4
 <context>
     <name>ReceiveWidget</name>
     <message>
-        <source>Scan the QR code or copy the address to receive PIV</source>
-        <translation>Escanee el código QR o copie la dirección para recibir PIV</translation>
+        <source>Scan the QR code or copy the address to receive DOGEC</source>
+        <translation>Escanee el código QR o copie la dirección para recibir DOGEC</translation>
     </message>
     <message>
         <source>Add Label</source>
@@ -3236,8 +3236,8 @@ Ha habido un error al tratar de guardar la libreta de direcciones en %1. Por fav
         <translation>1) ¿Qué es DogeCash?</translation>
     </message>
     <message>
-        <source>2) Why are my PIV unspendable?</source>
-        <translation>2) ¿Por qué mis PIV no se pueden gastar?</translation>
+        <source>2) Why are my DOGEC unspendable?</source>
+        <translation>2) ¿Por qué mis DOGEC no se pueden gastar?</translation>
     </message>
     <message>
         <source>1</source>
@@ -3252,16 +3252,16 @@ Ha habido un error al tratar de guardar la libreta de direcciones en %1. Por fav
         <translation>2</translation>
     </message>
     <message>
-        <source>Why are my PIV unspendable?</source>
-        <translation>¿Por qué mi PIV no se pueden gastar?</translation>
+        <source>Why are my DOGEC unspendable?</source>
+        <translation>¿Por qué mi DOGEC no se pueden gastar?</translation>
     </message>
     <message>
         <source>3</source>
         <translation>3</translation>
     </message>
     <message>
-        <source>How do I stake PIV?</source>
-        <translation>¿Cómo apuesto PIV?</translation>
+        <source>How do I stake DOGEC?</source>
+        <translation>¿Cómo apuesto DOGEC?</translation>
     </message>
     <message>
         <source>4</source>
@@ -3292,8 +3292,8 @@ Ha habido un error al tratar de guardar la libreta de direcciones en %1. Por fav
         <translation>Preguntas Frecuentes</translation>
     </message>
     <message>
-        <source>3) How do I stake PIV?</source>
-        <translation>3) ¿Cómo apuesto PIV?</translation>
+        <source>3) How do I stake DOGEC?</source>
+        <translation>3) ¿Cómo apuesto DOGEC?</translation>
     </message>
     <message>
         <source>4) Where I should go if I need support?</source>

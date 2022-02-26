@@ -452,8 +452,8 @@ voor bewijs van Inzet</translation>
         <translation>Munt Selectie</translation>
     </message>
     <message>
-        <source>Select PIV Outputs to Spend</source>
-        <translation>Selecteer PIV Outputs om te besteden</translation>
+        <source>Select DOGEC Outputs to Spend</source>
+        <translation>Selecteer DOGEC Outputs om te besteden</translation>
     </message>
     <message>
         <source>Dust:</source>
@@ -480,8 +480,8 @@ voor bewijs van Inzet</translation>
         <translation>Bedrag</translation>
     </message>
     <message>
-        <source>0.00 PIV</source>
-        <translation>0.00 PIV</translation>
+        <source>0.00 DOGEC</source>
+        <translation>0.00 DOGEC</translation>
     </message>
     <message>
         <source>Select all</source>
@@ -659,9 +659,9 @@ voor bewijs van Inzet</translation>
         <translation>Fout bij laden delegaties: %1</translation>
     </message>
     <message>
-        <source>You can delegate your PIVs, letting a hot node (24/7 online node)
+        <source>You can delegate your DOGECs, letting a hot node (24/7 online node)
 stake on your behalf, while you keep the keys securely offline.</source>
-        <translation>Je kan jouw PIVs delegeren en een hot node (24/7 online node)
+        <translation>Je kan jouw DOGECs delegeren en een hot node (24/7 online node)
 voor je laten staken, terwijl je de sleutels veilig offline opslag bewaart.</translation>
     </message>
     <message>
@@ -669,8 +669,8 @@ voor je laten staken, terwijl je de sleutels veilig offline opslag bewaart.</tra
         <translation>Voer eigenaarsadres in</translation>
     </message>
     <message>
-        <source>Accept PIV delegation / Delegate PIV</source>
-        <translation>Accepteer PIV delegatie / Delegeer PIV</translation>
+        <source>Accept DOGEC delegation / Delegate DOGEC</source>
+        <translation>Accepteer DOGEC delegatie / Delegeer DOGEC</translation>
     </message>
     <message>
         <source>Cold Staking address</source>
@@ -910,8 +910,8 @@ address</source>
         <translation>Bekijk de geschiedenis van uw account</translation>
     </message>
     <message>
-        <source>How to get PIV</source>
-        <translation>Hoe PIV verkrijgen</translation>
+        <source>How to get DOGEC</source>
+        <translation>Hoe DOGEC verkrijgen</translation>
     </message>
     <message>
         <source>Sort by</source>
@@ -2370,8 +2370,8 @@ Adres: %4
 <context>
     <name>ReceiveWidget</name>
     <message>
-        <source>Scan the QR code or copy the address to receive PIV</source>
-        <translation>Scan de QR code of kopieer het adres om PIV te ontvangen</translation>
+        <source>Scan the QR code or copy the address to receive DOGEC</source>
+        <translation>Scan de QR code of kopieer het adres om DOGEC te ontvangen</translation>
     </message>
     <message>
         <source>Transparent</source>
@@ -3209,8 +3209,8 @@ Er was een fout opgetreden tijdens het opslaan van deze adreslijst naar %1. Prob
         <translation>1) Wat is DogeCash?</translation>
     </message>
     <message>
-        <source>2) Why are my PIV unspendable?</source>
-        <translation>2) Waarom is mijn PIV niet besteedbaar?</translation>
+        <source>2) Why are my DOGEC unspendable?</source>
+        <translation>2) Waarom is mijn DOGEC niet besteedbaar?</translation>
     </message>
     <message>
         <source>1</source>
@@ -3225,16 +3225,16 @@ Er was een fout opgetreden tijdens het opslaan van deze adreslijst naar %1. Prob
         <translation>2</translation>
     </message>
     <message>
-        <source>Why are my PIV unspendable?</source>
-        <translation>Waarom is mijn PIV niet besteedbaar?</translation>
+        <source>Why are my DOGEC unspendable?</source>
+        <translation>Waarom is mijn DOGEC niet besteedbaar?</translation>
     </message>
     <message>
         <source>3</source>
         <translation>3</translation>
     </message>
     <message>
-        <source>How do I stake PIV?</source>
-        <translation>Hoe stake ik PIV?</translation>
+        <source>How do I stake DOGEC?</source>
+        <translation>Hoe stake ik DOGEC?</translation>
     </message>
     <message>
         <source>4</source>
@@ -3269,8 +3269,8 @@ Er was een fout opgetreden tijdens het opslaan van deze adreslijst naar %1. Prob
         <translation>FAQ Sluiten</translation>
     </message>
     <message>
-        <source>3) How do I stake PIV?</source>
-        <translation>3) Hoe stake ik PIV?</translation>
+        <source>3) How do I stake DOGEC?</source>
+        <translation>3) Hoe stake ik DOGEC?</translation>
     </message>
     <message>
         <source>4) Where I should go if I need support?</source>

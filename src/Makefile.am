@@ -312,8 +312,8 @@ BITCOIN_CORE_H = \
   wallet/walletdb.h \
   wallet/walletutil.h \
   warnings.h \
-  zpivchain.h \
-  zpiv/zpos.h \
+  zdogecchain.h \
+  zdogec/zpos.h \
   zmq/zmqabstractnotifier.h \
   zmq/zmqconfig.h \
   zmq/zmqnotificationinterface.h \
@@ -384,7 +384,7 @@ libbitcoin_server_a_SOURCES = \
   txmempool.cpp \
   validation.cpp \
   validationinterface.cpp \
-  zpivchain.cpp \
+  zdogecchain.cpp \
   $(BITCOIN_CORE_H) \
   $(LIBSAPLING_H)
 
@@ -420,7 +420,7 @@ libbitcoin_wallet_a_SOURCES = \
   wallet/walletdb.cpp \
   wallet/walletutil.cpp \
   stakeinput.cpp \
-  zpiv/zpos.cpp \
+  zdogec/zpos.cpp \
   $(BITCOIN_CORE_H) \
   $(LIBSAPLING_H)
 
@@ -482,7 +482,7 @@ libzerocoin_libbitcoin_zerocoin_a_SOURCES = \
   libzerocoin/Params.h \
   libzerocoin/SpendType.h \
   libzerocoin/ZerocoinDefines.h \
-  zpiv/zpivmodule.h \
+  zdogec/zdogecmodule.h \
   libzerocoin/bignum.cpp \
   libzerocoin/Coin.cpp \
   libzerocoin/CoinRandomnessSchnorrSignature.cpp \
@@ -490,7 +490,7 @@ libzerocoin_libbitcoin_zerocoin_a_SOURCES = \
   libzerocoin/Denominations.cpp \
   libzerocoin/ParamGeneration.cpp \
   libzerocoin/Params.cpp \
-  zpiv/zpivmodule.cpp
+  zdogec/zdogecmodule.cpp
 
 # common: shared between dogecashd, and dogecash-qt and non-server tools
 libbitcoin_common_a_CPPFLAGS = $(AM_CPPFLAGS) $(BITCOIN_INCLUDES)
@@ -749,7 +749,7 @@ CLEANFILES += util/*.gcda util/*.gcno
 CLEANFILES += wallet/*.gcda wallet/*.gcno
 CLEANFILES += wallet/test/*.gcda wallet/test/*.gcno
 CLEANFILES += zmq/*.gcda zmq/*.gcno
-CLEANFILES += zpiv/*.gcda zpiv/*.gcno
+CLEANFILES += zdogec/*.gcda zdogec/*.gcno
 CLEANFILES += obj/build.h
 
 CTAES_DIST =  crypto/ctaes/bench.c

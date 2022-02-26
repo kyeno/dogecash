@@ -449,8 +449,8 @@ for staking</source>
         <translation>코인 선택</translation>
     </message>
     <message>
-        <source>Select PIV Outputs to Spend</source>
-        <translation>사용할 PIV 아웃풋 선택</translation>
+        <source>Select DOGEC Outputs to Spend</source>
+        <translation>사용할 DOGEC 아웃풋 선택</translation>
     </message>
     <message>
         <source>Dust:</source>
@@ -477,8 +477,8 @@ for staking</source>
         <translation>금액</translation>
     </message>
     <message>
-        <source>0.00 PIV</source>
-        <translation>0.00 PIV</translation>
+        <source>0.00 DOGEC</source>
+        <translation>0.00 DOGEC</translation>
     </message>
     <message>
         <source>Select all</source>
@@ -668,17 +668,17 @@ for staking</source>
         <translation>위임 데이터 로딩 에러: %1</translation>
     </message>
     <message>
-        <source>You can delegate your PIVs, letting a hot node (24/7 online node)
+        <source>You can delegate your DOGECs, letting a hot node (24/7 online node)
 stake on your behalf, while you keep the keys securely offline.</source>
-        <translation>안전히 개인 프라이빗 키를 오프라인으로 보관한 상태로, 가지고 계신 PIV 를 매일 24시간 온라인으로 돌아가는 핫 노드로 위임하여, 대신 스테이킹을 하게 할수 있습니다. </translation>
+        <translation>안전히 개인 프라이빗 키를 오프라인으로 보관한 상태로, 가지고 계신 DOGEC 를 매일 24시간 온라인으로 돌아가는 핫 노드로 위임하여, 대신 스테이킹을 하게 할수 있습니다. </translation>
     </message>
     <message>
         <source>Enter owner address</source>
         <translation>Owner 주소 입력</translation>
     </message>
     <message>
-        <source>Accept PIV delegation / Delegate PIV</source>
-        <translation>PIV 위임권 수락하기 / PIV 위임 하기</translation>
+        <source>Accept DOGEC delegation / Delegate DOGEC</source>
+        <translation>DOGEC 위임권 수락하기 / DOGEC 위임 하기</translation>
     </message>
     <message>
         <source>Cold Staking address</source>
@@ -962,7 +962,7 @@ address</source>
         <translation>계정의 거래 이력 보기</translation>
     </message>
     <message>
-        <source>How to get PIV</source>
+        <source>How to get DOGEC</source>
         <translation>PIV를 얻을 수 있는 방법</translation>
     </message>
     <message>
@@ -2507,8 +2507,8 @@ Address: %4
         <translation>Shielded</translation>
     </message>
     <message>
-        <source>Accept transparent or shielded PIV</source>
-        <translation>Transparent / Shielded PIV 받기 주소 선택</translation>
+        <source>Accept transparent or shielded DOGEC</source>
+        <translation>Transparent / Shielded DOGEC 받기 주소 선택</translation>
     </message>
     <message>
         <source>Add Label</source>
@@ -2892,8 +2892,8 @@ Do you wish to proceed without memo?
         <translation>선택할 수 있는 %1을 가지고 있지 않습니다.</translation>
     </message>
     <message>
-        <source>You don't have any transparent PIVs to shield.</source>
-        <translation>Shield 가 가능한 Transparent PIV 가 없습니다.</translation>
+        <source>You don't have any transparent DOGECs to shield.</source>
+        <translation>Shield 가 가능한 Transparent DOGEC 가 없습니다.</translation>
     </message>
     <message>
         <source>No contacts available, you can go to the contacts screen and add some there!</source>
@@ -3324,7 +3324,7 @@ Verify that you have installed a predetermined text editor.</source>
         <translation>FAQ 닫기</translation>
     </message>
     <message>
-        <source>3) How do I stake PIV?</source>
+        <source>3) How do I stake DOGEC?</source>
         <translation>3) DogeCash 스테이킹은 어떻게 하나요?</translation>
     </message>
     <message>

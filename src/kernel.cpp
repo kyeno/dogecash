@@ -99,7 +99,7 @@ static bool LoadStakeInput(const CBlock& block, std::unique_ptr<CStakeInput>& st
     const CTxIn& txin = block.vtx[1]->vin[0];
     stake = txin.IsZerocoinSpend() ?
             std::unique_ptr<CStakeInput>(CLegacyZDogecStake::NewZDogecStake(txin, nHeight)) :
-            std::unique_ptr<CStakeInput>(CPivStake::NewPivStake(txin, nHeight, block.nTime));
+            std::unique_ptr<CStakeInput>(CDogecStake::NewDogecStake(txin, nHeight, block.nTime));
 
     return stake != nullptr;
 }
